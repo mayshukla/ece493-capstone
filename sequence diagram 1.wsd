@@ -1,0 +1,60 @@
+@startuml
+participant Renderer as r
+participant ClientToServerConnection as c
+participant ServerToClientConnection as s
+participant GameServer as gs
+note left of r #aqua
+Use cases shown:
+Input Code
+Run Game
+Watch Game
+Find Match
+Show Walls
+end note
+activate c
+c -> s: queueForGame()
+activate s
+s -> gs: enqueue(client: ServerToClientConnection)
+activate gs
+alt less than 2 agents queued
+    gs --> s: waitingMessage
+    s --> c: waitingMessage
+else 2 or more agents queued
+    return foundMatchMessage
+    return foundMatchMessage
+end
+c -> s: onReceiveAgentCode(code: String)
+deactivate c
+activate s
+s -> gs: startGame(clients: ServerToClientConnection[])
+deactivate s
+activate gs
+gs -> s: sendAgentStatesToClient(agentStates: AgentState[])
+activate s
+s -> c: onRecieveAgentStates(agentStates: AgentState[])
+activate c
+loop for each agentState
+    c -> r: updateAgentState(agentState: AgentState)
+    activate r
+    r -> r: render()
+    activate r
+    deactivate r
+    return updatedStateMessage
+end
+return updatedAgentsMessage
+return updatedAgentsMessage
+gs -> s: sendProjectileStatesToClient(projectileStates: ProjectileStates[])
+activate s
+s -> c: onReceieveProjectileStates(projectileStates: ProjectileState[])
+activate c
+loop for each projectileState
+    c -> r: updateProjectileState(projectileState: ProjectileState)
+    activate r
+    r -> r: render()
+    activate r
+    deactivate r
+    return updatedStateMessage
+end
+return updatedProjectilesMessage
+return updatedProjectilesMessage
+@enduml
