@@ -10,6 +10,7 @@ Run Game
 Watch Game
 Find Match
 Show Walls
+Show agent position
 end note
 activate c
 c -> s: queueForGame()

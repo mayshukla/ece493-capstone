@@ -1,0 +1,97 @@
+@startuml
+participant Agent as a
+participant Game as g
+participant PhysicsEngine as pe
+participant GameServer as gs
+participant ServerToClientConnection as s
+participant ClientToServerConnection as c
+note left of a #aqua
+Use cases shown:
+Program agent to attack
+Program agent to shield itself
+Program agent to move
+Use API
+Detect Collision
+End Game
+View Results
+end note
+activate g
+create pe
+g -> pe: << create >>
+g -> pe: addOnCollisionCallback(callback: Function<ObjectState[] -> void>)
+activate pe
+deactivate pe
+g -> a: run()
+activate a
+
+a -> a: setMovementSpeed(speed: Float)
+activate a
+a -> g: sendUpdateToClients()
+activate g
+deactivate g
+deactivate a
+
+a -> a: setMovementDirection(angle: Float)
+activate a
+a -> g: sendUpdateToClients()
+activate g
+deactivate g
+deactivate a
+
+a -> a: activateShield()
+activate a
+a -> g: sendUpdateToClients()
+activate g
+deactivate g
+deactivate a
+
+a -> a: deactivateShield()
+activate a
+a -> g: sendUpdateToClients()
+activate g
+deactivate g
+deactivate a
+
+a -> a: attackRanged(angle: Float)
+activate a
+a -> g: sendUpdateToClients()
+activate g
+deactivate g
+deactivate a
+
+pe -> g: onCollisionCallback(collidedObjects: ObjectState[])
+activate g
+alt agent collides with obstacle
+    g -> a: onObstacleHit()
+    activate a
+    a -> g: sendUpdateToClients()
+    activate g
+    deactivate g
+    deactivate a
+else agents collides with projectile
+    g -> a: onDamageTaken()
+    activate a
+    a -> a: decrementHealth(damage: Float)
+    activate a
+    deactivate a
+    a -> g: sendUpdateToClients()
+    activate g
+    deactivate g
+    alt agent health <= 0
+        a -> g: addSurvivalTime(agent: Agent, time: Float)
+        activate g
+        alt 1 agent remaining
+            g -> gs: endGame(clients: ServerToClientConnection[])
+            activate gs
+            gs -> s: sendResultsToClients(survivalTimes: Pair<Integer, Float>[])
+            activate s
+            deactivate gs
+            s -> c: onReceiveResults(survivalTimes: Pair<Integer, Float>[])
+            activate c
+            deactivate c
+            deactivate s
+            
+        end
+    end
+end
+@enduml
