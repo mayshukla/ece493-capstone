@@ -1,0 +1,58 @@
+@startuml Running Game Activity Diagram
+title User Running a Game Activity
+
+(*) --> "Open compatible web browser"
+--> "Launch game"
+--> "Home screen displays"
+--> "Enter user name & click find match"
+--> "Enter waiting queue"
+if "Match Found" then
+    --> [true] "Display code input screen"
+    --> ===B1===
+    --> "User inputs code"
+    if "User code has no errors" then
+        --> [true] "User clicks run"
+        --> ===B2===
+    else
+        --> [false] "User inputs code"
+    endif
+
+    ===B1=== --> "Opponent inputs code"
+     if "Opponent code has no errors" then
+        --> [true] "Opponent clicks run"
+        --> ===B2===
+    else
+        --> [false] "Opponent inputs code"
+    endif
+
+    ===B2=== --> "Game runs and renders"
+    --> "Game finsishes rendering"
+    --> "Winner is declared"
+    --> "Leaderboard is shown"
+    --> (*)
+else
+    --> [false] "Enter waiting queue"
+endif
+
+@enduml
+
+
+
+@startuml Help button Activity Diagram
+title User learning about game and settings
+
+(*) --> "Open compatible web browser"
+--> "Launch game"
+--> "Home screen displays"
+--> "Click on 'Help' Button or '?' Button"
+--> "Help page displays"
+--> "Exit help page"
+--> "Home screen displays"
+"Home screen displays" --> "Click on settings icon"
+--> "Settings screen displays"
+--> "User adjusts settings"
+--> "User exits settings screen"
+--> (*)
+
+
+@enduml
