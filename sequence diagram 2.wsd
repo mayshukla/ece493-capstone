@@ -5,6 +5,7 @@ participant PhysicsEngine as pe
 participant GameServer as gs
 participant ServerToClientConnection as s
 participant ClientToServerConnection as c
+participant Renderer as r
 note left of a #aqua
 Use cases shown:
 Program agent to attack
@@ -18,7 +19,7 @@ end note
 activate g
 create pe
 g -> pe: << create >>
-g -> pe: addOnCollisionCallback(callback: Function<ObjectState[] -> void>)
+g -> pe: addOnCollisionCallback(self.onCollisionCallback: Function<ObjectState[] -> void>)
 activate pe
 deactivate pe
 g -> a: run()
@@ -69,13 +70,14 @@ alt agent collides with obstacle
     deactivate g
     deactivate a
 else agents collides with projectile
-    g -> a: onDamageTaken()
-    activate a
-    a -> a: decrementHealth(damage: Float)
+    g -> a: decrementHealth(damage: Float)
     activate a
     deactivate a
+    g -> a: onDamageTaken()
+    activate a
     a -> g: sendUpdateToClients()
     activate g
+    deactivate a
     deactivate g
     alt agent health <= 0
         a -> g: addSurvivalTime(agent: Agent, time: Float)
@@ -88,9 +90,11 @@ else agents collides with projectile
             deactivate gs
             s -> c: onReceiveResults(survivalTimes: Pair<Integer, Float>[])
             activate c
-            deactivate c
             deactivate s
-            
+            c -> r: renderResultsScreen()
+            activate r
+            deactivate c
+            deactivate r
         end
     end
 end
