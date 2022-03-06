@@ -1,38 +1,48 @@
 @startuml Running Game Activity Diagram
 title User Running a Game Activity
 
-(*) --> "Open compatible web browser"
---> "Launch game"
---> "Home screen displays"
---> "Enter user name & click find match"
---> "Enter waiting queue"
-if "Match Found" then
-    --> [true] "Display code input screen"
-    --> ===B1===
-    --> "User inputs code"
-    if "User code has no errors" then
-        --> [true] "User clicks run"
-        --> ===B2===
-    else
-        --> [false] "User inputs code"
-    endif
 
-    ===B1=== --> "Opponent inputs code"
-     if "Opponent code has no errors" then
-        --> [true] "Opponent clicks run"
-        --> ===B2===
-    else
-        --> [false] "Opponent inputs code"
-    endif
+|#NavajoWhite|User Interface|
+start
+: Open compatible web browser;
+: Launch game;
+: Home screen displays;
+: Enter user name & click find match;
 
-    ===B2=== --> "Game runs and renders"
-    --> "Game finsishes rendering"
-    --> "Winner is declared"
-    --> "Leaderboard is shown"
-    --> (*)
-else
-    --> [false] "Enter waiting queue"
-endif
+
+|#AntiqueWhite|Server Side|
+repeat
+    : Enter waiting queue;
+repeat while (Match found) is (false)
+->true;
+
+
+: Server starts game;
+|User Interface|
+:Display code input screen;
+fork
+    repeat
+    :User inputs code;
+    repeat while (User code has errors) is (true)
+    ->false;
+        :User clicks run;
+fork again
+    repeat
+    :Opponent inputs code;
+    repeat while (Opponent code has errors) is (true)
+    ->false;
+        :Opponent clicks run;
+end fork
+
+|Server Side|
+: Game logic runs;
+|#GhostWhite|Client side|
+: Game renders;
+: Game finishes rendering;
+: Winner is declared;
+|User Interface|
+: Leaderboard is shown;
+end
 
 @enduml
 
