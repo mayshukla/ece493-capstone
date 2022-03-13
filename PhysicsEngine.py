@@ -3,6 +3,8 @@ import pymunk.pygame_util
 import pygame
 import pymunk.vec2d
 
+AGENT_COLLISION_TYPE = 1
+
 class PhysicsEngine:
 
     def __init__(self) -> None:
@@ -13,16 +15,19 @@ class PhysicsEngine:
         # create collision handlers
         # bodies can be given "collision types" and the collision between the types can be handled differently
         # can use this to handle agent and wall collision separately
-        self.collision_handler = self.space.add_collision_handler(1, 1)
+        self.collision_handler = self.space.add_collision_handler(AGENT_COLLISION_TYPE, AGENT_COLLISION_TYPE)
         self.collision_handler.begin = self.agent_collision
+        
         # collision_handler.post_solve =
         # collision_handler.pre_solve = 
         # collision_handler.separate = 
 
     def agent_collision(self, arbiter, space, data):
+        # stop the objects from moving
         arbiter.shapes[0].body.velocity = (0, 0)
         arbiter.shapes[1].body.velocity = (0, 0)
         print("Collision!")
+        # call the optional callback function
         if "callback" in data:
             data["callback"]()
         return True
