@@ -3,26 +3,39 @@ import pymunk.pygame_util
 import pygame
 import pymunk.vec2d
 
-AGENT_COLLISION_TYPE = 1
+COLLISION_TYPE_1 = 1
 
 class PhysicsEngine:
-
+    """
+    A wrapper around the pymunk physics engine. Tracks the positions and velocities of objects over time. Handles collisions between objects.
+    """
     def __init__(self) -> None:
         # create space for bodies
         self.space = pymunk.Space() # can be threaded
-        self.space.gravity = 0, 0
+        self.space.gravity = 0, 0 # gravity will not be present by default
 
         # create collision handlers
-        # bodies can be given "collision types" and the collision between the types can be handled differently
+        # bodies can be given "collision types" and the collision between the different types can be handled differently
         # can use this to handle agent and wall collision separately
-        self.collision_handler = self.space.add_collision_handler(AGENT_COLLISION_TYPE, AGENT_COLLISION_TYPE)
-        self.collision_handler.begin = self.agent_collision
+        self.collision_handler = self.space.add_collision_handler(COLLISION_TYPE_1, COLLISION_TYPE_1)
+        self.collision_handler.begin = self.begin_collision_handler
         
         # collision_handler.post_solve =
         # collision_handler.pre_solve = 
         # collision_handler.separate = 
 
-    def agent_collision(self, arbiter, space, data):
+    def begin_collision_handler(self, arbiter, space, data):
+        """
+        Called when two objects collide for the first time. 
+
+        Args:
+            arbiter: Contains information about the objects that collided.
+            space: Contains information about all objects currently instantiated. This is the same as self.space.
+            data: A dict that contains any additional parameters.
+        Returns:
+            True if the collision should be processed normally.
+            False if the collision should be ignored.
+        """
         # stop the objects from moving
         arbiter.shapes[0].body.velocity = (0, 0)
         arbiter.shapes[1].body.velocity = (0, 0)
@@ -33,9 +46,15 @@ class PhysicsEngine:
         return True
 
     def addOnCollisionCallback(self, callback):
+        """
+        Adds a callback function that will be called in "begin_collision_handler".
+        """
         self.collision_handler.data["callback"] = callback
 
     def run_test(self):
+        """
+        Renders the current space using pygame. This is for debug purposes only.
+        """
         # use pygame for testing
         GRAY = (220, 220, 220)
         pygame.init()
@@ -59,9 +78,15 @@ class PhysicsEngine:
         pygame.quit()
 
     def get_shapes(self):
+        """
+        Returns information about all shapes in the current space.
+        """
         return self.space.shapes
 
     def get_bodies(self):
+        """
+        Returns information about all bodies in the current space (one body can be associated with many shapes).
+        """
         return self.space.bodies
 
 
