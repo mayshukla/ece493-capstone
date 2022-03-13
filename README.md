@@ -22,3 +22,11 @@ python3 server.py <port>
 ```
 
 1. Go to `localhost:<port>` in a web browser.
+
+## Running tests
+
+Run the following in the root directory of this repo.
+
+```
+python3 -m unittest
+```
