@@ -1,4 +1,5 @@
 import argparse
+from traceback import format_exception
 import tornado.ioloop
 import tornado.web
 import tornado.websocket
@@ -61,7 +62,9 @@ class ServerToClientConnection(tornado.websocket.WebSocketHandler):
         )
         self.send_message(message)
 
-    def send_python_error(self, error_str):
+    def send_python_error(self, exception):
+        error_str = format_exception(exception)
+        error_str = "".join(error_str)
         message = Message(
             Message.PYTHON_ERROR,
             error_str

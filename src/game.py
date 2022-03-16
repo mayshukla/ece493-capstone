@@ -37,6 +37,7 @@ class Game():
             exec(code, player_globals)
             # Get the class object so we can instantiate it later.
             # TODO what if both players have classes with the same name?
+            class_name = class_name.strip()
             agent_class = eval(class_name, player_globals)
             self.agents.append(agent_class())
             client.send_debug_message("Successfully created Agent instance from player code")
@@ -44,5 +45,5 @@ class Game():
         except Exception as e:
             client.send_debug_message("Failed to create Agent instance from player code")
             # TODO send error message to client to be printed on the actual page (not just console)
-            client.send_python_error(repr(e))
+            client.send_python_error(e)
             return False
