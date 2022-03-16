@@ -1,6 +1,6 @@
 from collections import deque
 
-from game import Game
+from src.game import Game
 
 
 class GameServer():

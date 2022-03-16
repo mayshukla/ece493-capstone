@@ -4,8 +4,8 @@ import tornado.ioloop
 import tornado.web
 import tornado.websocket
 
-from gameserver import GameServer
-from message import Message
+from src.gameserver import GameServer
+from src.message import Message
 
 
 class ServerToClientConnection(tornado.websocket.WebSocketHandler):
