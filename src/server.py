@@ -62,6 +62,13 @@ class ServerToClientConnection(tornado.websocket.WebSocketHandler):
         )
         self.send_message(message)
 
+    def send_start_simulation_message(self):
+        message = Message(
+            Message.START_SIMULATION,
+            None
+        )
+        self.send_message(message)
+
     def send_python_error(self, exception):
         error_str = format_exception(exception)
         error_str = "".join(error_str)

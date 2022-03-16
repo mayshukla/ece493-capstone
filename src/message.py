@@ -12,9 +12,13 @@ class Message():
     # data: string to that should be printed to terminal/console
     DEBUG = "debug"
 
-    # Tell client that game is starting.
+    # Tell client that game is starting. (Matchmaking is over)
     # data: None
     START_GAME = "start_game"
+
+    # Tell client that the simulation is starting. (Code submission is done)
+    # data: None
+    START_SIMULATION = "start_simulation"
 
     # Used by client to send player's inputted python code.
     # data: {
