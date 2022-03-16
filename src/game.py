@@ -48,7 +48,7 @@ class Game():
             class_name = class_name.strip()
             agent_class = eval(class_name, player_globals)
 
-            # TODO check if player has already submitted code and if so, replace
+            # Check if player has already submitted code and if so, replace
             # agent instead of appending.
             agent_instance = agent_class()
             agent_index = self.get_index_of_client_agent(client)
@@ -58,8 +58,6 @@ class Game():
             else:
                 self.agents.append([client, agent_class()])
                 client.send_debug_message("Successfully created Agent instance from player code")
-            # TODO remove
-            print(self.agents)
 
             # Check if both clients have submitted valid code and if so, start the simulation.
             if len(self.agents) == 2:
