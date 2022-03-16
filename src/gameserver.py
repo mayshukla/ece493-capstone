@@ -10,7 +10,7 @@ class GameServer():
         """Places a client in the queue.
         """
         self.queue.appendleft(client)
-        client.write_message("Entered matchmaking queue.")
+        client.send_debug_message("Entered matchmaking queue.")
 
         if len(self.queue) >= 2:
             clients = []
@@ -28,6 +28,6 @@ class GameServer():
         """
         print("Starting a new game")
         for client in clients:
-            client.write_message("Found match. Starting game...")
+            client.send_start_game_message()
 
         # TODO create Game instance

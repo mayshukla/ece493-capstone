@@ -13,19 +13,28 @@ export default class ClientToServerConnection {
         this.#websocket.onmessage = this.#onmessage;
     }
 
-    #onmessage(message) {
-        console.log(message.data);
+    #onmessage(message_str) {
+        let message = Message.fromJson(message_str.data);
+
+        // TODO handle all message types
+        switch (message.type) {
+            case Message.DEBUG:
+                console.log(message.data);
+                break;
+            default:
+                console.error("ERROR: unhandled message type. Message: ${message}");
+        }
     }
 
     sendCode(code) {
-        let msg = new Message(
+        let message = new Message(
             Message.PLAYER_CODE,
             code
         );
-        this.sendMessage(msg);
+        this.sendMessage(message);
     }
 
-    sendMessage(msg) {
-        this.#websocket.send(msg.toJson());
+    sendMessage(message) {
+        this.#websocket.send(message.toJson());
     }
 }

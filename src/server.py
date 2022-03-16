@@ -4,6 +4,7 @@ import tornado.web
 import tornado.websocket
 
 from gameserver import GameServer
+from message import Message
 
 
 class ServerToClientConnection(tornado.websocket.WebSocketHandler):
@@ -18,17 +19,42 @@ class ServerToClientConnection(tornado.websocket.WebSocketHandler):
     def open(self, **kwargs):
         print("New ServerToClientConnection")
 
-        self.write_message("hello from server")
+        self.send_debug_message("hello from server")
 
         # Place self in queue
         self.game_server.enqueue(self)
 
-    def on_message(self, message):
-        print(message)
+    def on_message(self, message_str):
+        message = Message.from_json(message_str)
+        message_type = message.type
+
+        if message_type == Message.DEBUG:
+            print(message.data)
+        else:
+            print(f"ERROR: unhandled message type: {message.type}")
 
     def on_close(self):
         print("ServerToClientConnection closed")
         self.game_server.remove_from_queue(self)
+
+    def send_message(self, message):
+        """Send a Message object.
+        """
+        self.write_message(message.to_json())
+
+    def send_debug_message(self, message_contents):
+        message = Message(
+            Message.DEBUG,
+            message_contents
+        )
+        self.send_message(message)
+
+    def send_start_game_message(self, message_contents):
+        message = Message(
+            Message.START_GAME,
+            None
+        )
+        self.send_message(message)
 
 
 def main():
