@@ -6,7 +6,7 @@ class Game():
     In charge of game logic and detecting end condition.
     """
     def __init__(self):
-        self.agent_classes = []
+        self.agents = []
 
     def exec_player_code(self, player_code, class_name):
         """Attempts to execute player code and get the the agent class created
@@ -27,7 +27,7 @@ class Game():
             # Get the class object so we can instantiate it later.
             # TODO what if both players have classes with the same name?
             agent_class = eval(class_name, player_globals)
-            self.agent_classes.append(agent_class)
+            self.agents.append(agent_class())
             return True
         except:
             # TODO send error message to client to be printed
