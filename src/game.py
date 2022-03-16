@@ -39,11 +39,13 @@ class Game():
             # TODO what if both players have classes with the same name?
             class_name = class_name.strip()
             agent_class = eval(class_name, player_globals)
+            # TODO check if player has already submitted code and if so, replace
+            # agent instead of appending.
             self.agents.append(agent_class())
             client.send_debug_message("Successfully created Agent instance from player code")
+            # TODO check if both clients have submitted valid code and if so, start the simulation.
             return True
         except Exception as e:
             client.send_debug_message("Failed to create Agent instance from player code")
-            # TODO send error message to client to be printed on the actual page (not just console)
             client.send_python_error(e)
             return False
