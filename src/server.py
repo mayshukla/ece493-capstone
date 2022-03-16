@@ -28,6 +28,7 @@ class ServerToClientConnection(tornado.websocket.WebSocketHandler):
 
     def on_close(self):
         print("ServerToClientConnection closed")
+        self.game_server.remove_from_queue(self)
 
 
 def main():
