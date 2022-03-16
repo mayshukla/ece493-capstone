@@ -61,6 +61,13 @@ class ServerToClientConnection(tornado.websocket.WebSocketHandler):
         )
         self.send_message(message)
 
+    def send_python_error(self, error_str):
+        message = Message(
+            Message.PYTHON_ERROR,
+            error_str
+        )
+        self.send_message(message)
+
     def handle_player_code_message(self, message):
         code = message.data["code"]
         class_name = message.data["class_name"]

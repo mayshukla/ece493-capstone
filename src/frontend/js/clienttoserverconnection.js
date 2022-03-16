@@ -10,7 +10,7 @@ export default class ClientToServerConnection {
     constructor() {
         const server_url = "ws://" + window.location.hostname + ":" + window.location.port + "/websocket";
         this.#websocket = new WebSocket(server_url);
-        this.#websocket.onmessage = this.#onmessage;
+        this.#websocket.onmessage = (msg) => { this.#onmessage(msg) };
     }
 
     #onmessage(message_str) {
@@ -20,6 +20,9 @@ export default class ClientToServerConnection {
         switch (message.type) {
             case Message.DEBUG:
                 console.log(message.data);
+                break;
+            case Message.PYTHON_ERROR:
+                this.onPythonError(message.data);
                 break;
             default:
                 console.error("ERROR: unhandled message type. Message:", message);
@@ -39,5 +42,9 @@ export default class ClientToServerConnection {
 
     sendMessage(message) {
         this.#websocket.send(message.toJson());
+    }
+
+    onPythonError(error) {
+        console.error(error);
     }
 }

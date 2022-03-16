@@ -23,6 +23,11 @@ class Message():
     # }
     PLAYER_CODE = "player_code"
 
+    # Used by server to send python errors to client when player code causes
+    # errors.
+    # data: error message as string
+    PYTHON_ERROR = "python_error"
+
     def __init__(self, _type, data):
         """Constructor
 

@@ -6,6 +6,7 @@ export default class Message {
     static DEBUG = "debug";
     static START_GAME = "debug";
     static PLAYER_CODE = "player_code";
+    static PYTHON_ERROR = "python_error";
 
     constructor(type, data) {
         this.type = type;

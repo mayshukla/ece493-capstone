@@ -16,7 +16,6 @@ class Game():
 
         for client in self.clients:
             def callback(client, code, class_name):
-                print(self, client, code, class_name)
                 self.exec_player_code(client, code, class_name)
             client.on_receive_player_code = callback
 
@@ -42,7 +41,8 @@ class Game():
             self.agents.append(agent_class())
             client.send_debug_message("Successfully created Agent instance from player code")
             return True
-        except:
+        except Exception as e:
             client.send_debug_message("Failed to create Agent instance from player code")
             # TODO send error message to client to be printed on the actual page (not just console)
+            client.send_python_error(repr(e))
             return False
