@@ -1,10 +1,14 @@
 from collections import deque
 
+from game import Game
+
+
 class GameServer():
     """Manages client queue and starts and ends games.
     """
     def __init__(self):
         self.queue = deque()
+        self.games = deque()
 
     def enqueue(self, client):
         """Places a client in the queue.
@@ -30,4 +34,5 @@ class GameServer():
         for client in clients:
             client.send_start_game_message()
 
-        # TODO create Game instance
+        game = Game(clients)
+        self.games.appendleft(game)

@@ -5,10 +5,22 @@ class Game():
 
     In charge of game logic and detecting end condition.
     """
-    def __init__(self):
+    def __init__(self, clients):
+        """Constructor
+
+        Args:
+            clients: List of ServerToClientConnection instances.
+        """
+        self.clients = clients
         self.agents = []
 
-    def exec_player_code(self, player_code, class_name):
+        for client in self.clients:
+            def callback(client, code, class_name):
+                print(self, client, code, class_name)
+                self.exec_player_code(client, code, class_name)
+            client.on_receive_player_code = callback
+
+    def exec_player_code(self, client, player_code, class_name):
         """Attempts to execute player code and get the the agent class created
         by the player.
 
@@ -28,7 +40,9 @@ class Game():
             # TODO what if both players have classes with the same name?
             agent_class = eval(class_name, player_globals)
             self.agents.append(agent_class())
+            client.send_debug_message("Successfully created Agent instance from player code")
             return True
         except:
-            # TODO send error message to client to be printed
+            client.send_debug_message("Failed to create Agent instance from player code")
+            # TODO send error message to client to be printed on the actual page (not just console)
             return False

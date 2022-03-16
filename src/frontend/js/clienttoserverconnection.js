@@ -22,14 +22,17 @@ export default class ClientToServerConnection {
                 console.log(message.data);
                 break;
             default:
-                console.error("ERROR: unhandled message type. Message: ${message}");
+                console.error("ERROR: unhandled message type. Message:", message);
         }
     }
 
-    sendCode(code) {
+    sendCode(code, className) {
         let message = new Message(
             Message.PLAYER_CODE,
-            code
+            {
+                "code": code,
+                "class_name": className
+            }
         );
         this.sendMessage(message);
     }

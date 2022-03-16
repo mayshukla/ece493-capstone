@@ -16,6 +16,9 @@ class ServerToClientConnection(tornado.websocket.WebSocketHandler):
         # Get reference to game server
         self.game_server = game_server
 
+        # Callback which can be set by other classes
+        self.on_receive_player_code = None
+
     def open(self, **kwargs):
         print("New ServerToClientConnection")
 
@@ -30,6 +33,8 @@ class ServerToClientConnection(tornado.websocket.WebSocketHandler):
 
         if message_type == Message.DEBUG:
             print(message.data)
+        if message_type == Message.PLAYER_CODE:
+            self.handle_player_code_message(message)
         else:
             print(f"ERROR: unhandled message type: {message.type}")
 
@@ -49,12 +54,18 @@ class ServerToClientConnection(tornado.websocket.WebSocketHandler):
         )
         self.send_message(message)
 
-    def send_start_game_message(self, message_contents):
+    def send_start_game_message(self):
         message = Message(
             Message.START_GAME,
             None
         )
         self.send_message(message)
+
+    def handle_player_code_message(self, message):
+        code = message.data["code"]
+        class_name = message.data["class_name"]
+        if self.on_receive_player_code is not None:
+            self.on_receive_player_code(self, code, class_name)
 
 
 def main():
@@ -78,7 +89,7 @@ def main():
             # StaticFileHandler simply serves static files.
             r"/(.*)",
             tornado.web.StaticFileHandler,
-            {"path": "frontend", "default_filename": "index.html"},
+            {"path": "src/frontend", "default_filename": "index.html"},
         ),
     ])
     application.listen(port)

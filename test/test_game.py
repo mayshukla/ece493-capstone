@@ -1,10 +1,12 @@
 import unittest
+from unittest.mock import MagicMock
 
 from src.game import *
 
 class TestGame(unittest.TestCase):
     def setUp(self):
-        self.game = Game()
+        self.game = Game([])
+        self.client = MagicMock()
 
     def test_exec_player_code_good(self):
         player_code = """
@@ -12,7 +14,7 @@ class MyAgent(Agent):
     def foo(self, x):
         return x + 1
         """
-        success = self.game.exec_player_code(player_code, "MyAgent")
+        success = self.game.exec_player_code(self.client, player_code, "MyAgent")
         assert(success)
         assert(self.game.agents[0].foo(100) == 101)
 
@@ -21,14 +23,14 @@ class MyAgent(Agent):
 class MyAgent(Agent):
     pass
         """
-        success = self.game.exec_player_code(player_code, "asdfasdfasdf")
+        success = self.game.exec_player_code(self.client, player_code, "asdfasdfasdf")
         assert(not success)
 
     def test_exec_player_code_no_class(self):
         player_code = """
 1 + 1
         """
-        success = self.game.exec_player_code(player_code, "MyAgent")
+        success = self.game.exec_player_code(self.client, player_code, "MyAgent")
         assert(not success)
 
 

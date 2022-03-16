@@ -3,7 +3,7 @@
   padding: 0;
   box-sizing: border-box;
 }
-#codeArea {
+#codeArea, #classNameArea {
   font-family:'Courier New', Courier, monospace;
 }
 #submitButton {

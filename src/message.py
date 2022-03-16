@@ -17,7 +17,10 @@ class Message():
     START_GAME = "start_game"
 
     # Used by client to send player's inputted python code.
-    # data: code as string
+    # data: {
+    #     code: code as string
+    #     class_name: name of the Agent subclass created by the player
+    # }
     PLAYER_CODE = "player_code"
 
     def __init__(self, _type, data):
