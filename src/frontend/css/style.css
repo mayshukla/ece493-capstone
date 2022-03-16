@@ -3,3 +3,10 @@
   padding: 0;
   box-sizing: border-box;
 }
+#codeArea {
+  font-family:'Courier New', Courier, monospace;
+}
+#submitButton {
+  padding: 10px;
+  font-size: 1.5rem;
+}

@@ -14,4 +14,9 @@ export default class ClientToServerConnection {
     #onmessage(message) {
         console.log(message.data);
     }
+
+    sendCode(code) {
+        // TODO
+        this.#websocket.send(code);
+    }
 }
