@@ -4,7 +4,7 @@ class Message():
     """Base class for messages to be passed between the server and client as JSON.
     """
 
-    ## Declare message types here.
+    ## Declare message types here and also in message.js.
     ##   Explain what the message is for.
     ##   Also declare what will be contained in the data field.
 
@@ -15,6 +15,10 @@ class Message():
     # Tell client that game is starting.
     # data: None
     START_GAME = "start_game"
+
+    # Used by client to send player's inputted python code.
+    # data: code as string
+    PLAYER_CODE = "player_code"
 
     def __init__(self, _type, data):
         """Constructor

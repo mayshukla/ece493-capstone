@@ -1,3 +1,5 @@
+import Message from './message.js';
+
 /**
  * Represents connection from client to server.
  * Abstracts away websocket details.
@@ -16,7 +18,14 @@ export default class ClientToServerConnection {
     }
 
     sendCode(code) {
-        // TODO
-        this.#websocket.send(code);
+        let msg = new Message(
+            Message.PLAYER_CODE,
+            code
+        );
+        this.sendMessage(msg);
+    }
+
+    sendMessage(msg) {
+        this.#websocket.send(msg.toJson());
     }
 }
