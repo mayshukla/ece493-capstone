@@ -16,7 +16,7 @@ class MyAgent(Agent):
         """
         success = self.game.exec_player_code(self.client, player_code, "MyAgent")
         assert(success)
-        assert(self.game.agents[0].foo(100) == 101)
+        assert(self.game.agents[0][1].foo(100) == 101)
 
     def test_exec_player_code_wrong_name(self):
         player_code = """
