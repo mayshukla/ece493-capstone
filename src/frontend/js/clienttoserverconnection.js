@@ -44,6 +44,9 @@ export default class ClientToServerConnection {
         this.#websocket.send(message.toJson());
     }
 
+    /**
+     * Can be overwritten by another class.
+     */
     onPythonError(error) {
         console.error(error);
     }

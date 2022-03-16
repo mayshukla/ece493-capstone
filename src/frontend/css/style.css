@@ -10,3 +10,7 @@
   padding: 10px;
   font-size: 1.5rem;
 }
+#pythonErrorsArea {
+  font-family:'Courier New', Courier, monospace;
+  color: red;
+}
