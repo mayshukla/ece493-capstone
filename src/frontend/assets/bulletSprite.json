@@ -1,0 +1,20 @@
+{"frames": {
+
+"bulletspritecropped.png":
+{
+	"frame": {"x":0,"y":0,"w":243,"h":344},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":243,"h":344},
+	"sourceSize": {"w":243,"h":344}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "bulletSprite.png",
+	"format": "RGBA8888",
+	"size": {"w":243,"h":344},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:5623f72c914b1a334b422f2822150a8f:a1fb28c69f0e004633e0c58c829f4847:14547e6fef080f13fd7243245108721e$"
+}
+}

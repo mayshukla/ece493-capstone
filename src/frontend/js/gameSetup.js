@@ -7,13 +7,18 @@ const Application = PIXI.Application,
   Rectangle = PIXI.Rectangle,
   AnimatedSprite = PIXI.AnimatedSprite,
   Container = PIXI.Container,
-  ParticleContainer = PIXI.ParticleContainer;
+  ParticleContainer = PIXI.ParticleContainer,
+  Texture = PIXI.Texture;
 
-const PI = 3.14;
-const PLAYABLE_AREA_X_RIGHT = 1024 - 64;
-const PLAYABLE_AREA_X_LEFT = 64;
-const PLAYABLE_AREA_Y_UP = 30;
-const PLAYABLE_AREA_Y_DOWN = 700 - 30;
+const PI = 3.14,
+  PLAYABLE_AREA_X_MIN = 65,
+  PLAYABLE_AREA_X_MAX = 1024 - PLAYABLE_AREA_X_MIN,
+  PLAYABLE_AREA_Y_MIN = 25,
+  PLAYABLE_AREA_Y_MAX = 700 - PLAYABLE_AREA_Y_MIN,
+  AGENT_GUN_X_PX = 244,
+  AGENT_GUN_Y_PX = 162,
+  AGENT_GUN_X_NORM = 0.95686,
+  AGENT_GUN_Y_NORM = 0.75349;
 
 //Create a Pixi Application
 const app = new Application({
@@ -32,180 +37,263 @@ app.renderer.autoDensity = true;
 loader
   .add("../assets/sample.png")
   .add("../assets/dungeon.json")
-  .add("../assets/shooterIdle.json")
-  .add("../assets/shooterIdle.png")
+  .add("../assets/agentsheet.json")
+  .add("../assets/agentsheet.png")
+  .add("../assets/obstacleboxes.json")
   .add("../assets/obstacleboxes.png")
-  .add("../assets/obstacleboxes1.png")
-  .add("../assets/obstacleboxes2.png")
-  .add("../assets/obstacleboxes3.png")
-  .add("../assets/obstacleboxes4.png")
-  .add("../assets/obstacleboxes5.png")
+  .add("../assets/bulletSprite.png")
   .load(setup);
 
-let idleSheet, id, idleAnim, shooterIdle, gameState;
+let agentSheet,
+  id,
+  agent,
+  agentMoving = false,
+  gameState,
+  obstacleSheet,
+  obstacleSSheet,
+  projectileList,
+  projectileSpeed;
 
 //This `setup` function will run when the image has loaded
 function setup() {
+  //#region SpriteAssetsCreation
+
   //Create the shooter sprite
   id = resources["../assets/dungeon.json"].textures;
-  idleSheet = resources["../assets/shooterIdle.json"];
+  agentSheet = resources["../assets/agentsheet.json"];
 
-  //   creating the shooter dude single frame
-  const textureIdle = TextureCache["../assets/shooterIdle.png"];
-
-  //Create a rectangle object that defines the position and
-  //size of the sub-image you want to extract from the texture
-  //(`Rectangle` is an alias for `PIXI.Rectangle`)
-  const idleRect = new Rectangle(0, 0, 253, 216);
-
-  //Tell the texture to use that rectangular section
-  textureIdle.frame = idleRect;
-
-  //Create the sprite from the texture
-  shooterIdle = new Sprite(textureIdle);
-
-  // creating obstacles
+  //#region Creating Obstacles
   let obstacles = new ParticleContainer(1500, {
     rotation: true,
     tint: true,
     vertices: true,
     uvs: true,
   });
+  obstacleSSheet = new PIXI.BaseTexture.from("../assets/obstacleboxes.png");
+  obstacleSheet = {};
 
-  yellowBox = createSpriteFromSheet("../assets/obstacleboxes.png", 0, 0, 32, 32);
-  yellowBox.x = getRndInteger(PLAYABLE_AREA_X_LEFT, PLAYABLE_AREA_X_RIGHT);
-  yellowBox.y = getRndInteger(PLAYABLE_AREA_Y_UP, PLAYABLE_AREA_Y_DOWN);
+  obstacleSheet["yellowBox"] = [
+    new Texture(obstacleSSheet, new Rectangle(0 * 32, 0, 32, 32)),
+  ];
+  obstacleSheet["blueBox"] = [
+    new Texture(obstacleSSheet, new Rectangle(1 * 32, 0, 32, 32)),
+  ];
+  obstacleSheet["orangeBox"] = [
+    new Texture(obstacleSSheet, new Rectangle(2 * 32, 0, 32, 32)),
+  ];
+  obstacleSheet["greyBox1"] = [
+    new Texture(obstacleSSheet, new Rectangle(3 * 32, 0, 32, 32)),
+  ];
+  obstacleSheet["greyBox2"] = [
+    new Texture(obstacleSSheet, new Rectangle(4 * 32, 0, 32, 32)),
+  ];
+  obstacleSheet["pinkBox"] = [
+    new Texture(obstacleSSheet, new Rectangle(5 * 32, 0, 32, 32)),
+  ];
+
+  let yellowBox = new Sprite(obstacleSheet["yellowBox"][0]);
+  yellowBox.x = getRndInteger(PLAYABLE_AREA_X_MIN, PLAYABLE_AREA_X_MAX);
+  yellowBox.y = getRndInteger(PLAYABLE_AREA_Y_MAX, PLAYABLE_AREA_Y_MIN);
   obstacles.addChild(yellowBox);
 
-  blueBox = createSpriteFromSheet("../assets/obstacleboxes1.png", 32, 0, 32, 32);
-  blueBox.x = getRndInteger(PLAYABLE_AREA_X_LEFT, PLAYABLE_AREA_X_RIGHT);
-  blueBox.y = getRndInteger(PLAYABLE_AREA_Y_UP, PLAYABLE_AREA_Y_DOWN);
+  let blueBox = new Sprite(obstacleSheet["blueBox"][0]);
+  blueBox.x = getRndInteger(PLAYABLE_AREA_X_MIN, PLAYABLE_AREA_X_MAX);
+  blueBox.y = getRndInteger(PLAYABLE_AREA_Y_MAX, PLAYABLE_AREA_Y_MIN);
   obstacles.addChild(blueBox);
 
-  orangeBox = createSpriteFromSheet("../assets/obstacleboxes2.png", 64, 0, 32, 32);
-  orangeBox.x = getRndInteger(PLAYABLE_AREA_X_LEFT, PLAYABLE_AREA_X_RIGHT);
-  orangeBox.y = getRndInteger(PLAYABLE_AREA_Y_UP, PLAYABLE_AREA_Y_DOWN);
+  let orangeBox = new Sprite(obstacleSheet["orangeBox"][0]);
+  orangeBox.x = getRndInteger(PLAYABLE_AREA_X_MIN, PLAYABLE_AREA_X_MAX);
+  orangeBox.y = getRndInteger(PLAYABLE_AREA_Y_MAX, PLAYABLE_AREA_Y_MIN);
   obstacles.addChild(orangeBox);
 
-  greyBox1 = createSpriteFromSheet("../assets/obstacleboxes3.png", 96, 0, 32, 32);
-  greyBox1.x = getRndInteger(PLAYABLE_AREA_X_LEFT, PLAYABLE_AREA_X_RIGHT);
-  greyBox1.y = getRndInteger(PLAYABLE_AREA_Y_UP, PLAYABLE_AREA_Y_DOWN);
+  let greyBox1 = new Sprite(obstacleSheet["greyBox1"][0]);
+  greyBox1.x = getRndInteger(PLAYABLE_AREA_X_MIN, PLAYABLE_AREA_X_MAX);
+  greyBox1.y = getRndInteger(PLAYABLE_AREA_Y_MAX, PLAYABLE_AREA_Y_MIN);
   obstacles.addChild(greyBox1);
 
-  greyBox2 = createSpriteFromSheet("../assets/obstacleboxes4.png", 128, 0, 32, 32);
-  greyBox2.x = getRndInteger(PLAYABLE_AREA_X_LEFT, PLAYABLE_AREA_X_RIGHT);
-  greyBox2.y = getRndInteger(PLAYABLE_AREA_Y_UP, PLAYABLE_AREA_Y_DOWN);
+  let greyBox2 = new Sprite(obstacleSheet["greyBox2"][0]);
+  greyBox2.x = getRndInteger(PLAYABLE_AREA_X_MIN, PLAYABLE_AREA_X_MAX);
+  greyBox2.y = getRndInteger(PLAYABLE_AREA_Y_MAX, PLAYABLE_AREA_Y_MIN);
   obstacles.addChild(greyBox2);
 
-  pinkBox = createSpriteFromSheet("../assets/obstacleboxes5.png", 160, 0, 32, 32);
-  pinkBox.x = getRndInteger(PLAYABLE_AREA_X_LEFT, PLAYABLE_AREA_X_RIGHT);
-  pinkBox.y = getRndInteger(PLAYABLE_AREA_Y_UP, PLAYABLE_AREA_Y_DOWN);
+  let pinkBox = new Sprite(obstacleSheet["pinkBox"][0]);
+  pinkBox.x = getRndInteger(PLAYABLE_AREA_X_MIN, PLAYABLE_AREA_X_MAX);
+  pinkBox.y = getRndInteger(PLAYABLE_AREA_Y_MAX, PLAYABLE_AREA_Y_MIN);
   obstacles.addChild(pinkBox);
 
-
-
+  //#endregion
 
   // create an animated sprite from the json sheet in assets
-  idleAnim = new AnimatedSprite(
-    idleSheet.spritesheet.animations["survivor-idle_handgun"]
+  agent = new AnimatedSprite(
+    agentSheet.spritesheet.animations["survivor-idle_handgun"]
   );
-  console.log(idleAnim);
+  console.log(agent);
 
   // set speed, start playback and add it to the stage
-  idleAnim.animationSpeed = 0.3;
-  idleAnim.play();
-  idleAnim.x = 65;
-  idleAnim.y = 350;
-  idleAnim.width = 50;
-  idleAnim.height = 50;
+  agent.animationSpeed = 0.3;
+  agent.play();
+  agent.x = 65;
+  agent.y = 350;
+  agent.scale.set(0.197628458, 0.23148148);
+  agent.vx = 0;
+  agent.vy = 0;
+  agent.angle = 100;
+  agent["vAngle"] = 0;
+  agent.anchor.set(0.95652, 0.75);
 
-  idleAnim.vx = 0;
-  idleAnim.vy = 0;
-
-  idleAnim.anchor.set(0.5, 0.5);
+  projectileList = [];
+  projectileSpeed = 5;
 
   background = new Sprite(id["dungeon.png"]);
-
   background.scale.set(2, 1.367);
   //   agent size and obstacle size are 50 px
-  shooterIdle.width = 50;
-  shooterIdle.height = 50;
-  shooterIdle.x = 65;
-  shooterIdle.y = 30;
+
+  //#endregion
 
   app.stage.addChild(background);
   app.stage.addChild(obstacles);
-  //   app.stage.addChild(shooterIdle);
-  app.stage.addChild(idleAnim);
+  app.stage.addChild(agent);
 
   //   Start game loop
   app.ticker.add((delta) => gameLoop(delta));
 
   // start listening for key input to move shoooter
-  moveShooter(idleAnim);
+  moveShooter(agent);
+  fireProjectile(agent);
 
   //   set the game state to play
   gameState = play;
 }
 
 function gameLoop(delta) {
-    // this calls the play fxn 60 times per minute
-    gameState(delta);
-
+  // this calls the play fxn 60 times per minute
+  gameState(delta);
 }
 
 function play(delta) {
+  updateAgentPosition(agent, agent.vx, agent.vy);
+  updateProjectiles(projectileList, projectileSpeed);
+  updateAgentAngle(agent, agent.vAngle);
+
+  if (agentMoving) {
+    if (!agent.playing) {
+      agent.textures =
+        agentSheet.spritesheet.animations["survivor-move_handgun"];
+      agent.loop = true;
+      agent.animationSpeed = 0.3;
+      agent.play();
+    }
+  }
+
+  if (!agentMoving) {
+    if (!agent.playing) {
+      agent.textures =
+        agentSheet.spritesheet.animations["survivor-idle_handgun"];
+      agent.loop = true;
+      agent.animationSpeed = 0.3;
+      agent.play();
+    }
+  }
+}
+
+function updateAgentAngle(agent, angle) {
+  // For testing purposes this is disabled, but when client
+  // starts receiving messages concerning agent movements
+  // this will be enabled
+
+  // if (agent.angle !== angle) {
+  //   for (let index = agent.angle; index <= angle; index++) {
+  //     agent.angle += index;
+  //   }
+  // }
+
+  agent.angle += agent.vAngle;
+}
+
+function updateAgentPosition(agent, vx, vy) {
+  if (vx === 0 && vy === 0) {
+    agentMoving = false;
+  } else {
+    agentMoving = true;
+  }
+
+  // console.log(agentMoving);
+
   //Apply the velocity values to the idle shooter's
   //position to make it move
-  idleAnim.x += idleAnim.vx;
-  idleAnim.y += idleAnim.vy;
+  agent.x += vx;
+  agent.y += vy;
+}
+
+function updateProjectiles(projectileList, speed) {
+  for (let index = 0; index < projectileList.length; index++) {
+    currentProjectile = projectileList[index];
+    currentProjectile.position.x +=
+      Math.cos(currentProjectile.rotation) * speed;
+    currentProjectile.position.y +=
+      Math.sin(currentProjectile.rotation) * speed;
+
+    if (
+      currentProjectile.position.x < PLAYABLE_AREA_X_MIN ||
+      currentProjectile.position.x > PLAYABLE_AREA_X_MAX ||
+      currentProjectile.position.y < PLAYABLE_AREA_Y_MIN ||
+      currentProjectile.position.y > PLAYABLE_AREA_Y_MAX
+    ) {
+      currentProjectile.dead = true;
+    }
+
+    if (currentProjectile.dead) {
+      currentProjectile.visible = false;
+      app.stage.removeChild(currentProjectile);
+    }
+  }
 }
 
 function keyboard(value) {
-    const key = {};
-    key.value = value;
-    key.isDown = false;
-    key.isUp = true;
-    key.press = undefined;
-    key.release = undefined;
-    //The `key pressed handler`
-    key.downHandler = (event) => {
-      if (event.key === key.value) {
-        if (key.isUp && key.press) {
-          key.press();
-        }
-        key.isDown = true;
-        key.isUp = false;
-        event.preventDefault();
+  const key = {};
+  key.value = value;
+  key.isDown = false;
+  key.isUp = true;
+  key.press = undefined;
+  key.release = undefined;
+  //The `key pressed handler`
+  key.downHandler = (event) => {
+    if (event.key === key.value) {
+      if (key.isUp && key.press) {
+        key.press();
       }
-    };
+      key.isDown = true;
+      key.isUp = false;
+      event.preventDefault();
+    }
+  };
 
-    //The `key released handler`
-    key.upHandler = (event) => {
-      if (event.key === key.value) {
-        if (key.isDown && key.release) {
-          key.release();
-        }
-        key.isDown = false;
-        key.isUp = true;
-        event.preventDefault();
+  //The `key released handler`
+  key.upHandler = (event) => {
+    if (event.key === key.value) {
+      if (key.isDown && key.release) {
+        key.release();
       }
-    };
+      key.isDown = false;
+      key.isUp = true;
+      event.preventDefault();
+    }
+  };
 
-    //Attach event listeners
-    const downListener = key.downHandler.bind(key);
-    const upListener = key.upHandler.bind(key);
+  //Attach event listeners
+  const downListener = key.downHandler.bind(key);
+  const upListener = key.upHandler.bind(key);
 
-    window.addEventListener("keydown", downListener, false);
-    window.addEventListener("keyup", upListener, false);
+  window.addEventListener("keydown", downListener, false);
+  window.addEventListener("keyup", upListener, false);
 
-    // Detach event listeners
-    key.unsubscribe = () => {
-      window.removeEventListener("keydown", downListener);
-      window.removeEventListener("keyup", upListener);
-    };
+  // Detach event listeners
+  key.unsubscribe = () => {
+    window.removeEventListener("keydown", downListener);
+    window.removeEventListener("keyup", upListener);
+  };
 
-    return key;
+  return key;
 }
 
 function moveShooter(shooter) {
@@ -213,15 +301,15 @@ function moveShooter(shooter) {
   const left = keyboard("ArrowLeft"),
     up = keyboard("ArrowUp"),
     right = keyboard("ArrowRight"),
-    down = keyboard("ArrowDown");
+    down = keyboard("ArrowDown"),
+    angleLeft = keyboard("e"),
+    angleRight = keyboard("q");
 
   //Left arrow key `press` method
   left.press = () => {
     //Change the shooter's velocity when the key is pressed
-    shooter.vx = -1;
-    shooter.vy = 0;
-
-    shooter.angle = 180;
+    shooter.vx = -2;
+    // shooter.vy = 0;
   };
 
   //Left arrow key `release` method
@@ -229,57 +317,118 @@ function moveShooter(shooter) {
     //If the left arrow has been released, and the right arrow isn't down,
     //and the shooter isn't moving vertically:
     //Stop the shooter
-    if (!right.isDown && shooter.vy === 0) {
+    if (!right.isDown) {
       shooter.vx = 0;
     }
   };
 
   //Up
   up.press = () => {
-    shooter.vy = -1;
-    shooter.vx = 0;
-    shooter.angle = 270;
+    shooter.vy = -2;
+    // shooter.vx = 0;
   };
 
   up.release = () => {
-    if (!down.isDown && shooter.vx === 0) {
+    if (!down.isDown) {
       shooter.vy = 0;
     }
   };
 
   //Right
   right.press = () => {
-    shooter.vx = 1;
-    shooter.vy = 0;
-    shooter.angle = 0;
+    shooter.vx = 2;
+    // shooter.vy = 0;
   };
 
   right.release = () => {
-    if (!left.isDown && shooter.vy === 0) {
+    if (!left.isDown) {
       shooter.vx = 0;
     }
   };
 
   //Down
   down.press = () => {
-    shooter.vy = 1;
-    shooter.vx = 0;
-    shooter.angle = 90;
+    shooter.vy = 2;
+    // shooter.vx = 0;
   };
 
   down.release = () => {
-    if (!up.isDown && shooter.vx === 0) {
+    if (!up.isDown) {
       shooter.vy = 0;
+    }
+  };
+
+  //angle left
+  angleLeft.press = () => {
+    shooter["vAngle"] = -2;
+
+    console.log(agent.vAngle);
+    // shooter.vx = 0;
+  };
+
+  angleLeft.release = () => {
+    if (!angleRight.isDown) {
+      shooter["vAngle"] = 0;
+    }
+  };
+
+  //angle right
+  angleRight.press = () => {
+    shooter["vAngle"] = 2;
+    // shooter.vx = 0;
+  };
+
+  angleRight.release = () => {
+    if (!angleLeft.isDown) {
+      shooter["vAngle"] = 0;
     }
   };
 }
 
 function createSpriteFromSheet(path, x, y, width, height) {
-    let texture = TextureCache[path];
-    let textureRect = new Rectangle(x, y, width, height);
-    texture.frame = textureRect;
-    let sprite = new Sprite(texture);
-    return sprite;
+  let texture = TextureCache[path];
+  let textureRect = new Rectangle(x, y, width, height);
+  texture.frame = textureRect;
+  let sprite = new Sprite(texture);
+  return sprite;
+}
+
+function fireProjectile(agent) {
+  const space = keyboard(" ");
+
+  space.press = () => {
+    createProjectile(agent.rotation, {
+      x: agent.position.x,
+      y: agent.position.y,
+    });
+  };
+
+  space.release = () => {};
+}
+
+function createProjectile(rotation, startPosition) {
+  agent.stop();
+  agent.textures = agentSheet.spritesheet.animations["survivor-idle_handgun"];
+  agent.loop = false;
+  agent.animationSpeed = 1;
+  agent.play();
+
+  var projectile = createSpriteFromSheet(
+    "../assets/bulletSprite.png",
+    0,
+    0,
+    257,
+    76
+  );
+  projectile.width = 10;
+  projectile.height = 5;
+  projectile.anchor.set(0.5, 0.5);
+  projectile.position.x = startPosition.x;
+  projectile.position.y = startPosition.y;
+  projectile.rotation = rotation;
+
+  projectileList.push(projectile);
+  app.stage.addChild(projectile);
 }
 
 function getRndInteger(min, max) {
