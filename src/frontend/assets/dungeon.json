@@ -1,0 +1,20 @@
+{"frames": {
+
+"dungeon.png":
+{
+	"frame": {"x":0,"y":0,"w":512,"h":512},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":512,"h":512},
+	"sourceSize": {"w":512,"h":512}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "dungeon.png",
+	"format": "RGBA8888",
+	"size": {"w":512,"h":512},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:21bbe26fc6c650f89b72d8cbeb10d284:362d34cfee00fa6643ca1ba62e98dde7:9c0fba27a8a0c106083a8713f6c67b32$"
+}
+}
