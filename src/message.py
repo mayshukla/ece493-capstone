@@ -16,6 +16,14 @@ class Message():
     # data: None
     START_GAME = "start_game"
 
+    # Send client the current state of each agent
+    # data: a list of AgentStates
+    AGENT_STATES = "agent_states"
+
+    # Send client the current state of each agent
+    # data: a list of ProjectileStates
+    PROJECTILE_STATES = "projectile_states"
+
     def __init__(self, _type, data):
         """Constructor
 
@@ -33,6 +41,16 @@ class Message():
         json_dict = {
             "type": self.type,
             "data": self.data.__str__() if self.data is not None else None
+        }
+
+        return json.dumps(json_dict)
+
+    def to_json_array(self):
+        """Returns json string representation when data is a list of any type.
+        """
+        json_dict = {
+            "type": self.type,
+            "data": [object.to_json_dict() for object in self.data] if self.data is not None else None
         }
 
         return json.dumps(json_dict)
