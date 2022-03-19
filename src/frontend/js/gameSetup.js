@@ -20,29 +20,7 @@ const PI = 3.14,
   AGENT_GUN_X_NORM = 0.95686,
   AGENT_GUN_Y_NORM = 0.75349;
 
-//Create a Pixi Application
-const app = new Application({
-  width: 1024, // default: 800
-  height: 700, // default: 600
-  antialias: true, // default: false
-  transparent: false, // default: false
-  resolution: 1, // default: 1
-});
-
-//Add the canvas that Pixi automatically created for you to the HTML document
-document.body.appendChild(app.view);
-app.renderer.autoDensity = true;
-
-//load an image and run the `setup` function when it's done
-loader
-  .add("../assets/sample.png")
-  .add("../assets/dungeon.json")
-  .add("../assets/agentsheet.json")
-  .add("../assets/agentsheet.png")
-  .add("../assets/obstacleboxes.json")
-  .add("../assets/obstacleboxes.png")
-  .add("../assets/bulletSprite.png")
-  .load(setup);
+let app;
 
 let agentSheet,
   id,
@@ -53,6 +31,32 @@ let agentSheet,
   obstacleSSheet,
   projectileList,
   projectileSpeed;
+
+export default function initPixi() {
+  //Create a Pixi Application
+  app = new Application({
+    width: 1024, // default: 800
+    height: 700, // default: 600
+    antialias: true, // default: false
+    transparent: false, // default: false
+    resolution: 1, // default: 1
+  });
+
+  //Add the canvas that Pixi automatically created for you to the HTML document
+  document.body.appendChild(app.view);
+  app.renderer.autoDensity = true;
+
+  //load an image and run the `setup` function when it's done
+  loader
+    .add("../assets/sample.png")
+    .add("../assets/dungeon.json")
+    .add("../assets/agentsheet.json")
+    .add("../assets/agentsheet.png")
+    .add("../assets/obstacleboxes.json")
+    .add("../assets/obstacleboxes.png")
+    .add("../assets/bulletSprite.png")
+    .load(setup);
+}
 
 //This `setup` function will run when the image has loaded
 function setup() {
@@ -144,7 +148,7 @@ function setup() {
   projectileList = [];
   projectileSpeed = 5;
 
-  background = new Sprite(id["dungeon.png"]);
+  const background = new Sprite(id["dungeon.png"]);
   background.scale.set(2, 1.367);
   //   agent size and obstacle size are 50 px
 

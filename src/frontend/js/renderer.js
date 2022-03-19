@@ -1,3 +1,5 @@
+import initPixi from "./gameSetup.js";
+
 /**
  * Deals with UI and rendering.
  */
@@ -7,6 +9,8 @@ export default class Renderer {
     #classNameArea;
     #submitButton;
     #pythonErrorsArea;
+    #queueScreen;
+    #codeInputScreen;
 
     constructor(clientToServerConnection) {
         this.#server = clientToServerConnection;
@@ -18,6 +22,12 @@ export default class Renderer {
 
         this.#pythonErrorsArea = document.getElementById("pythonErrorsArea");
         this.#server.onPythonError = (error) => { this.#onPythonError(error); };
+
+        this.#server.onStartGame = () => { this.#onStartGame(); };
+        this.#server.onStartSimulation = () => { this.#onStartSimulation(); };
+
+        this.#queueScreen = document.getElementById("queueScreen");
+        this.#codeInputScreen = document.getElementById("codeInputScreen");
     }
 
     #sendCodeToServer() {
@@ -28,5 +38,18 @@ export default class Renderer {
 
     #onPythonError(error) {
         this.#pythonErrorsArea.textContent = error;
+    }
+
+    #onStartGame() {
+        this.#queueScreen.classList.add("hidden");
+        this.#codeInputScreen.classList.remove("hidden");
+        this.#pythonErrorsArea.classList.remove("hidden");
+    }
+
+    #onStartSimulation() {
+        this.#codeInputScreen.classList.add("hidden");
+
+        // Initialize the Pixi canvas
+        initPixi();
     }
 }

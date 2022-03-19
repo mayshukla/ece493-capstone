@@ -24,6 +24,12 @@ export default class ClientToServerConnection {
             case Message.PYTHON_ERROR:
                 this.onPythonError(message.data);
                 break;
+            case Message.START_GAME:
+                this.onStartGame();
+                break;
+            case Message.START_SIMULATION:
+                this.onStartSimulation();
+                break;
             default:
                 console.error("ERROR: unhandled message type. Message:", message);
         }
@@ -49,5 +55,19 @@ export default class ClientToServerConnection {
      */
     onPythonError(error) {
         console.error(error);
+    }
+
+    /**
+     * Can be overwritten by another class.
+     */
+    onStartGame(error) {
+        console.log("START_GAME message received");
+    }
+
+    /**
+     * Can be overwritten by another class.
+     */
+    onStartSimulation(error) {
+        console.log("START_SIMULATION message received");
     }
 }
