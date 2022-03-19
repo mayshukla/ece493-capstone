@@ -4,7 +4,7 @@
  */
 export default class Message {
     static DEBUG = "debug";
-    static START_GAME = "debug";
+    static START_GAME = "start_game";
     static PLAYER_CODE = "player_code";
     static PYTHON_ERROR = "python_error";
     static START_SIMULATION = "start_simulation";
