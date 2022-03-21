@@ -46,7 +46,8 @@ class Message():
         Arguments:
             type: One of the message type strings declared above (e.g. Message.Debug)
             data: Any type that has a __str__() method (this will be used to jsonify).
-                The type of data may be different for different message types.
+                The type of data may be different for different message types. May also be a list
+                of any type that implements the to_json_dict() method.
         """
         self.type = _type
         self.data = data
@@ -54,21 +55,18 @@ class Message():
     def to_json(self):
         """Returns json string representation.
         """
+        if isinstance(self.data, list):
+            # if data is a list convert it to a json array
+            data = [object.to_json_dict() for object in self.data]
+        elif self.data is not None:
+            # otherwise if data is not none convert it to a string
+            data = self.data.__str__()
+        else:
+            data = None
         json_dict = {
             "type": self.type,
-            "data": self.data.__str__() if self.data is not None else None
+            "data": data
         }
-
-        return json.dumps(json_dict)
-
-    def to_json_array(self):
-        """Returns json string representation when data is a list of any type.
-        """
-        json_dict = {
-            "type": self.type,
-            "data": [object.to_json_dict() for object in self.data] if self.data is not None else None
-        }
-
         return json.dumps(json_dict)
 
     def from_json(json_str):
