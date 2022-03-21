@@ -2,7 +2,6 @@
 
 
 
-from numpy import square
 import pymunk
 import pymunk.pygame_util
 import pygame
