@@ -3,3 +3,14 @@
   padding: 0;
   box-sizing: border-box;
 }
+#codeArea, #classNameArea {
+  font-family:'Courier New', Courier, monospace;
+}
+#submitButton {
+  padding: 10px;
+  font-size: 1.5rem;
+}
+#pythonErrorsArea {
+  font-family:'Courier New', Courier, monospace;
+  color: red;
+}

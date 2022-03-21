@@ -4,7 +4,7 @@ class Message():
     """Base class for messages to be passed between the server and client as JSON.
     """
 
-    ## Declare message types here.
+    ## Declare message types here and also in message.js.
     ##   Explain what the message is for.
     ##   Also declare what will be contained in the data field.
 
@@ -12,9 +12,25 @@ class Message():
     # data: string to that should be printed to terminal/console
     DEBUG = "debug"
 
-    # Tell client that game is starting.
+    # Tell client that game is starting. (Matchmaking is over)
     # data: None
     START_GAME = "start_game"
+
+    # Tell client that the simulation is starting. (Code submission is done)
+    # data: None
+    START_SIMULATION = "start_simulation"
+
+    # Used by client to send player's inputted python code.
+    # data: {
+    #     code: code as string
+    #     class_name: name of the Agent subclass created by the player
+    # }
+    PLAYER_CODE = "player_code"
+
+    # Used by server to send python errors to client when player code causes
+    # errors.
+    # data: error message as string
+    PYTHON_ERROR = "python_error"
 
     def __init__(self, _type, data):
         """Constructor
