@@ -4,11 +4,7 @@ from unittest.mock import MagicMock
 from src.message import *
 from src.physics_engine import *
 from src.object_state import *
-from src.dynamic_object_state import *
-from src.agent_state import *
-from src.projectile_state import *
 from src.vector2 import *
-from src.obstacle import *
 
 class TestPhysicsEngine(unittest.TestCase):
 
@@ -41,8 +37,8 @@ class TestPhysicsEngine(unittest.TestCase):
         assert(projectile_state.position.y == 220)
 
     def test_adding_obstacle(self):
-        agent_state = AgentState(1, Vector2(100, 200), Vector2(0, 100), 10)
-        obstacle = Obstacle(2, Vector2(100, 300), 10, 10)
+        agent_state = AgentState(1, Vector2(0, 100), Vector2(100, 0), 30)
+        obstacle = Obstacle(2, Vector2(100, 70), 30, 30)
         self.pe.add_agent(agent_state)
         self.pe.add_obstacle(obstacle)
         self.pe.step(2)

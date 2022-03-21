@@ -147,7 +147,7 @@ class PhysicsEngine:
         end_points = [upper_left_point, upper_right_point, lower_right_point, lower_left_point]
         
         for i in range(4):
-            segment = pymunk.Segment(obstacle_body, start_points[i], end_points[i], 5)
+            segment = pymunk.Segment(obstacle_body, start_points[i], end_points[i], 15)
             segment.collision_type = COLLISION_TYPE_1
             self.space.add(segment)
 
@@ -220,12 +220,11 @@ class PhysicsEngine:
 if __name__ == '__main__':
     pe = PhysicsEngine()
 
-    from agent_state import *
     from vector2 import *
-    from obstacle import *
+    from object_state import *
 
-    agent_state = AgentState(1, Vector2(100, 200), Vector2(0, 100), 10)
-    obstacle = Obstacle(2, Vector2(100, 300), 10, 10)
+    agent_state = AgentState(1, Vector2(0, 100), Vector2(5, 0), 30)
+    obstacle = Obstacle(2, Vector2(100, 70), 30, 30)
     pe.add_agent(agent_state)
     pe.add_obstacle(obstacle)
     #assert(self.callback.called)
