@@ -21,7 +21,7 @@ class AgentState(DynamicObjectState):
         json_dict = {
             'id': self.id,
             'position': {'x': self.position.x, 'y': self.position.y},
-            'velocity': {'x': str(self.velocity.x), 'y': self.velocity.y},
+            'velocity': {'x': self.velocity.x, 'y': self.velocity.y},
             'health': self.health,
             'shieldEnabled': self.shieldEnabled
         }
