@@ -4,6 +4,9 @@ from unittest.mock import MagicMock
 from src.message import *
 from src.physics_engine import *
 from src.object_state import *
+from src.agent_state import *
+from src.obstacle import *
+from src.projectile_state import *
 from src.vector2 import *
 
 class TestPhysicsEngine(unittest.TestCase):

@@ -1,0 +1,361 @@
+{"frames": {
+
+"survivor-idle_handgun_0.png":
+{
+	"frame": {"x":0,"y":0,"w":253,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":216},
+	"sourceSize": {"w":253,"h":216}
+},
+"survivor-idle_handgun_1.png":
+{
+	"frame": {"x":253,"y":0,"w":253,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":216},
+	"sourceSize": {"w":253,"h":216}
+},
+"survivor-idle_handgun_2.png":
+{
+	"frame": {"x":1012,"y":216,"w":253,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":216},
+	"sourceSize": {"w":253,"h":216}
+},
+"survivor-idle_handgun_3.png":
+{
+	"frame": {"x":1265,"y":216,"w":253,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":216},
+	"sourceSize": {"w":253,"h":216}
+},
+"survivor-idle_handgun_4.png":
+{
+	"frame": {"x":1518,"y":216,"w":253,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":216},
+	"sourceSize": {"w":253,"h":216}
+},
+"survivor-idle_handgun_5.png":
+{
+	"frame": {"x":1771,"y":216,"w":253,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":216},
+	"sourceSize": {"w":253,"h":216}
+},
+"survivor-idle_handgun_6.png":
+{
+	"frame": {"x":0,"y":432,"w":253,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":216},
+	"sourceSize": {"w":253,"h":216}
+},
+"survivor-idle_handgun_7.png":
+{
+	"frame": {"x":253,"y":432,"w":253,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":216},
+	"sourceSize": {"w":253,"h":216}
+},
+"survivor-idle_handgun_8.png":
+{
+	"frame": {"x":506,"y":432,"w":253,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":216},
+	"sourceSize": {"w":253,"h":216}
+},
+"survivor-idle_handgun_9.png":
+{
+	"frame": {"x":759,"y":432,"w":253,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":216},
+	"sourceSize": {"w":253,"h":216}
+},
+"survivor-idle_handgun_10.png":
+{
+	"frame": {"x":506,"y":0,"w":253,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":216},
+	"sourceSize": {"w":253,"h":216}
+},
+"survivor-idle_handgun_11.png":
+{
+	"frame": {"x":759,"y":0,"w":253,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":216},
+	"sourceSize": {"w":253,"h":216}
+},
+"survivor-idle_handgun_12.png":
+{
+	"frame": {"x":1012,"y":0,"w":253,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":216},
+	"sourceSize": {"w":253,"h":216}
+},
+"survivor-idle_handgun_13.png":
+{
+	"frame": {"x":1265,"y":0,"w":253,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":216},
+	"sourceSize": {"w":253,"h":216}
+},
+"survivor-idle_handgun_14.png":
+{
+	"frame": {"x":1518,"y":0,"w":253,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":216},
+	"sourceSize": {"w":253,"h":216}
+},
+"survivor-idle_handgun_15.png":
+{
+	"frame": {"x":1771,"y":0,"w":253,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":216},
+	"sourceSize": {"w":253,"h":216}
+},
+"survivor-idle_handgun_16.png":
+{
+	"frame": {"x":0,"y":216,"w":253,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":216},
+	"sourceSize": {"w":253,"h":216}
+},
+"survivor-idle_handgun_17.png":
+{
+	"frame": {"x":253,"y":216,"w":253,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":216},
+	"sourceSize": {"w":253,"h":216}
+},
+"survivor-idle_handgun_18.png":
+{
+	"frame": {"x":506,"y":216,"w":253,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":216},
+	"sourceSize": {"w":253,"h":216}
+},
+"survivor-idle_handgun_19.png":
+{
+	"frame": {"x":759,"y":216,"w":253,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":216},
+	"sourceSize": {"w":253,"h":216}
+},
+"survivor-move_handgun_0.png":
+{
+	"frame": {"x":0,"y":648,"w":258,"h":220},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":258,"h":220},
+	"sourceSize": {"w":258,"h":220}
+},
+"survivor-move_handgun_1.png":
+{
+	"frame": {"x":258,"y":648,"w":258,"h":220},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":258,"h":220},
+	"sourceSize": {"w":258,"h":220}
+},
+"survivor-move_handgun_2.png":
+{
+	"frame": {"x":1290,"y":868,"w":258,"h":220},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":258,"h":220},
+	"sourceSize": {"w":258,"h":220}
+},
+"survivor-move_handgun_3.png":
+{
+	"frame": {"x":1548,"y":868,"w":258,"h":220},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":258,"h":220},
+	"sourceSize": {"w":258,"h":220}
+},
+"survivor-move_handgun_4.png":
+{
+	"frame": {"x":0,"y":1088,"w":258,"h":220},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":258,"h":220},
+	"sourceSize": {"w":258,"h":220}
+},
+"survivor-move_handgun_5.png":
+{
+	"frame": {"x":258,"y":1088,"w":258,"h":220},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":258,"h":220},
+	"sourceSize": {"w":258,"h":220}
+},
+"survivor-move_handgun_6.png":
+{
+	"frame": {"x":516,"y":1088,"w":258,"h":220},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":258,"h":220},
+	"sourceSize": {"w":258,"h":220}
+},
+"survivor-move_handgun_7.png":
+{
+	"frame": {"x":774,"y":1088,"w":258,"h":220},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":258,"h":220},
+	"sourceSize": {"w":258,"h":220}
+},
+"survivor-move_handgun_8.png":
+{
+	"frame": {"x":1032,"y":1088,"w":258,"h":220},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":258,"h":220},
+	"sourceSize": {"w":258,"h":220}
+},
+"survivor-move_handgun_9.png":
+{
+	"frame": {"x":1290,"y":1088,"w":258,"h":220},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":258,"h":220},
+	"sourceSize": {"w":258,"h":220}
+},
+"survivor-move_handgun_10.png":
+{
+	"frame": {"x":516,"y":648,"w":258,"h":220},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":258,"h":220},
+	"sourceSize": {"w":258,"h":220}
+},
+"survivor-move_handgun_11.png":
+{
+	"frame": {"x":774,"y":648,"w":258,"h":220},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":258,"h":220},
+	"sourceSize": {"w":258,"h":220}
+},
+"survivor-move_handgun_12.png":
+{
+	"frame": {"x":1032,"y":648,"w":258,"h":220},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":258,"h":220},
+	"sourceSize": {"w":258,"h":220}
+},
+"survivor-move_handgun_13.png":
+{
+	"frame": {"x":1290,"y":648,"w":258,"h":220},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":258,"h":220},
+	"sourceSize": {"w":258,"h":220}
+},
+"survivor-move_handgun_14.png":
+{
+	"frame": {"x":1548,"y":648,"w":258,"h":220},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":258,"h":220},
+	"sourceSize": {"w":258,"h":220}
+},
+"survivor-move_handgun_15.png":
+{
+	"frame": {"x":0,"y":868,"w":258,"h":220},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":258,"h":220},
+	"sourceSize": {"w":258,"h":220}
+},
+"survivor-move_handgun_16.png":
+{
+	"frame": {"x":258,"y":868,"w":258,"h":220},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":258,"h":220},
+	"sourceSize": {"w":258,"h":220}
+},
+"survivor-move_handgun_17.png":
+{
+	"frame": {"x":516,"y":868,"w":258,"h":220},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":258,"h":220},
+	"sourceSize": {"w":258,"h":220}
+},
+"survivor-move_handgun_18.png":
+{
+	"frame": {"x":774,"y":868,"w":258,"h":220},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":258,"h":220},
+	"sourceSize": {"w":258,"h":220}
+},
+"survivor-move_handgun_19.png":
+{
+	"frame": {"x":1032,"y":868,"w":258,"h":220},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":258,"h":220},
+	"sourceSize": {"w":258,"h":220}
+},
+"survivor-shoot_handgun_0.png":
+{
+	"frame": {"x":1012,"y":432,"w":255,"h":215},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":215},
+	"sourceSize": {"w":255,"h":215}
+},
+"survivor-shoot_handgun_1.png":
+{
+	"frame": {"x":1267,"y":432,"w":255,"h":215},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":215},
+	"sourceSize": {"w":255,"h":215}
+},
+"survivor-shoot_handgun_2.png":
+{
+	"frame": {"x":1522,"y":432,"w":255,"h":215},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":215},
+	"sourceSize": {"w":255,"h":215}
+}},
+"animations": {
+	"survivor-idle_handgun": ["survivor-idle_handgun_0.png","survivor-idle_handgun_1.png","survivor-idle_handgun_2.png","survivor-idle_handgun_3.png","survivor-idle_handgun_4.png","survivor-idle_handgun_5.png","survivor-idle_handgun_6.png","survivor-idle_handgun_7.png","survivor-idle_handgun_8.png","survivor-idle_handgun_9.png","survivor-idle_handgun_10.png","survivor-idle_handgun_11.png","survivor-idle_handgun_12.png","survivor-idle_handgun_13.png","survivor-idle_handgun_14.png","survivor-idle_handgun_15.png","survivor-idle_handgun_16.png","survivor-idle_handgun_17.png","survivor-idle_handgun_18.png","survivor-idle_handgun_19.png"],
+	"survivor-move_handgun": ["survivor-move_handgun_0.png","survivor-move_handgun_1.png","survivor-move_handgun_2.png","survivor-move_handgun_3.png","survivor-move_handgun_4.png","survivor-move_handgun_5.png","survivor-move_handgun_6.png","survivor-move_handgun_7.png","survivor-move_handgun_8.png","survivor-move_handgun_9.png","survivor-move_handgun_10.png","survivor-move_handgun_11.png","survivor-move_handgun_12.png","survivor-move_handgun_13.png","survivor-move_handgun_14.png","survivor-move_handgun_15.png","survivor-move_handgun_16.png","survivor-move_handgun_17.png","survivor-move_handgun_18.png","survivor-move_handgun_19.png"],
+	"survivor-shoot_handgun": ["survivor-shoot_handgun_0.png","survivor-shoot_handgun_1.png","survivor-shoot_handgun_2.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "agentsheet.png",
+	"format": "RGBA8888",
+	"size": {"w":2024,"h":1308},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:d5111cdb43a1a77b945858e2a0083b54:d6b89e61218f511b0ec3b3b51d2435d3:2c21cbc2cb8cb3c7a70e87dbaa6c2483$"
+}
+}
