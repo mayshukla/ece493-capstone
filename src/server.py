@@ -84,6 +84,14 @@ class ServerToClientConnection(tornado.websocket.WebSocketHandler):
         if self.on_receive_player_code is not None:
             self.on_receive_player_code(self, code, class_name)
 
+    def send_agent_states(self, agent_states):
+        message = Message(Message.AGENT_STATES, agent_states)
+        self.write_message(message.to_json_array())
+
+    def send_projectile_states(self, projectile_states):
+        message = Message(Message.PROJECTILE_STATES, projectile_states)
+        self.write_message(message.to_json_array())
+
 
 def main():
     parser = argparse.ArgumentParser()
