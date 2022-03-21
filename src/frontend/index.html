@@ -14,21 +14,24 @@
 
 <body>
   <script src="js/main.js" type="module"></script>
-  <script src="js/gameSetup.js"></script>
 
   <h1>ECE 493 Capstone Project</h1>
 
-  <label for="classNameArea">Class name:</label>
-  <textarea id="classNameArea" rows="1" cols="80">
+  <div id="queueScreen">Waiting in matchmaking queue.</div>
+
+  <div id="codeInputScreen" class="hidden">
+    <label for="classNameArea">Class name:</label>
+    <textarea id="classNameArea" rows="1" cols="80">
 MyAgent
-  </textarea>
-  <textarea id="codeArea" rows="30" cols="80">
+    </textarea>
+    <textarea id="codeArea" rows="30" cols="80">
 class MyAgent(Agent):
     """Enter your code here ..."""</textarea>
-  <button type="button" id="submitButton">Submit Code</button>
+    <button type="button" id="submitButton">Submit Code</button>
+  </div>
 
   <!-- Place to print python error messages to the player. -->
-  <div id="pythonErrorsArea">
+  <div id="pythonErrorsArea" class="hidden">
   </div>
 </body>
 </html>
