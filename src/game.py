@@ -52,7 +52,7 @@ class Game():
 
             # Check if player has already submitted code and if so, replace
             # agent instead of appending.
-            agent_instance = agent_class(self.gen_id())
+            agent_instance = agent_class(self.gen_id(), self)
             agent_index = self.get_index_of_client_agent(client)
             if agent_index is not None:
                 self.agents[agent_index][1] = agent_instance
@@ -96,3 +96,6 @@ class Game():
         _id = self.next_id
         self.next_id += 1
         return _id
+
+    def get_agents(self):
+        return self.agents

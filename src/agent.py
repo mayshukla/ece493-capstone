@@ -14,13 +14,15 @@ class Agent:
     MAX_HEALTH = 100
     DAMAGE_AMOUNT = 10
 
-    def __init__(self, id):
+    def __init__(self, id, game):
         self.agent_state = AgentState(
             id,
             Vector2(0, 0),
             Vector2(0, 0),
             Agent.MAX_HEALTH
         )
+
+        self.game = game
 
     def run():
         """This function will be called repeatedly in the main game loop.
@@ -49,6 +51,34 @@ class Agent:
             Position as Vector2 (object with x and y fields).
         """
         return self.agent_state.position
+
+    def get_agents_position(self):
+        """Gets position of all agents except this agent.
+
+        Returns:
+            List of Vector2 objects representing positions.
+        """
+        positions = []
+        agents = self.game.get_agents()
+        for agent in agents:
+            if agent.agent_state.id == self.agent_state.id:
+                continue
+            positions.append(agent.agent_state.position)
+        return positions
+
+    def get_agents_health(self):
+        """Gets health of all agents except this agent.
+
+        Returns:
+            List of numbers representing health.
+        """
+        healths = []
+        agents = self.game.get_agents()
+        for agent in agents:
+            if agent.agent_state.id == self.agent_state.id:
+                continue
+            healths.append(agent.agent_state.health)
+        return healths
 
     def _set_position(self, position):
         """
