@@ -16,6 +16,8 @@ class Game():
         self.agents = []
         self.simulation_started = False
 
+        self.next_id = 0
+
         for client in self.clients:
             def callback(client, code, class_name):
                 self.exec_player_code(client, code, class_name)
@@ -50,13 +52,13 @@ class Game():
 
             # Check if player has already submitted code and if so, replace
             # agent instead of appending.
-            agent_instance = agent_class()
+            agent_instance = agent_class(self.gen_id())
             agent_index = self.get_index_of_client_agent(client)
             if agent_index is not None:
                 self.agents[agent_index][1] = agent_instance
                 client.send_debug_message("Successfully updated Agent instance from player code")
             else:
-                self.agents.append([client, agent_class()])
+                self.agents.append([client, agent_instance])
                 client.send_debug_message("Successfully created Agent instance from player code")
 
             # Check if both clients have submitted valid code and if so, start the simulation.
@@ -87,3 +89,10 @@ class Game():
                 return i
 
         return None
+
+    def gen_id(self):
+        """Generates a new unique ID with each call
+        """
+        _id = self.next_id
+        self.next_id += 1
+        return _id
