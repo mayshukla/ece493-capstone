@@ -26,7 +26,7 @@ class Game():
 
         self.next_id = 0
 
-        self.physics = PhysicsEngine
+        self.physics = PhysicsEngine()
         self.physics.addOnCollisionCallback(self.collision_callback)
 
         for client in self.clients:
