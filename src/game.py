@@ -1,3 +1,7 @@
+import asyncio
+
+import tornado.ioloop
+
 from src.agent import Agent
 
 class Game():
@@ -5,6 +9,8 @@ class Game():
 
     In charge of game logic and detecting end condition.
     """
+    TICKS_PER_SECOND = 30
+
     def __init__(self, clients):
         """Constructor
 
@@ -22,6 +28,21 @@ class Game():
             def callback(client, code, class_name):
                 self.exec_player_code(client, code, class_name)
             client.on_receive_player_code = callback
+
+    async def run_game_loop(self):
+        """Continuously ticks physics engine and updates clients"""
+        # TODO set start positions of agents
+
+        while True:
+            self.tick()
+            await asyncio.sleep(1 / Game.TICKS_PER_SECOND)
+
+    def tick(self):
+        """Performs one iteration of game loop"""
+        print("game.tick()")
+        # TODO tick physics engine
+        # TODO tick agents
+        # TODO send updates to clients
 
     def exec_player_code(self, client, player_code, class_name):
         """Attempts to execute player code and get the the agent class created
@@ -68,7 +89,8 @@ class Game():
                 for client in self.clients:
                     client.send_start_simulation_message()
 
-                # TODO start the physics engine
+                # call run_game_loop at the next iteration of the i/o loop
+                tornado.ioloop.IOLoop.current().add_callback(self.run_game_loop)
 
             return True
         except Exception as e:
