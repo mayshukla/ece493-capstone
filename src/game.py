@@ -1,8 +1,10 @@
 import asyncio
+from pygame import Vector2
 
 import tornado.ioloop
 
 from src.agent import Agent
+from src.physics_engine import PhysicsEngine
 
 class Game():
     """Represents a single game.
@@ -24,14 +26,17 @@ class Game():
 
         self.next_id = 0
 
+        self.physics = PhysicsEngine
+        self.physics.addOnCollisionCallback(self.collision_callback)
+
         for client in self.clients:
             def callback(client, code, class_name):
                 self.exec_player_code(client, code, class_name)
             client.on_receive_player_code = callback
 
     async def run_game_loop(self):
-        """Continuously ticks physics engine and updates clients"""
-        # TODO set start positions of agents
+        """Continuously steps physics engine and updates clients"""
+        self.prepare_to_start_simulation()
 
         while True:
             self.tick()
@@ -39,10 +44,31 @@ class Game():
 
     def tick(self):
         """Performs one iteration of game loop"""
-        print("game.tick()")
-        # TODO tick physics engine
-        # TODO tick agents
+        self.physics.step(1 / Game.TICKS_PER_SECOND)
+        for agent in self.agents:
+            agent._tick()
+
         # TODO send updates to clients
+
+    def prepare_to_start_simulation(self):
+        """Does setup work that needs to be done after all agents are created but before game loop starts.
+
+        - Sets starting positions of agents and obstacles.
+        - Initializes physics engine
+        """
+        # TODO figure out what starting positions should be
+        self.agents[0]._set_position(Vector2(65, 350))
+        self.agents[1]._set_position(Vector2(959, 350))
+
+        # TODO set obstacle positions and add to physics
+
+        for agent in self.agents:
+            self.physics.add_agent(agent.agent_state)
+
+    def collision_callback(self):
+        """Callback for when physics engine detects collision."""
+        # TODO
+        pass
 
     def exec_player_code(self, client, player_code, class_name):
         """Attempts to execute player code and get the the agent class created
