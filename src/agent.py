@@ -1,6 +1,6 @@
 from src.agent_state import AgentState
-from src.game import Game
 from src.vector2 import Vector2
+from src.globals import *
 
 class Agent:
     """Base class for an Agent that should be extended by player code.
@@ -16,7 +16,7 @@ class Agent:
     DAMAGE_AMOUNT = 10
     SHIELD_TIME_MAX = 10
     SHIELD_COOLDOWN_MAX = 20
-    TIMER_DECREMENT = 1 / Game.TICKS_PER_SECOND
+    TIMER_DECREMENT = 1 / TICKS_PER_SECOND
 
     def __init__(self, id, game):
         self.agent_state = AgentState(

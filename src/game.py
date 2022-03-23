@@ -5,13 +5,13 @@ import tornado.ioloop
 
 from src.agent import Agent
 from src.physics_engine import PhysicsEngine
+from src.globals import *
 
 class Game():
     """Represents a single game.
 
     In charge of game logic and detecting end condition.
     """
-    TICKS_PER_SECOND = 30
 
     def __init__(self, clients):
         """Constructor
@@ -40,11 +40,11 @@ class Game():
 
         while True:
             self.tick()
-            await asyncio.sleep(1 / Game.TICKS_PER_SECOND)
+            await asyncio.sleep(1 / TICKS_PER_SECOND)
 
     def tick(self):
         """Performs one iteration of game loop"""
-        self.physics.step(1 / Game.TICKS_PER_SECOND)
+        self.physics.step(1 / TICKS_PER_SECOND)
         for agent in self.agents:
             agent._tick()
 
