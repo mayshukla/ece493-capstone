@@ -30,7 +30,7 @@ class Agent:
 
         self.game = game
 
-    def run():
+    def run(self):
         """This function will be called repeatedly in the main game loop.
 
         Players can override this function to implement agent behavior.
@@ -125,7 +125,11 @@ class Agent:
         self.agent_state.health -= Agent.DAMAGE_AMOUNT
 
     def _tick(self):
-        """Decrements timers. This is called in the game loop."""
+        """Main interface for game loop.
+
+        Performs all the functions that need to be done in one iteration of the
+        game loop such as decrementing timers.
+        """
         if self.agent_state.shieldEnabled:
             if self.shield_time > 0:
                 self.shield_time -= Agent.TIMER_DECREMENT
@@ -136,3 +140,5 @@ class Agent:
                 self.shield_cooldown_time -= Agent.TIMER_DECREMENT
             if self.shield_cooldown_time < 0:
                 self.shield_cooldown_time = 0
+
+        self.run()
