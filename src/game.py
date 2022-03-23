@@ -34,6 +34,8 @@ class Game():
                 self.exec_player_code(client, code, class_name)
             client.on_receive_player_code = callback
 
+        self.projectiles = []
+
     async def run_game_loop(self):
         """Continuously steps physics engine and updates clients"""
         self.prepare_to_start_simulation()
@@ -46,9 +48,12 @@ class Game():
         """Performs one iteration of game loop"""
         self.physics.step(1 / TICKS_PER_SECOND)
         for agent in self.agents:
-            agent._tick()
+            agent[1]._tick()
 
         # TODO send updates to clients
+        for agent in self.agents:
+            agent[0].send_agent_states([agent[1].agent_state for agent in self.agents])
+            agent[0].send_projectile_states([projectile for projectile in self.projectiles])
 
     def prepare_to_start_simulation(self):
         """Does setup work that needs to be done after all agents are created but before game loop starts.
@@ -57,13 +62,13 @@ class Game():
         - Initializes physics engine
         """
         # TODO figure out what starting positions should be
-        self.agents[0]._set_position(Vector2(65, 350))
-        self.agents[1]._set_position(Vector2(959, 350))
+        self.agents[0][1]._set_position(Vector2(65, 350))
+        self.agents[1][1]._set_position(Vector2(959, 350))
 
         # TODO set obstacle positions and add to physics
 
         for agent in self.agents:
-            self.physics.add_agent(agent.agent_state)
+            self.physics.add_agent(agent[1].agent_state)
 
     def collision_callback(self):
         """Callback for when physics engine detects collision."""

@@ -8,6 +8,8 @@ export default class Message {
     static PLAYER_CODE = "player_code";
     static PYTHON_ERROR = "python_error";
     static START_SIMULATION = "start_simulation";
+    static PROJECTILE_STATES = "projectile_states";
+    static AGENT_STATES = "agent_states";
 
     constructor(type, data) {
         this.type = type;
