@@ -26,7 +26,7 @@ class Agent:
             Agent.MAX_HEALTH
         )
         self.shield_time = Agent.SHIELD_TIME_MAX
-        self.shield_cooldown_time = Agent.SHIELD_COOLDOWN_MAX
+        self.shield_cooldown_time = 0
 
         self.game = game
 
@@ -134,3 +134,5 @@ class Agent:
         else:
             if self.shield_cooldown_time > 0:
                 self.shield_cooldown_time -= Agent.TIMER_DECREMENT
+            if self.shield_cooldown_time < 0:
+                self.shield_cooldown_time = 0

@@ -41,6 +41,45 @@ class TestAgent(unittest.TestCase):
         assert(len(actual_healths) == 1)
         assert(actual_healths[0] == expected_health)
 
+    def test_activate_shield(self):
+        assert(not self.agent.is_shield_activated())
+        self.agent.activate_shield()
+        assert(self.agent.is_shield_activated())
+        assert(self.agent.get_shield_time() == Agent.SHIELD_TIME_MAX)
+        self.agent._tick()
+        assert(self.agent.get_shield_time() == Agent.SHIELD_TIME_MAX - Agent.TIMER_DECREMENT)
+
+        # Should do nothing when shield is already activated
+        self.agent.activate_shield()
+        assert(self.agent.get_shield_time() == Agent.SHIELD_TIME_MAX - Agent.TIMER_DECREMENT)
+
+    def test_deactivate_shield(self):
+        self.agent.activate_shield()
+        self.agent.deactivate_shield()
+        assert(not self.agent.is_shield_activated())
+        assert(self.agent.get_shield_time() == Agent.SHIELD_TIME_MAX)
+        assert(self.agent.get_shield_cooldown_time() == Agent.SHIELD_COOLDOWN_MAX)
+        self.agent._tick()
+        assert(self.agent.get_shield_cooldown_time() == Agent.SHIELD_COOLDOWN_MAX - Agent.TIMER_DECREMENT)
+
+        # Should do nothing when shield is already activated
+        self.agent.deactivate_shield()
+        assert(self.agent.get_shield_cooldown_time() == Agent.SHIELD_COOLDOWN_MAX - Agent.TIMER_DECREMENT)
+
+    def test_shield_timer(self):
+        self.agent.activate_shield()
+        for _ in range(Agent.SHIELD_TIME_MAX * TICKS_PER_SECOND + 1):
+            self.agent._tick()
+        assert(not self.agent.is_shield_activated())
+
+    def test_shield_cooldown_timer(self):
+        self.agent.activate_shield()
+        self.agent.deactivate_shield()
+        for _ in range(Agent.SHIELD_COOLDOWN_MAX * TICKS_PER_SECOND + 1):
+            self.agent._tick()
+        print(self.agent.get_shield_cooldown_time())
+        assert(self.agent.get_shield_cooldown_time() == 0)
+
 
 if __name__ == '__main__':
     unittest.main()
