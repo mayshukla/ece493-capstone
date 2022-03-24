@@ -43,8 +43,6 @@ class TestMessage(unittest.TestCase):
                 {"id": 2, "position": {"x": 300, "y": 400}, "velocity": {"x": 10, "y": 10}, "angle": 45.0,  "attackerId": 4}
             ]
         })
-        print(expected_json)
-        print(msg.to_json())
         self.assertEqual(msg.to_json(), expected_json)
 
 

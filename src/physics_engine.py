@@ -51,10 +51,17 @@ class PhysicsEngine:
         arbiter.shapes[0].body.velocity = (0, 0)
         arbiter.shapes[1].body.velocity = (0, 0)
         print("Collision!")
+        object_id_1 = self._get_body_id(arbiter.shapes[0].body)
+        print(object_id_1)
+        object_id_2 = self._get_body_id(arbiter.shapes[1].body)
+        print(object_id_2)
+        object_state_1 = self._get_object_state_from_id(object_id_1)
+        print(object_state_1)
+        object_state_2 = self._get_object_state_from_id(object_id_2)
+        print(object_state_2)
         # call the optional callback function
         if "callback" in data:
-            # TODO: Pass the collided objects to the callback
-            data["callback"]()
+            data["callback"](object_state_1, object_state_2)
         return True
 
     def addOnCollisionCallback(self, callback):
@@ -215,6 +222,21 @@ class PhysicsEngine:
             object_state.position.y = object_body.position[1]
             object_state.velocity.x = object_body.velocity[0]
             object_state.velocity.y = object_body.velocity[1]
+
+    def _get_body_id(self, body):
+        """
+        Returns the object_state id that corresponds to the pymunk body. If the body cannot be found returns None.
+        """
+        for id in self.bodies:
+            if self.bodies[id] == body:
+                return id
+        return None
+
+    def _get_object_state_from_id(self, id):
+        """
+        Returns the object_state with the corresponding id. Returns None if an object with the passed in id cannot be found.
+        """
+        return next((object_state for object_state in self.object_states if object_state.id == id), None)
 
 if __name__ == '__main__':
     pe = PhysicsEngine()

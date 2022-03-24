@@ -70,7 +70,7 @@ class Game():
         for agent in self.agents:
             self.physics.add_agent(agent[1].agent_state)
 
-    def collision_callback(self):
+    def collision_callback(self, object_state_1, object_state_2):
         """Callback for when physics engine detects collision."""
         # TODO
         pass
