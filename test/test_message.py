@@ -28,8 +28,8 @@ class TestMessage(unittest.TestCase):
         expected_json = json.dumps({
             "type": Message.AGENT_STATES,
             "data": [
-                {"id": 1, "position": {"x": 100, "y": 200}, "velocity": {"x": 0, "y": 0}, "health": 10, "shieldEnabled": False},
-                {"id": 2, "position": {"x": 300, "y": 400}, "velocity": {"x": 10, "y": 10}, "health": 20, "shieldEnabled": False}
+                {"id": 1, "position": {"x": 100, "y": 200}, "velocity": {"x": 0, "y": 0}, "angle": 0.0, "health": 10, "shieldEnabled": False},
+                {"id": 2, "position": {"x": 300, "y": 400}, "velocity": {"x": 10, "y": 10}, "angle": 45.0, "health": 20, "shieldEnabled": False}
             ]
         })
         self.assertEqual(msg.to_json(), expected_json)
@@ -39,10 +39,12 @@ class TestMessage(unittest.TestCase):
         expected_json = json.dumps({
             "type": Message.PROJECTILE_STATES,
             "data": [
-                {"id": 1, "position": {"x": 100, "y": 200}, "velocity": {"x": 0, "y": 0}, "attackerId": 3},
-                {"id": 2, "position": {"x": 300, "y": 400}, "velocity": {"x": 10, "y": 10}, "attackerId": 4}
+                {"id": 1, "position": {"x": 100, "y": 200}, "velocity": {"x": 0, "y": 0}, "angle": 0.0,  "attackerId": 3},
+                {"id": 2, "position": {"x": 300, "y": 400}, "velocity": {"x": 10, "y": 10}, "angle": 45.0,  "attackerId": 4}
             ]
         })
+        print(expected_json)
+        print(msg.to_json())
         self.assertEqual(msg.to_json(), expected_json)
 
 

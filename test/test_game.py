@@ -40,7 +40,7 @@ class MyAgent(Agent):
         self.mock_agents()
         self.game.tick()
         for agent_mock in self.game.agents:
-            agent_mock._tick.assert_called()
+            agent_mock[1]._tick.assert_called()
 
         # TODO add more asserts as we add functionality to Game.tick
 
