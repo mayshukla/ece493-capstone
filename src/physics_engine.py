@@ -6,6 +6,7 @@ import pymunk
 import pymunk.pygame_util
 import pygame
 import pymunk.vec2d
+from src.obstacle import Obstacle
 
 COLLISION_TYPE_1 = 1
 
@@ -51,10 +52,13 @@ class PhysicsEngine:
         arbiter.shapes[0].body.velocity = (0, 0)
         arbiter.shapes[1].body.velocity = (0, 0)
         print("Collision!")
+        object_id_1 = self._get_body_id(arbiter.shapes[0].body)
+        object_id_2 = self._get_body_id(arbiter.shapes[1].body)
+        object_state_1 = self._get_object_state_from_id(object_id_1)
+        object_state_2 = self._get_object_state_from_id(object_id_2)
         # call the optional callback function
         if "callback" in data:
-            # TODO: Pass the collided objects to the callback
-            data["callback"]()
+            data["callback"](object_state_1, object_state_2)
         return True
 
     def addOnCollisionCallback(self, callback):
@@ -135,6 +139,12 @@ class PhysicsEngine:
         """
         obstacle_body = pymunk.Body(mass=0, moment=0, body_type=pymunk.Body.STATIC)
         obstacle_body.position = (obstacle.position.x, obstacle.position.y)
+
+        if obstacle.id in self.bodies:
+            raise ValueError(f"Duplicate id {obstacle.id} found")
+        self.bodies[obstacle.id] = obstacle_body
+        self.object_states.append(obstacle)
+
         self.space.add(obstacle_body)
 
         # TODO: make the obstacle shapes match the obstacle sprites
@@ -165,12 +175,13 @@ class PhysicsEngine:
         circle = pymunk.Circle(projectile_body, radius=5)
         circle.elasticity = 0
         circle.collision_type = COLLISION_TYPE_1
-        self.space.add(projectile_body, circle)
 
         if projectile_state.id in self.bodies:
             raise ValueError(f"Duplicate id {projectile_state.id} found")
         self.bodies[projectile_state.id] = projectile_body
         self.object_states.append(projectile_state)
+
+        self.space.add(projectile_body, circle)
 
     def remove_object(self, object_id):
         """
@@ -213,8 +224,43 @@ class PhysicsEngine:
             object_body = self.bodies[object_state.id]
             object_state.position.x = object_body.position[0]
             object_state.position.y = object_body.position[1]
-            object_state.velocity.x = object_body.velocity[0]
-            object_state.velocity.y = object_body.velocity[1]
+            if not isinstance(object_state, Obstacle):
+                object_state.velocity.x = object_body.velocity[0]
+                object_state.velocity.y = object_body.velocity[1]
+
+    def _get_body_id(self, body):
+        """
+        Returns the object_state id that corresponds to the pymunk body. If the body cannot be found returns None.
+        """
+        for id in self.bodies:
+            if self.bodies[id] == body:
+                return id
+        return None
+
+    def _get_object_state_from_id(self, id):
+        """
+        Returns the object_state with the corresponding id. Returns None if an object with the passed in id cannot be found.
+        """
+        return next((object_state for object_state in self.object_states if object_state.id == id), None)
+
+    def scan_area(self, position, distance):
+        """
+        Locates all objects within a specified distance of a given position.
+
+        Arguments:
+            position: A Vector2 object specifiying the point around which to search for objects.
+            distance: A float specifiying the maximum distance away from the point to search for objects.
+
+        Returns: a list containing the object_state for each object that was located. If no objects were located the list will be empty.
+        """
+        query = self.space.point_query([position.x, position.y], distance, pymunk.ShapeFilter())
+        hits = []
+        for hit in query:
+            id = self._get_body_id(hit.shape.body)
+            object = self._get_object_state_from_id(id)
+            hits.append(object)
+        return hits
+
 
 if __name__ == '__main__':
     pe = PhysicsEngine()

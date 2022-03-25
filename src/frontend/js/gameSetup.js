@@ -29,8 +29,10 @@ let agentSheet,
   gameState,
   obstacleSheet,
   obstacleSSheet,
-  projectileList,
   projectileSpeed;
+
+export let agents = [];
+export let projectileList = [];
 
 export default function initPixi() {
   //Create a Pixi Application
@@ -133,6 +135,8 @@ function setup() {
   );
   console.log(agent);
 
+  agents.push(agent);
+
   // set speed, start playback and add it to the stage
   agent.animationSpeed = 0.3;
   agent.play();
@@ -144,8 +148,8 @@ function setup() {
   agent.angle = 100;
   agent["vAngle"] = 0;
   agent.anchor.set(0.95652, 0.75);
+  agent.id = 0;
 
-  projectileList = [];
   projectileSpeed = 5;
 
   const background = new Sprite(id["dungeon.png"]);
@@ -212,6 +216,11 @@ function updateAgentAngle(agent, angle) {
   // }
 
   agent.angle += agent.vAngle;
+}
+
+export function setAgentPosition(agent, x, y){
+  agent.x = x;
+  agent.y = y;
 }
 
 function updateAgentPosition(agent, vx, vy) {

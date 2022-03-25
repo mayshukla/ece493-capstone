@@ -20,6 +20,7 @@ class ProjectileState(DynamicObjectState):
             'id': self.id,
             'position': {'x': self.position.x, 'y': self.position.y},
             'velocity': {'x': self.velocity.x, 'y': self.velocity.y},
+            'angle': self.velocity.get_angle(),
             'attackerId': self.attackerId,
         }
         return json_dict
