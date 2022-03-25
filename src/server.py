@@ -86,11 +86,11 @@ class ServerToClientConnection(tornado.websocket.WebSocketHandler):
 
     def send_agent_states(self, agent_states):
         message = Message(Message.AGENT_STATES, agent_states)
-        self.write_message(message.to_json_array())
+        self.write_message(message.to_json())
 
     def send_projectile_states(self, projectile_states):
         message = Message(Message.PROJECTILE_STATES, projectile_states)
-        self.write_message(message.to_json_array())
+        self.write_message(message.to_json())
 
 
 def main():

@@ -1,4 +1,5 @@
 import Message from './message.js';
+import {agents, projectileList, setAgentPosition} from './gameSetup.js';
 
 /**
  * Represents connection from client to server.
@@ -29,6 +30,12 @@ export default class ClientToServerConnection {
                 break;
             case Message.START_SIMULATION:
                 this.onStartSimulation();
+                break;
+            case Message.AGENT_STATES:
+                this.onReceiveAgentStates(message.data);
+                break;
+            case Message.PROJECTILE_STATES:
+                this.onReceiveProjectileStates(message.data);
                 break;
             default:
                 console.error("ERROR: unhandled message type. Message:", message);
@@ -69,5 +76,32 @@ export default class ClientToServerConnection {
      */
     onStartSimulation(error) {
         console.log("START_SIMULATION message received");
+    }
+
+    onReceiveAgentStates(agent_states) {
+        console.log(agent_states);
+        console.log(agents)
+        for (var agent_state of agent_states) {
+            console.log(agent_state)
+            //console.log(agent_state.position)
+            //console.log(agent_state.position.x)
+            var agent = agents.find(obj => {
+                console.log(obj.id);
+                console.log(agent_state.id);
+                return obj.id === agent_state.id
+            })
+            console.log(agent);
+            if (typeof agent === 'undefined') {
+                // create agent
+                return false;
+            }
+            else {
+                setAgentPosition(agent, agent_state.position.x, agent_state.position.y);
+            }
+        }
+    }
+
+    onReceiveProjectileStates(projectile_states) {
+        console.log(projectile_states);
     }
 }

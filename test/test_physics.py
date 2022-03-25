@@ -17,11 +17,12 @@ class TestPhysicsEngine(unittest.TestCase):
         self.pe.addOnCollisionCallback(self.callback)
 
     def test_collision_callback(self):
-        circle1 = self.pe.create_circle((100, 200), 30)
-        circle2 = self.pe.create_circle((300, 200), 30)
-        circle1.body.velocity = (5, 0)
-        self.pe.space.step(40)
-        assert(self.callback.called)
+        agent_state_1 = AgentState(1, Vector2(100, 200), Vector2(5, 0), 10)
+        agent_state_2 = AgentState(2, Vector2(300, 200), Vector2(0, 0), 10)
+        self.pe.add_agent(agent_state_1)
+        self.pe.add_agent(agent_state_2)
+        self.pe.step(40)
+        self.callback.assert_called_with(agent_state_1, agent_state_2)
 
     def test_adding_agent(self):
         agent_state = AgentState(1, Vector2(100, 200), Vector2(0, 5), 10)
