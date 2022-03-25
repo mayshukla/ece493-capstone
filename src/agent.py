@@ -17,6 +17,7 @@ class Agent:
     SHIELD_TIME_MAX = 10
     SHIELD_COOLDOWN_MAX = 20
     TIMER_DECREMENT = 1 / TICKS_PER_SECOND
+    SCAN_DISTANCE = 50
 
     def __init__(self, id, game):
         self.agent_state = AgentState(

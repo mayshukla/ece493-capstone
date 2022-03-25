@@ -71,6 +71,39 @@ class MyAgent(Agent):
         self.game.physics.step(1)
         assert(agent.on_damage_taken.called)
 
+    def test_obstacle_scanned_callback(self):
+        collision_callback = MagicMock()
+        self.game.physics.addOnCollisionCallback(collision_callback)
+        agent = Agent(self.game.gen_id(), self.game)
+        obstacle = Obstacle(self.game.gen_id(), Vector2(100, 70), 30, 30)
+        agent.on_obstacle_scanned = MagicMock()
+        self.game.agents = [[MagicMock(), agent]]
+        agent._set_position(Vector2(0, 100))
+        agent.agent_state.velocity = Vector2(100, 0)
+        self.game.physics.add_agent(agent.agent_state)
+        self.game.physics.add_obstacle(obstacle)
+        for i in range(40):
+            self.game.tick()
+        collision_callback.assert_not_called()
+        agent.on_obstacle_scanned.assert_called_with(obstacle)
+
+    def test_enemy_scanned_callback(self):
+        collision_callback = MagicMock()
+        self.game.physics.addOnCollisionCallback(collision_callback)
+        agent = Agent(self.game.gen_id(), self.game)
+        enemy = Agent(self.game.gen_id(), self.game)
+        agent.on_enemy_scanned = MagicMock()
+        self.game.agents = [[MagicMock(), agent]]
+        agent._set_position(Vector2(0, 100))
+        agent.agent_state.velocity = Vector2(100, 0)
+        enemy._set_position(Vector2(100, 100))
+        self.game.physics.add_agent(agent.agent_state)
+        self.game.physics.add_agent(enemy.agent_state)
+        for i in range(10):
+            self.game.tick()
+        collision_callback.assert_not_called()
+        agent.on_enemy_scanned.assert_called_with(enemy.get_position())
+
 
         
 

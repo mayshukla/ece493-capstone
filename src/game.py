@@ -2,6 +2,7 @@ import asyncio
 from pygame import Vector2
 
 import tornado.ioloop
+from src import agent_state
 
 from src.agent import Agent
 from src.physics_engine import PhysicsEngine
@@ -53,7 +54,19 @@ class Game():
         for agent in self.agents:
             agent[1]._tick()
 
-        # TODO send updates to clients
+        # determine if agents have scanned anything
+        for agent in self.agents:
+            scanned_objects = self.physics.scan_area(agent[1].get_position(), Agent.SCAN_DISTANCE)
+            # call appropriate callback for each scanned object
+            for object in scanned_objects:
+                if object == agent[1].agent_state:
+                    continue
+                elif isinstance(object, AgentState):
+                    agent[1].on_enemy_scanned(object.position)
+                elif isinstance(object, Obstacle):
+                    agent[1].on_obstacle_scanned(object)
+
+        # send updates to clients
         for agent in self.agents:
             agent[0].send_agent_states([agent[1].agent_state for agent in self.agents])
             agent[0].send_projectile_states([projectile for projectile in self.projectiles])
@@ -80,11 +93,11 @@ class Game():
             # destroy both projectiles
             self.physics.remove_object(object_state_1.id)
             self.physics.remove_object(object_state_2.id)
-        if isinstance(object_state_1, AgentState) and isinstance(object_state_2, AgentState):
+        elif isinstance(object_state_1, AgentState) and isinstance(object_state_2, AgentState):
             # TODO: handle agent-agent collision
             # does this require any special handling?
             pass
-        if isinstance(object_state_1, ProjectileState) or isinstance(object_state_2, ProjectileState):
+        elif isinstance(object_state_1, ProjectileState) or isinstance(object_state_2, ProjectileState):
             if isinstance(object_state_1, AgentState) or isinstance(object_state_2, AgentState):
                 # handle projectile-agent collision
                 if isinstance(object_state_1, AgentState):
