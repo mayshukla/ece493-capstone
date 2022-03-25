@@ -6,6 +6,9 @@ import tornado.ioloop
 from src.agent import Agent
 from src.physics_engine import PhysicsEngine
 from src.globals import *
+from src.projectile_state import ProjectileState
+from src.agent_state import AgentState
+from src.obstacle import Obstacle
 
 class Game():
     """Represents a single game.
@@ -72,8 +75,56 @@ class Game():
 
     def collision_callback(self, object_state_1, object_state_2):
         """Callback for when physics engine detects collision."""
-        # TODO
-        pass
+        if isinstance(object_state_1, ProjectileState) and isinstance(object_state_2, ProjectileState):
+            # handle projectile-projectile collision
+            # destroy both projectiles
+            self.physics.remove_object(object_state_1.id)
+            self.physics.remove_object(object_state_2.id)
+        if isinstance(object_state_1, AgentState) and isinstance(object_state_2, AgentState):
+            # TODO: handle agent-agent collision
+            # does this require any special handling?
+            pass
+        if isinstance(object_state_1, ProjectileState) or isinstance(object_state_2, ProjectileState):
+            if isinstance(object_state_1, AgentState) or isinstance(object_state_2, AgentState):
+                # handle projectile-agent collision
+                if isinstance(object_state_1, AgentState):
+                    agent = self.get_agent_from_state(object_state_1)
+                    projectile = object_state_2
+                else:
+                    agent = self.get_agent_from_state(object_state_2)
+                    projectile = object_state_1
+                # damage the agent if their shields are not active
+                if not agent.is_shield_activated():
+                    agent._decrement_health()
+                    # callback
+                    agent.on_damage_taken()
+                # remove the projectile
+                self.physics.remove_object(projectile)
+            else:
+                # handle projectile-obstacle collision
+                if isinstance(object_state_1, ProjectileState):
+                    projectile = object_state_2
+                else:
+                    projectile = object_state_1
+                # remove the projectile
+                self.physics.remove_object(projectile)
+        else:
+            # handle agent-obstacle collision
+            if isinstance(object_state_1, AgentState):
+                agent = self.get_agent_from_state(object_state_1)
+            else:
+                agent = self.get_agent_from_state(object_state_2)
+            # callback
+            agent.on_obstacle_hit()
+
+
+    def get_agent_from_state(self, agent_state):
+        """Returns the agent that corresponds to the agent_state. 
+        Returns None if the agent cannot be found."""
+        for agent in self.agents:
+            if agent[1].agent_state.id == agent_state.id:
+                return agent[1]
+        return None
 
     def exec_player_code(self, client, player_code, class_name):
         """Attempts to execute player code and get the the agent class created

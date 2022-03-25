@@ -136,3 +136,19 @@ class Agent:
                 self.shield_cooldown_time -= Agent.TIMER_DECREMENT
             if self.shield_cooldown_time < 0:
                 self.shield_cooldown_time = 0
+
+    def on_enemy_scanned(self, enemy_position):
+        """Callback that players can override. Called when an enemy is nearby."""
+        pass
+
+    def on_obstacle_scanned(self, obstacle):
+        """Callback that players can override. Called when an obstacle is nearby."""
+        pass
+
+    def on_damage_taken(self):
+        """Callback that players can override. Called when the agent is damaged by a projectile."""
+        pass
+
+    def on_obstacle_hit(self):
+        """Callback that players can override. Called when the agent runs into an obstacle."""
+        pass
