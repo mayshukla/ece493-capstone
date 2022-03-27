@@ -132,7 +132,7 @@ class Agent:
 
         The direction is specified in units of degrees.
         Zero degrees means directly to the right.
-        Positive angles turn the agent counterclockwise from the zero degree position.
+        Positive angles turn the agent clockwise from the zero degree position.
 
         Args:
             angle: Desired angle in degrees.
