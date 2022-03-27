@@ -8,6 +8,8 @@ from src.agent_state import *
 from src.obstacle import *
 from src.projectile_state import *
 from src.vector2 import *
+from src.agent import *
+from src.globals import *
 
 class TestPhysicsEngine(unittest.TestCase):
 
@@ -96,6 +98,22 @@ class TestPhysicsEngine(unittest.TestCase):
         self.pe.add_agent(agent_state)
         self.pe.step(1)
         assert(self.callback.called)
+
+    def test_agent_movement(self):
+        agent = Agent(0, MagicMock())
+        self.pe.add_agent(agent.agent_state)
+
+        velocity = Vector2.from_angle_magnitude(125, 5.5)
+        agent.set_movement_speed(velocity.get_magnitude())
+        agent.set_movement_direction(velocity.get_angle())
+
+        for _ in range(TICKS_PER_SECOND):
+            self.pe.step(1 / TICKS_PER_SECOND)
+
+        expected_position = velocity
+        actual_position = agent.agent_state.position
+        self.assertAlmostEqual(expected_position.x, actual_position.x)
+        self.assertAlmostEqual(expected_position.y, actual_position.y)
 
 if __name__ == '__main__':
     unittest.main()
