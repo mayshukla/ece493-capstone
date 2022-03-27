@@ -78,7 +78,7 @@ class Game():
         - Initializes physics engine
         """
         # TODO figure out what starting positions should be
-        self.agents[0][1]._set_position(Vector2(65, 350))
+        self.agents[0][1]._set_position(Vector2(400, 350))
         self.agents[1][1]._set_position(Vector2(959, 350))
 
         # TODO set obstacle positions and add to physics
