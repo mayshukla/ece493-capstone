@@ -18,6 +18,7 @@ class Agent:
     SHIELD_COOLDOWN_MAX = 20
     TIMER_DECREMENT = 1 / TICKS_PER_SECOND
     SCAN_DISTANCE = 50
+    MAX_SPEED = 50 # in units of pixels per second
 
     def __init__(self, id, game):
         self.agent_state = AgentState(
@@ -112,6 +113,32 @@ class Agent:
 
     def get_shield_cooldown_time(self):
         return self.shield_cooldown_time
+
+    def set_movement_speed(self, speed):
+        """Sets the current speed of the agent in units of pixels per second.
+
+        If a speed greater that Agent.MAX_SPEED is given, then the speed is set
+        to Agent.MAX_SPEED.
+
+        Args:
+            speed: Desired speed in units of pixels per second.
+        """
+        angle = self.agent_state.velocity.get_angle()
+        magnitude = speed if speed <= Agent.MAX_SPEED else Agent.MAX_SPEED
+        self.agent_state.velocity = Vector2.from_angle_magnitude(angle, magnitude)
+
+    def set_movement_direction(self, angle):
+        """Sets the current direction of movement.
+
+        The direction is specified in units of degrees.
+        Zero degrees means directly to the right.
+        Positive angles turn the agent counterclockwise from the zero degree position.
+
+        Args:
+            angle: Desired angle in degrees.
+        """
+        magnitude = self.agent_state.velocity.get_magnitude()
+        self.agent_state.velocity = Vector2.from_angle_magnitude(angle, magnitude)
 
     def _set_position(self, position):
         """
