@@ -12,6 +12,7 @@ from src.vector2 import *
 class TestPhysicsEngine(unittest.TestCase):
 
     def setUp(self):
+        print("starting...")
         self.pe = PhysicsEngine()
         self.callback = MagicMock()
         self.pe.addOnCollisionCallback(self.callback)
@@ -71,6 +72,30 @@ class TestPhysicsEngine(unittest.TestCase):
         assert(len(self.pe.space.bodies) == 0)
         assert(agent_state.position.x == 100)
         assert(agent_state.position.y == 200)
+
+    def test_upper_boundary(self):
+        agent_state = AgentState(1, Vector2(50, PhysicsEngine.SPACE_HEIGHT), Vector2(0, 1), 10)
+        self.pe.add_agent(agent_state)
+        self.pe.step(1)
+        assert(self.callback.called)
+
+    def test_right_boundary(self):
+        agent_state = AgentState(1, Vector2(PhysicsEngine.SPACE_WIDTH, 50), Vector2(0, 1), 10)
+        self.pe.add_agent(agent_state)
+        self.pe.step(1)
+        assert(self.callback.called)
+
+    def test_left_boundary(self):
+        agent_state = AgentState(1, Vector2(0, 50), Vector2(0, 1), 10)
+        self.pe.add_agent(agent_state)
+        self.pe.step(1)
+        assert(self.callback.called)
+
+    def test_lower_boundary(self):
+        agent_state = AgentState(1, Vector2(50, 0), Vector2(0, 1), 10)
+        self.pe.add_agent(agent_state)
+        self.pe.step(1)
+        assert(self.callback.called)
 
 if __name__ == '__main__':
     unittest.main()
