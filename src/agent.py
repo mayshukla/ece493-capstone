@@ -19,6 +19,7 @@ class Agent:
     TIMER_DECREMENT = 1 / TICKS_PER_SECOND
     SCAN_DISTANCE = 50
     MAX_SPEED = 50 # in units of pixels per second
+    PROJECTILE_SPEED = 200
 
     def __init__(self, id, game):
         self.agent_state = AgentState(
@@ -113,6 +114,20 @@ class Agent:
 
     def get_shield_cooldown_time(self):
         return self.shield_cooldown_time
+
+    def attack_ranged(self, direction):
+        """Triggers a ranged attack in the specified direction.
+
+        Args:
+            direction: Direction in degrees. Follows same angle convection as
+                set_movement_direction.
+        """
+        # TODO implement attack cooldown
+        self.game.create_projectile(
+            self.agent_state.position.clone(),
+            direction,
+            self.agent_state.id
+        )
 
     def set_movement_speed(self, speed):
         """Sets the current speed of the agent in units of pixels per second.

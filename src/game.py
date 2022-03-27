@@ -215,3 +215,16 @@ class Game():
 
     def get_agents(self):
         return self.agents
+
+    def create_projectile(self, position, direction, attackerId):
+        """Creates a new projectile and passes it to the physics engine."""
+        velocity = Vector2.from_angle_magnitude(direction, Agent.PROJECTILE_SPEED)
+
+        projectile_state = ProjectileState(
+            self.gen_id(),
+            position,
+            velocity,
+            attackerId
+        )
+
+        self.physics.add_projectile(projectile_state)
