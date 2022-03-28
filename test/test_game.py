@@ -2,7 +2,6 @@ import unittest
 from unittest.mock import MagicMock
 
 from src.game import *
-import json
 from src.vector2 import Vector2
 
 class TestGame(unittest.TestCase):

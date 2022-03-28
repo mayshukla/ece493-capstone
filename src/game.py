@@ -1,8 +1,6 @@
 import asyncio
-from pygame import Vector2
 
 import tornado.ioloop
-from src import agent_state
 
 from src.agent import Agent
 from src.physics_engine import PhysicsEngine
@@ -10,6 +8,7 @@ from src.globals import *
 from src.projectile_state import ProjectileState
 from src.agent_state import AgentState
 from src.obstacle import Obstacle
+from src.vector2 import Vector2
 
 class Game():
     """Represents a single game.
