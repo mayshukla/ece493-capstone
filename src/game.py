@@ -50,9 +50,10 @@ class Game():
 
     def tick(self):
         """Performs one iteration of game loop"""
-        self.physics.step(1 / TICKS_PER_SECOND)
+        # self.physics.step(1 / TICKS_PER_SECOND)
         for agent in self.agents:
             agent[1]._tick()
+            agent[1].agent_state.velocity = Vector2(2, 2)
 
         # determine if agents have scanned anything
         for agent in self.agents:
@@ -132,7 +133,7 @@ class Game():
 
 
     def get_agent_from_state(self, agent_state):
-        """Returns the agent that corresponds to the agent_state. 
+        """Returns the agent that corresponds to the agent_state.
         Returns None if the agent cannot be found."""
         for agent in self.agents:
             if agent[1].agent_state.id == agent_state.id:
