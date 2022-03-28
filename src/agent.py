@@ -31,6 +31,7 @@ class Agent:
         self.shield_cooldown_time = 0
 
         self.game = game
+        self.collisions = {}
 
     def run(self):
         """This function will be called repeatedly in the main game loop.
@@ -123,9 +124,34 @@ class Agent:
         Args:
             speed: Desired speed in units of pixels per second.
         """
+        print("setting speed: " + str(speed))
         angle = self.agent_state.velocity.get_angle()
         magnitude = speed if speed <= Agent.MAX_SPEED else Agent.MAX_SPEED
-        self.agent_state.velocity = Vector2.from_angle_magnitude(angle, magnitude)
+        velocity = Vector2.from_angle_magnitude(angle, magnitude)
+        #print(velocity)
+        self.agent_state.velocity = self._clip_velocity(velocity)
+        #self.agent_state.velocity = velocity
+        #print(self.agent_state.velocity)
+
+    def _clip_velocity(self, velocity):
+        print("before: " + str(velocity.x) + ", " + str(velocity.y))
+        for collision in self.collisions:
+            if self.collisions[collision].y - self.get_position().y < 0:
+                velocity.y = max(0, velocity.y)
+                print("clipping y")
+            elif self.collisions[collision].y - self.get_position().y > 0:
+                velocity.y = min(0, velocity.y)
+                print("clipping y")
+
+            if self.collisions[collision].x - self.get_position().x < 0:
+                velocity.x = max(0, velocity.x)
+                print("clipping x")
+            elif self.collisions[collision].x - self.get_position().x > 0:
+                velocity.x = min(0, velocity.x)
+                print("clipping x")
+
+        print("after: " + str(velocity.x) + ", " + str(velocity.y))
+        return velocity
 
     def set_movement_direction(self, angle):
         """Sets the current direction of movement.
@@ -137,8 +163,12 @@ class Agent:
         Args:
             angle: Desired angle in degrees.
         """
+        print("setting angle: " + str(angle))
         magnitude = self.agent_state.velocity.get_magnitude()
-        self.agent_state.velocity = Vector2.from_angle_magnitude(angle, magnitude)
+        velocity = Vector2.from_angle_magnitude(angle, magnitude)
+
+        self.agent_state.velocity = self._clip_velocity(velocity)
+        #self.agent_state.velocity = velocity
 
     def _set_position(self, position):
         """
@@ -151,6 +181,12 @@ class Agent:
         """Decreases health by Agent.DAMAGE_AMOUNT
         """
         self.agent_state.health -= Agent.DAMAGE_AMOUNT
+
+    def _add_collision(self, colliding_object_state, collision_point):
+        self.collisions[colliding_object_state] = collision_point
+
+    def _remove_collision(self, colliding_object_state):
+        self.collisions.pop(colliding_object_state)
 
     def _tick(self):
         """Main interface for game loop.

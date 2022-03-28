@@ -68,6 +68,7 @@ class Game():
 
         # send updates to clients
         for agent in self.agents:
+            #print(agent[1].agent_state.position)
             agent[0].send_agent_states([agent[1].agent_state for agent in self.agents])
             agent[0].send_projectile_states([projectile for projectile in self.projectiles])
 
@@ -86,7 +87,8 @@ class Game():
         for agent in self.agents:
             self.physics.add_agent(agent[1].agent_state)
 
-    def collision_callback(self, object_state_1, object_state_2):
+    def collision_callback(self, object_state_1, object_state_2, contact_point):
+        print(contact_point)
         """Callback for when physics engine detects collision."""
         if isinstance(object_state_1, ProjectileState) and isinstance(object_state_2, ProjectileState):
             # handle projectile-projectile collision
@@ -125,9 +127,12 @@ class Game():
             # handle agent-obstacle collision
             if isinstance(object_state_1, AgentState):
                 agent = self.get_agent_from_state(object_state_1)
+                obstacle = object_state_2
             else:
                 agent = self.get_agent_from_state(object_state_2)
+                obtsacle = object_state_1
             # callback
+            agent._add_collision(obstacle, contact_point)
             agent.on_obstacle_hit()
 
 

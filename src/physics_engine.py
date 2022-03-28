@@ -27,7 +27,7 @@ class PhysicsEngine:
         
         # Other collision handler functions that are called at different stages of the collision
         # collision_handler.post_solve =
-        # collision_handler.pre_solve = 
+        #self.collision_handler.pre_solve = self.pre_solve_collision_handler
         # collision_handler.separate = 
 
         # Object state classes that will be continuously updated
@@ -55,6 +55,9 @@ class PhysicsEngine:
         print("Colliding...")
         arbiter.shapes[0].body.velocity = (0, 0)
         arbiter.shapes[1].body.velocity = (0, 0)
+        print(arbiter.shapes[0].body.position)
+        print(arbiter.shapes[1].body.position)
+        print(arbiter.contact_point_set)
         print("Collision!")
         object_id_1 = self._get_body_id(arbiter.shapes[0].body)
         object_id_2 = self._get_body_id(arbiter.shapes[1].body)
@@ -62,8 +65,19 @@ class PhysicsEngine:
         object_state_2 = self._get_object_state_from_id(object_id_2)
         # call the optional callback function
         if "callback" in data:
-            data["callback"](object_state_1, object_state_2)
+            data["callback"](object_state_1, object_state_2, arbiter.contact_point_set.points[0].point_a)
         return True
+
+    ''''def pre_solve_collision_handler(self, arbiter, space, data):
+        print("pre solve")
+        arbiter.shapes[0].body.velocity = (0, 0)
+        arbiter.shapes[1].body.velocity = (0, 0)
+        for shape in arbiter.shapes:
+            if shape.body.body_type == pymunk.Body.KINEMATIC:
+                shape.body.velocity = (-50, 0)
+        
+        return True'''
+
 
     def addOnCollisionCallback(self, callback):
         """
@@ -276,20 +290,20 @@ class PhysicsEngine:
         return hits
 
     def set_boundaries(self):
-        left_boundary_segment = pymunk.Segment(self.space.static_body, (0, 0), (0, PhysicsEngine.SPACE_HEIGHT), 1)
+        left_boundary_segment = pymunk.Segment(self.space.static_body, (0, 0), (0, PhysicsEngine.SPACE_HEIGHT), 100)
         left_boundary_segment.collision_type = PhysicsEngine.COLLISION_TYPE_1
         self.space.add(left_boundary_segment)
 
-        right_boundary_segment = pymunk.Segment(self.space.static_body, (PhysicsEngine.SPACE_WIDTH, 0), (PhysicsEngine.SPACE_WIDTH, PhysicsEngine.SPACE_HEIGHT), 1)
+        right_boundary_segment = pymunk.Segment(self.space.static_body, (PhysicsEngine.SPACE_WIDTH, 0), (PhysicsEngine.SPACE_WIDTH, PhysicsEngine.SPACE_HEIGHT), 100)
         right_boundary_segment.collision_type = PhysicsEngine.COLLISION_TYPE_1
         self.space.add(right_boundary_segment)
-        print(right_boundary_segment.bb)
+        #print(right_boundary_segment.bb)
 
-        upper_boundary_segment = pymunk.Segment(self.space.static_body, (0, PhysicsEngine.SPACE_HEIGHT), (PhysicsEngine.SPACE_WIDTH, PhysicsEngine.SPACE_HEIGHT), 1)
+        upper_boundary_segment = pymunk.Segment(self.space.static_body, (0, PhysicsEngine.SPACE_HEIGHT), (PhysicsEngine.SPACE_WIDTH, PhysicsEngine.SPACE_HEIGHT), 100)
         upper_boundary_segment.collision_type = PhysicsEngine.COLLISION_TYPE_1
         self.space.add(upper_boundary_segment)
 
-        lower_boundary_segment = pymunk.Segment(self.space.static_body, (0, 0), (PhysicsEngine.SPACE_WIDTH, 0), 1)
+        lower_boundary_segment = pymunk.Segment(self.space.static_body, (0, 0), (PhysicsEngine.SPACE_WIDTH, 0), 100)
         lower_boundary_segment.collision_type = PhysicsEngine.COLLISION_TYPE_1
         self.space.add(lower_boundary_segment)
 
@@ -302,7 +316,7 @@ if __name__ == '__main__':
     from agent_state import AgentState
     #from obstacle import Obstacle
 
-    agent_state = AgentState(1, Vector2(0, 500), Vector2(5, 0), 30)
+    agent_state = AgentState(1, Vector2(80, 500), Vector2(50, 0), 30)
     #obstacle = Obstacle(2, Vector2(100, 70), 30, 30)
     pe.add_agent(agent_state)
     #pe.add_obstacle(obstacle)
