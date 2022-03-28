@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import MagicMock
+import math
 
 from src.game import *
 from src.vector2 import Vector2
@@ -13,6 +14,17 @@ class TestAgent(unittest.TestCase):
         # Mock game.get_agents()
         agents = [self.agent, self.enemy_agent]
         self.game.get_agents = MagicMock(return_value=agents)
+
+    def normalize_angle(self, angle):
+        angle = math.fmod(angle, 360)
+        if angle < 0:
+            angle += 360
+        return angle
+
+    def assertAngleEquals(self, angle1, angle2):
+        angle1 = self.normalize_angle(angle1)
+        angle2 = self.normalize_angle(angle2)
+        self.assertAlmostEqual(angle1, angle2)
 
     def test_get_health(self):
         assert(self.agent.get_health() == Agent.MAX_HEALTH)
@@ -79,6 +91,36 @@ class TestAgent(unittest.TestCase):
             self.agent._tick()
         print(self.agent.get_shield_cooldown_time())
         assert(self.agent.get_shield_cooldown_time() == 0)
+
+    def test_set_movement_speed(self):
+        self.agent.agent_state.velocity = Vector2.from_angle_magnitude(240, 5.5)
+
+        self.agent.set_movement_speed(6.6)
+        self.assertAlmostEqual(self.agent.agent_state.velocity.get_magnitude(), 6.6)
+        self.assertAngleEquals(self.agent.agent_state.velocity.get_angle(), 240)
+
+        # Test clamping max speed
+        self.agent.set_movement_speed(Agent.MAX_SPEED + 1)
+        self.assertAlmostEqual(self.agent.agent_state.velocity.get_magnitude(), Agent.MAX_SPEED)
+        self.assertAngleEquals(self.agent.agent_state.velocity.get_angle(), 240)
+
+    def test_set_movement_direction(self):
+        self.agent.agent_state.velocity = Vector2.from_angle_magnitude(240, 5.5)
+
+        # Negative angle
+        self.agent.set_movement_direction(-45)
+        self.assertAlmostEqual(self.agent.agent_state.velocity.get_magnitude(), 5.5)
+        self.assertAngleEquals(self.agent.agent_state.velocity.get_angle(), -45)
+
+        # Positive angle
+        self.agent.set_movement_direction(100)
+        self.assertAlmostEqual(self.agent.agent_state.velocity.get_magnitude(), 5.5)
+        self.assertAngleEquals(self.agent.agent_state.velocity.get_angle(), 100)
+
+        # Angle > 360
+        self.agent.set_movement_direction(400)
+        self.assertAlmostEqual(self.agent.agent_state.velocity.get_magnitude(), 5.5)
+        self.assertAngleEquals(self.agent.agent_state.velocity.get_angle(), 400)
 
 
 if __name__ == '__main__':

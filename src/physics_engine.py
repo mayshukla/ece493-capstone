@@ -1,12 +1,9 @@
-
-
-
-
 import pymunk
 import pymunk.pygame_util
 import pygame
 import pymunk.vec2d
 from src.obstacle import Obstacle
+from src.vector2 import Vector2
 
 COLLISION_TYPE_1 = 1
 
@@ -215,6 +212,16 @@ class PhysicsEngine:
         Args:
             time_increment: the amount of time to advance all objects in the physics space
         """
+        for object_state in self.object_states:
+            if object_state.id not in self.bodies:
+                self.object_states.remove(object_state)
+                continue
+            # Update velocity of objects such as agents that may have been
+            # updated by game logic (e.g. a call to Agent.set_movement_speed)
+            if not isinstance(object_state, Obstacle):
+                object_body = self.bodies[object_state.id]
+                object_body.velocity = (object_state.velocity.x, object_state.velocity.y)
+
         self.space.step(time_increment)
 
         for object_state in self.object_states:
