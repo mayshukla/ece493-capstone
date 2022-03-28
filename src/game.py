@@ -111,7 +111,7 @@ class Game():
                     # callback
                     agent.on_damage_taken()
                 # remove the projectile
-                self.physics.remove_object(projectile)
+                self.physics.remove_object(projectile.id)
             else:
                 # handle projectile-obstacle collision
                 if isinstance(object_state_1, ProjectileState):
@@ -119,7 +119,7 @@ class Game():
                 else:
                     projectile = object_state_1
                 # remove the projectile
-                self.physics.remove_object(projectile)
+                self.physics.remove_object(projectile.id)
         else:
             # handle agent-obstacle collision
             if isinstance(object_state_1, AgentState):
