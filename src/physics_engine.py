@@ -2,7 +2,6 @@ import pymunk
 import pymunk.pygame_util
 import pygame
 import pymunk.vec2d
-from src.globals import TICKS_PER_SECOND
 from src.obstacle import Obstacle
 from src.vector2 import Vector2
 
