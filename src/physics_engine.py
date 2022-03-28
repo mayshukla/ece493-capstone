@@ -3,7 +3,6 @@ import pymunk.pygame_util
 import pygame
 import pymunk.vec2d
 from src.obstacle import Obstacle
-from src.projectile_state import ProjectileState
 from src.vector2 import Vector2
 
 COLLISION_TYPE_1 = 1

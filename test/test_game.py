@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import MagicMock
+import math
 
 from src.game import *
 from src.vector2 import Vector2
@@ -167,6 +168,24 @@ class MyAgent(Agent):
 
         # Ensure projectile destroyed
         self.assertEqual(len(self.game.physics.bodies), 2)
+
+    def test_attack_movement_speed(self):
+        attacker = Agent(self.game.gen_id(), self.game)
+        self.game.agents = [[MagicMock(), attacker], [MagicMock(), MagicMock()]]
+
+        self.game.prepare_to_start_simulation()
+
+        attacker.set_movement_speed(Agent.MAX_SPEED)
+        self.assertAlmostEqual(attacker.agent_state.velocity.get_magnitude(), Agent.MAX_SPEED)
+        attacker.attack_ranged(0)
+        self.assertAlmostEqual(attacker.agent_state.velocity.get_magnitude(), Agent.MAX_SPEED_DURING_ATTACK)
+
+        # Wait for cooldown
+        for _ in range(TICKS_PER_SECOND * math.ceil(Agent.ATTACK_COOLDOWN_MAX)):
+            self.game.tick()
+
+        attacker.set_movement_speed(Agent.MAX_SPEED)
+        self.assertAlmostEqual(attacker.agent_state.velocity.get_magnitude(), Agent.MAX_SPEED)
 
 
 if __name__ == '__main__':

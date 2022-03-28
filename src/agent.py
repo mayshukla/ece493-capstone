@@ -20,6 +20,7 @@ class Agent:
     TIMER_DECREMENT = 1 / TICKS_PER_SECOND
     SCAN_DISTANCE = 50
     MAX_SPEED = 50 # in units of pixels per second
+    MAX_SPEED_DURING_ATTACK = MAX_SPEED * 0.5
     PROJECTILE_SPEED = 200
 
     def __init__(self, id, game):
@@ -138,17 +139,28 @@ class Agent:
             self.agent_state.id
         )
 
+        # Limit max speed
+        if self.agent_state.velocity.get_magnitude() > Agent.MAX_SPEED_DURING_ATTACK:
+            self.set_movement_speed(Agent.MAX_SPEED_DURING_ATTACK)
+
     def set_movement_speed(self, speed):
         """Sets the current speed of the agent in units of pixels per second.
 
         If a speed greater that Agent.MAX_SPEED is given, then the speed is set
         to Agent.MAX_SPEED.
 
+        If the agent is currently within the attack cooldown period, then the
+        speed is clamped at Agent.MAX_SPEED_DURING_ATTACK.
+
         Args:
             speed: Desired speed in units of pixels per second.
         """
+        max_speed = Agent.MAX_SPEED
+        if self.attack_cooldown_timer.get_time() > 0:
+            max_speed = Agent.MAX_SPEED_DURING_ATTACK
+
         angle = self.agent_state.velocity.get_angle()
-        magnitude = speed if speed <= Agent.MAX_SPEED else Agent.MAX_SPEED
+        magnitude = speed if speed <= max_speed else max_speed
         self.agent_state.velocity = Vector2.from_angle_magnitude(angle, magnitude)
 
     def set_movement_direction(self, angle):
