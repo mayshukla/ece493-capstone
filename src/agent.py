@@ -16,6 +16,7 @@ class Agent:
     DAMAGE_AMOUNT = 10
     SHIELD_TIME_MAX = 10
     SHIELD_COOLDOWN_MAX = 20
+    ATTACK_COOLDOWN_MAX = 0.5
     TIMER_DECREMENT = 1 / TICKS_PER_SECOND
     SCAN_DISTANCE = 50
     MAX_SPEED = 50 # in units of pixels per second
@@ -30,6 +31,7 @@ class Agent:
         )
         self.shield_timer = Timer(Agent.SHIELD_TIME_MAX, Agent.SHIELD_TIME_MAX, callback=self.deactivate_shield)
         self.shield_cooldown_timer = Timer(Agent.SHIELD_COOLDOWN_MAX, 0)
+        self.attack_cooldown_timer = Timer(Agent.ATTACK_COOLDOWN_MAX, 0)
 
         self.game = game
 
@@ -118,11 +120,18 @@ class Agent:
     def attack_ranged(self, direction):
         """Triggers a ranged attack in the specified direction.
 
+        If within the cooldown period, this function does nothing.
+        The cooldown period is defined by Agent.ATTACK_COOLDOWN_MAX
+
         Args:
             direction: Direction in degrees. Follows same angle convection as
                 set_movement_direction.
         """
-        # TODO implement attack cooldown
+        if self.attack_cooldown_timer.get_time() > 0:
+            return
+
+        self.attack_cooldown_timer.reset()
+
         self.game.create_projectile(
             self.agent_state.position.clone(),
             direction,
@@ -177,6 +186,7 @@ class Agent:
             self.shield_timer.tick()
         else:
             self.shield_cooldown_timer.tick()
+        self.attack_cooldown_timer.tick()
 
         self.run()
 

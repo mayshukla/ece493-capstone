@@ -140,6 +140,34 @@ class MyAgent(Agent):
         # Ensure projectile destroyed
         self.assertEqual(len(self.game.physics.bodies), 2)
 
+    def test_attack_cooldown(self):
+        attacker = Agent(self.game.gen_id(), self.game)
+        attackee = Agent(self.game.gen_id(), self.game)
+        self.game.agents = [[MagicMock(), attacker], [MagicMock(), attackee]]
+
+        self.game.prepare_to_start_simulation()
+
+        attacker.attack_ranged(0)
+        attacker.attack_ranged(0)
+
+        for _ in range(TICKS_PER_SECOND * 10):
+            self.game.tick()
+
+        self.assertEqual(attacker.get_health(), Agent.MAX_HEALTH)
+        # Ensure damage was only taken once
+        self.assertEqual(attackee.get_health(), Agent.MAX_HEALTH - Agent.DAMAGE_AMOUNT)
+
+        # Attack cooldown period should have ended by now
+        attacker.attack_ranged(0)
+        for _ in range(TICKS_PER_SECOND * 10):
+            self.game.tick()
+
+        self.assertEqual(attacker.get_health(), Agent.MAX_HEALTH)
+        self.assertEqual(attackee.get_health(), Agent.MAX_HEALTH - 2 * Agent.DAMAGE_AMOUNT)
+
+        # Ensure projectile destroyed
+        self.assertEqual(len(self.game.physics.bodies), 2)
+
 
 if __name__ == '__main__':
     unittest.main()
