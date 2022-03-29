@@ -65,6 +65,10 @@ class Message():
         if isinstance(self.data, list):
             # if data is a list convert it to a json array
             data = [object.to_json_dict() for object in self.data]
+        elif isinstance(self.data, dict):
+            # a dict will be converted by json.dumps. don't convert it to a
+            # string.
+            data = self.data
         elif self.data is not None:
             # otherwise if data is not none convert it to a string
             data = self.data.__str__()
