@@ -111,7 +111,7 @@ class Game():
                     # callback
                     agent.on_damage_taken()
                 # remove the projectile
-                self.physics.remove_object(projectile)
+                self.physics.remove_object(projectile.id)
             else:
                 # handle projectile-obstacle collision
                 if isinstance(object_state_1, ProjectileState):
@@ -119,7 +119,7 @@ class Game():
                 else:
                     projectile = object_state_1
                 # remove the projectile
-                self.physics.remove_object(projectile)
+                self.physics.remove_object(projectile.id)
         else:
             # handle agent-obstacle collision
             if isinstance(object_state_1, AgentState):
@@ -215,3 +215,16 @@ class Game():
 
     def get_agents(self):
         return self.agents
+
+    def create_projectile(self, position, direction, attackerId):
+        """Creates a new projectile and passes it to the physics engine."""
+        velocity = Vector2.from_angle_magnitude(direction, Agent.PROJECTILE_SPEED)
+
+        projectile_state = ProjectileState(
+            self.gen_id(),
+            position,
+            velocity,
+            attackerId
+        )
+
+        self.physics.add_projectile(projectile_state)
