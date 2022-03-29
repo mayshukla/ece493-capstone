@@ -18,7 +18,7 @@ python3 -m pip install -r src/requirements.txt
 1. Start server.
 
 ```bash
-python3 src <port>
+python3 -m src <port>
 ```
 
 1. Go to `localhost:<port>` in a web browser.

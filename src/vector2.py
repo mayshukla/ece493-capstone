@@ -20,6 +20,10 @@ class Vector2():
         """returns the magnitude of the vector"""
         return math.sqrt(self.x * self.x + self.y * self.y)
 
+    def clone(self):
+        """Returns a new Vector2 instance with the same x and y values."""
+        return Vector2(self.x, self.y)
+
     @classmethod
     def from_angle_magnitude(vector2, angle, magnitude):
         """returns a vector object

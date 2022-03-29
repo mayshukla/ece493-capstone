@@ -148,10 +148,12 @@ class PhysicsEngine:
         agent_body.position = (agent_state.position.x, agent_state.position.y)
         agent_body.velocity = (agent_state.velocity.x, agent_state.velocity.y)
 
-        # TODO: Make the shape(s) for the agent match the agent sprite. The shape(s) will be the hitbox for the sprite.
         circle = pymunk.Circle(agent_body, radius=AGENT_RADIUS)
         circle.elasticity = 0
         circle.collision_type = PhysicsEngine.COLLISION_TYPE_1
+        circle.filter = pymunk.ShapeFilter(
+            group=self._id_to_collision_group(agent_state.id)
+        )
         self.space.add(agent_body, circle)
 
         if agent_state.id in self.bodies:
@@ -204,6 +206,10 @@ class PhysicsEngine:
         circle = pymunk.Circle(projectile_body, radius=5)
         circle.elasticity = 0
         circle.collision_type = PhysicsEngine.COLLISION_TYPE_1
+        # Ignore collisions between an agent and its own projectile
+        circle.filter = pymunk.ShapeFilter(
+            group=self._id_to_collision_group(projectile_state.attackerId)
+        )
 
         if projectile_state.id in self.bodies:
             raise ValueError(f"Duplicate id {projectile_state.id} found")
@@ -281,6 +287,16 @@ class PhysicsEngine:
         Returns the object_state with the corresponding id. Returns None if an object with the passed in id cannot be found.
         """
         return next((object_state for object_state in self.object_states if object_state.id == id), None)
+
+    def _id_to_collision_group(self, _id):
+        """Converts an ObjectState id value to a group to use with
+        pymunk.ShapeFilter
+        """
+
+        # Add one to ensure that group is not zero.
+        # Group value of zero does not filter anything:
+        #   http://www.pymunk.org/en/latest/pymunk.html#pymunk.ShapeFilter.group
+        return _id + 1
 
     def scan_area(self, position, distance):
         """

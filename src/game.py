@@ -1,8 +1,6 @@
 import asyncio
-from pygame import Vector2
 
 import tornado.ioloop
-from src import agent_state
 
 from src.agent import Agent
 from src.physics_engine import PhysicsEngine
@@ -10,6 +8,7 @@ from src.globals import *
 from src.projectile_state import ProjectileState
 from src.agent_state import AgentState
 from src.obstacle import Obstacle
+from src.vector2 import Vector2
 
 class Game():
     """Represents a single game.
@@ -112,7 +111,7 @@ class Game():
                     # callback
                     agent.on_damage_taken()
                 # remove the projectile
-                self.physics.remove_object(projectile)
+                self.physics.remove_object(projectile.id)
             else:
                 # handle projectile-obstacle collision
                 if isinstance(object_state_1, ProjectileState):
@@ -120,7 +119,7 @@ class Game():
                 else:
                     projectile = object_state_1
                 # remove the projectile
-                self.physics.remove_object(projectile)
+                self.physics.remove_object(projectile.id)
         else:
             # handle agent-obstacle collision
             if isinstance(object_state_1, AgentState):
@@ -231,3 +230,16 @@ class Game():
 
     def get_agents(self):
         return self.agents
+
+    def create_projectile(self, position, direction, attackerId):
+        """Creates a new projectile and passes it to the physics engine."""
+        velocity = Vector2.from_angle_magnitude(direction, Agent.PROJECTILE_SPEED)
+
+        projectile_state = ProjectileState(
+            self.gen_id(),
+            position,
+            velocity,
+            attackerId
+        )
+
+        self.physics.add_projectile(projectile_state)
