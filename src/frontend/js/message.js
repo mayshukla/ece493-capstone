@@ -9,6 +9,7 @@ export default class Message {
     static PYTHON_ERROR = "python_error";
     static START_SIMULATION = "start_simulation";
     static PROJECTILE_STATES = "projectile_states";
+    static DESTROY = "destroy";
     static AGENT_STATES = "agent_states";
 
     constructor(type, data) {

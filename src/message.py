@@ -24,6 +24,13 @@ class Message():
     # data: a list of ProjectileStates
     PROJECTILE_STATES = "projectile_states"
 
+    # Send client the id of an object that was destroyed
+    # data: {
+    #     id: id of destroyed object
+    #     type: type of destroyed object. Possible values: "agent", "projectile"
+    # }
+    DESTROY = "destroy"
+
     # Tell client that the simulation is starting. (Code submission is done)
     # data: None
     START_SIMULATION = "start_simulation"
