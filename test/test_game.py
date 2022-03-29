@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import MagicMock
 import math
+from time import time
 
 from src.game import *
 from src.vector2 import Vector2
@@ -235,6 +236,8 @@ class MyAgent(Agent):
         self.game.agents = [[MagicMock(), attacker], [MagicMock(), attackee]]
 
         self.game.prepare_to_start_simulation()
+        
+        self.game.game_start_time = time()
 
         # Perform enough attacks to eliminate attackee
         for _ in range(math.ceil(Agent.MAX_HEALTH / Agent.DAMAGE_AMOUNT)):
