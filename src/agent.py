@@ -171,31 +171,31 @@ class Agent:
         """
         Sets the agent's velocity to 0 if their current velocity would cause them to clip through an object they are colliding with.
         """
-        for collision in self.collisions:
-            if abs(self.collisions[collision].y - self.get_position().y) >= AGENT_RADIUS:
-                if self.collisions[collision].y < self.get_position().y:
+        for collision, contact_point in self.collisions.items():
+            if abs(contact_point.y - self.get_position().y) >= AGENT_RADIUS:
+                if contact_point.y < self.get_position().y:
                     if self.agent_state.velocity.y < 0:
                         self.agent_state.velocity.x = 0
                         self.agent_state.velocity.y = 0
                     # print("y must be positive")
                     # print("contact at: " + str(self.collisions[collision].y))
                     # print("current pos: " + str(self.get_position().y))
-                elif self.collisions[collision].y > self.get_position().y:
+                elif contact_point.y > self.get_position().y:
                     if self.agent_state.velocity.y > 0:
                         self.agent_state.velocity.x = 0
                         self.agent_state.velocity.y = 0
                     # print("y must be negative")
                     # print("contact at: " + str(self.collisions[collision].y))
                     # print("current pos: " + str(self.get_position().y))
-            if abs(self.collisions[collision].x - self.get_position().x) >= AGENT_RADIUS:
-                if self.collisions[collision].x < self.get_position().x:
+            if abs(contact_point.x - self.get_position().x) >= AGENT_RADIUS:
+                if contact_point.x < self.get_position().x:
                     if self.agent_state.velocity.x < 0:
                         self.agent_state.velocity.x = 0
                         self.agent_state.velocity.y = 0
                     # print("x must be positive")
                     # print("contact at: " + str(self.collisions[collision].x))
                     # print("current pos: " + str(self.get_position().x))
-                elif self.collisions[collision].x > self.get_position().x:
+                elif contact_point.x > self.get_position().x:
                     if self.agent_state.velocity.x > 0:
                         self.agent_state.velocity.x = 0
                         self.agent_state.velocity.y = 0
