@@ -47,7 +47,7 @@ class MyAgent(Agent):
         # TODO add more asserts as we add functionality to Game.tick
 
     def test_obstacle_hit_callback(self):
-        self.game.physics.addOnCollisionCallback(self.game.collision_callback)
+        self.game.physics.add_on_collision_callback(self.game.collision_callback)
         agent = Agent(self.game.gen_id(), self.game)
         obstacle = Obstacle(self.game.gen_id(), Vector2(100, 70), 30, 30)
         agent.on_obstacle_hit = MagicMock()
@@ -60,7 +60,7 @@ class MyAgent(Agent):
         assert(agent.on_obstacle_hit.called)
 
     def test_damage_taken_callback(self):
-        self.game.physics.addOnCollisionCallback(self.game.collision_callback)
+        self.game.physics.add_on_collision_callback(self.game.collision_callback)
         agent = Agent(self.game.gen_id(), self.game)
         projectile = ProjectileState(self.game.gen_id(), Vector2(0, 100), Vector2(100, 0), self.game.gen_id())
         agent.on_damage_taken = MagicMock()
@@ -73,7 +73,7 @@ class MyAgent(Agent):
 
     def test_obstacle_scanned_callback(self):
         collision_callback = MagicMock()
-        self.game.physics.addOnCollisionCallback(collision_callback)
+        self.game.physics.add_on_collision_callback(collision_callback)
         agent = Agent(self.game.gen_id(), self.game)
         obstacle = Obstacle(self.game.gen_id(), Vector2(200, 70), 30, 30)
         agent.on_obstacle_scanned = MagicMock()
@@ -89,7 +89,7 @@ class MyAgent(Agent):
 
     def test_enemy_scanned_callback(self):
         collision_callback = MagicMock()
-        self.game.physics.addOnCollisionCallback(collision_callback)
+        self.game.physics.add_on_collision_callback(collision_callback)
         agent = Agent(self.game.gen_id(), self.game)
         enemy = Agent(self.game.gen_id(), self.game)
         agent.on_enemy_scanned = MagicMock()

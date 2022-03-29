@@ -31,7 +31,8 @@ class Game():
         self.next_id = 0
 
         self.physics = PhysicsEngine()
-        self.physics.addOnCollisionCallback(self.collision_callback)
+        self.physics.add_on_collision_callback(self.collision_callback)
+        self.physics.add_on_separate_callback(self.separate_callback)
 
         for client in self.clients:
             def callback(client, code, class_name):
@@ -88,7 +89,6 @@ class Game():
             self.physics.add_agent(agent[1].agent_state)
 
     def collision_callback(self, object_state_1, object_state_2, contact_point):
-        print(contact_point)
         """Callback for when physics engine detects collision."""
         if isinstance(object_state_1, ProjectileState) and isinstance(object_state_2, ProjectileState):
             # handle projectile-projectile collision
@@ -96,8 +96,6 @@ class Game():
             self.physics.remove_object(object_state_1.id)
             self.physics.remove_object(object_state_2.id)
         elif isinstance(object_state_1, AgentState) and isinstance(object_state_2, AgentState):
-            # TODO: handle agent-agent collision
-            # does this require any special handling?
             pass
         elif isinstance(object_state_1, ProjectileState) or isinstance(object_state_2, ProjectileState):
             if isinstance(object_state_1, AgentState) or isinstance(object_state_2, AgentState):
@@ -130,11 +128,23 @@ class Game():
                 obstacle = object_state_2
             else:
                 agent = self.get_agent_from_state(object_state_2)
-                obtsacle = object_state_1
+                obstacle = object_state_1
             # callback
             agent._add_collision(obstacle, contact_point)
             agent.on_obstacle_hit()
 
+    def separate_callback(self, object_state_1, object_state_2):
+        """Callback for when physics engine detects that two colliding objects have now separated."""
+        if isinstance(object_state_1, AgentState) or isinstance(object_state_2, AgentState):
+            if isinstance(object_state_1, Obstacle) or isinstance(object_state_2, Obstacle):
+                # handle agent-obstacle separation
+                if isinstance(object_state_1, AgentState):
+                    agent = self.get_agent_from_state(object_state_1)
+                    obstacle = object_state_2
+                else:
+                    agent = self.get_agent_from_state(object_state_2)
+                    obstacle = object_state_1
+                agent._remove_collision(obstacle)
 
     def get_agent_from_state(self, agent_state):
         """Returns the agent that corresponds to the agent_state. 

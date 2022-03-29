@@ -17,7 +17,8 @@ class TestPhysicsEngine(unittest.TestCase):
         print("starting...")
         self.pe = PhysicsEngine()
         self.callback = MagicMock()
-        self.pe.addOnCollisionCallback(self.callback)
+        self.pe.add_on_collision_callback(self.callback)
+        self.num_boundaries = 4
 
     def test_collision_callback(self):
         agent_state_1 = AgentState(1, Vector2(100, 200), Vector2(5, 0), 10)
@@ -25,13 +26,13 @@ class TestPhysicsEngine(unittest.TestCase):
         self.pe.add_agent(agent_state_1)
         self.pe.add_agent(agent_state_2)
         self.pe.step(40)
-        self.callback.assert_called_with(agent_state_1, agent_state_2)
+        assert(self.callback.called)
 
     def test_adding_agent(self):
         agent_state = AgentState(1, Vector2(100, 200), Vector2(0, 5), 10)
         self.pe.add_agent(agent_state)
         self.pe.step(1)
-        assert(len(self.pe.space.bodies) == 1)
+        assert(len(self.pe.space.bodies) == 1 + self.num_boundaries)
         assert(agent_state.position.x == 100)
         assert(agent_state.position.y == 205)
 
@@ -39,7 +40,7 @@ class TestPhysicsEngine(unittest.TestCase):
         projectile_state = ProjectileState(1, Vector2(100, 200), Vector2(10, 20), 1)
         self.pe.add_projectile(projectile_state)
         self.pe.step(1)
-        assert(len(self.pe.space.bodies) == 1)
+        assert(len(self.pe.space.bodies) == 1 + self.num_boundaries)
         assert(projectile_state.position.x == 110)
         assert(projectile_state.position.y == 220)
 
@@ -50,7 +51,7 @@ class TestPhysicsEngine(unittest.TestCase):
         self.pe.add_obstacle(obstacle)
         self.pe.step(2)
         assert(self.callback.called)
-        assert(len(self.pe.space.bodies) == 2)
+        assert(len(self.pe.space.bodies) == 2 + self.num_boundaries)
 
     def test_agent_id_exception(self):
         agent_state = AgentState(1, Vector2(100, 200), Vector2(0, 100), 10)
@@ -71,7 +72,7 @@ class TestPhysicsEngine(unittest.TestCase):
         self.pe.add_agent(agent_state)
         self.pe.remove_object(agent_state.id)
         self.pe.step(1)
-        assert(len(self.pe.space.bodies) == 0)
+        assert(len(self.pe.space.bodies) == 0 + self.num_boundaries)
         assert(agent_state.position.x == 100)
         assert(agent_state.position.y == 200)
 
@@ -101,6 +102,8 @@ class TestPhysicsEngine(unittest.TestCase):
 
     def test_agent_movement(self):
         agent = Agent(0, MagicMock())
+        starting_position = Vector2(300, 300)
+        agent._set_position(Vector2(300, 300))
         self.pe.add_agent(agent.agent_state)
 
         velocity = Vector2.from_angle_magnitude(125, 5.5)
@@ -110,7 +113,11 @@ class TestPhysicsEngine(unittest.TestCase):
         for _ in range(TICKS_PER_SECOND):
             self.pe.step(1 / TICKS_PER_SECOND)
 
-        expected_position = velocity
+        print(agent.agent_state.position.x)
+        print(agent.agent_state.position.y)
+
+        expected_position = Vector2(starting_position.x + velocity.x, starting_position.y + velocity.y)
+
         actual_position = agent.agent_state.position
         self.assertAlmostEqual(expected_position.x, actual_position.x)
         self.assertAlmostEqual(expected_position.y, actual_position.y)

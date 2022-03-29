@@ -2,7 +2,7 @@ import pymunk
 import pymunk.pygame_util
 import pygame
 import pymunk.vec2d
-from src.globals import TICKS_PER_SECOND
+from src.globals import *
 from src.obstacle import Obstacle
 from src.vector2 import Vector2
 
@@ -24,11 +24,7 @@ class PhysicsEngine:
         # Bodies can be given "collision types" and the collisions between the different types can be handled differently
         self.collision_handler = self.space.add_collision_handler(PhysicsEngine.COLLISION_TYPE_1, PhysicsEngine.COLLISION_TYPE_1)
         self.collision_handler.begin = self.begin_collision_handler
-        
-        # Other collision handler functions that are called at different stages of the collision
-        # collision_handler.post_solve =
-        #self.collision_handler.pre_solve = self.pre_solve_collision_handler
-        # collision_handler.separate = 
+        self.collision_handler.separate = self.separate_collision_handler
 
         # Object state classes that will be continuously updated
         self.object_states = []
@@ -55,35 +51,39 @@ class PhysicsEngine:
         print("Colliding...")
         arbiter.shapes[0].body.velocity = (0, 0)
         arbiter.shapes[1].body.velocity = (0, 0)
-        print(arbiter.shapes[0].body.position)
-        print(arbiter.shapes[1].body.position)
-        print(arbiter.contact_point_set)
+        # print(arbiter.shapes[0].body.position)
+        # print(arbiter.shapes[1].body.position)
+        # print(arbiter.contact_point_set)
         print("Collision!")
         object_id_1 = self._get_body_id(arbiter.shapes[0].body)
         object_id_2 = self._get_body_id(arbiter.shapes[1].body)
         object_state_1 = self._get_object_state_from_id(object_id_1)
         object_state_2 = self._get_object_state_from_id(object_id_2)
         # call the optional callback function
-        if "callback" in data:
-            data["callback"](object_state_1, object_state_2, arbiter.contact_point_set.points[0].point_a)
+        if "collision_callback" in data:
+            data["collision_callback"](object_state_1, object_state_2, arbiter.contact_point_set.points[0].point_a)
         return True
 
-    ''''def pre_solve_collision_handler(self, arbiter, space, data):
-        print("pre solve")
-        arbiter.shapes[0].body.velocity = (0, 0)
-        arbiter.shapes[1].body.velocity = (0, 0)
-        for shape in arbiter.shapes:
-            if shape.body.body_type == pymunk.Body.KINEMATIC:
-                shape.body.velocity = (-50, 0)
+    def separate_collision_handler(self, arbiter, space, data):
+        object_id_1 = self._get_body_id(arbiter.shapes[0].body)
+        object_id_2 = self._get_body_id(arbiter.shapes[1].body)
+        object_state_1 = self._get_object_state_from_id(object_id_1)
+        object_state_2 = self._get_object_state_from_id(object_id_2)
+        if "separate_callback" in data:
+            data["separate_callback"](object_state_1, object_state_2)
+        return True
         
-        return True'''
-
-
-    def addOnCollisionCallback(self, callback):
+    def add_on_collision_callback(self, callback):
         """
         Adds a callback function that will be called in "begin_collision_handler".
         """
-        self.collision_handler.data["callback"] = callback
+        self.collision_handler.data["collision_callback"] = callback
+
+    def add_on_separate_callback(self, callback):
+        """
+        Adds a callback function that will be called in "separate_collision_handler".
+        """
+        self.collision_handler.data["separate_callback"] = callback
 
     def run_render_test(self):
         """
@@ -138,7 +138,7 @@ class PhysicsEngine:
         agent_body.velocity = (agent_state.velocity.x, agent_state.velocity.y)
 
         # TODO: Make the shape(s) for the agent match the agent sprite. The shape(s) will be the hitbox for the sprite.
-        circle = pymunk.Circle(agent_body, radius=30)
+        circle = pymunk.Circle(agent_body, radius=AGENT_RADIUS)
         circle.elasticity = 0
         circle.collision_type = PhysicsEngine.COLLISION_TYPE_1
         self.space.add(agent_body, circle)
@@ -290,22 +290,38 @@ class PhysicsEngine:
         return hits
 
     def set_boundaries(self):
-        left_boundary_segment = pymunk.Segment(self.space.static_body, (0, 0), (0, PhysicsEngine.SPACE_HEIGHT), 100)
+
+        left_boundary_obstacle = Obstacle(-1, Vector2(0, 0), 0, 0)
+        left_boundary_body = pymunk.Body(mass=0, moment=0, body_type=pymunk.Body.STATIC)
+        self.bodies[-1] = left_boundary_body
+        self.object_states.append(left_boundary_obstacle)
+        left_boundary_segment = pymunk.Segment(left_boundary_body, (0, 0), (0, PhysicsEngine.SPACE_HEIGHT), 40)
         left_boundary_segment.collision_type = PhysicsEngine.COLLISION_TYPE_1
-        self.space.add(left_boundary_segment)
+        self.space.add(left_boundary_body, left_boundary_segment)
 
-        right_boundary_segment = pymunk.Segment(self.space.static_body, (PhysicsEngine.SPACE_WIDTH, 0), (PhysicsEngine.SPACE_WIDTH, PhysicsEngine.SPACE_HEIGHT), 100)
+        right_boundary_obstacle = Obstacle(-2, Vector2(0, 0), 0, 0)
+        right_boundary_body = pymunk.Body(mass=0, moment=0, body_type=pymunk.Body.STATIC)
+        self.bodies[-2] = right_boundary_body
+        self.object_states.append(right_boundary_obstacle)
+        right_boundary_segment = pymunk.Segment(right_boundary_body, (PhysicsEngine.SPACE_WIDTH, 0), (PhysicsEngine.SPACE_WIDTH, PhysicsEngine.SPACE_HEIGHT), 100)
         right_boundary_segment.collision_type = PhysicsEngine.COLLISION_TYPE_1
-        self.space.add(right_boundary_segment)
-        #print(right_boundary_segment.bb)
-
-        upper_boundary_segment = pymunk.Segment(self.space.static_body, (0, PhysicsEngine.SPACE_HEIGHT), (PhysicsEngine.SPACE_WIDTH, PhysicsEngine.SPACE_HEIGHT), 100)
+        self.space.add(right_boundary_body, right_boundary_segment)
+        
+        upper_boundary_obstacle = Obstacle(-3, Vector2(0, 0), 0, 0)
+        upper_boundary_body = pymunk.Body(mass=0, moment=0, body_type=pymunk.Body.STATIC)
+        self.bodies[-3] = upper_boundary_body
+        self.object_states.append(upper_boundary_obstacle)
+        upper_boundary_segment = pymunk.Segment(upper_boundary_body, (0, PhysicsEngine.SPACE_HEIGHT), (PhysicsEngine.SPACE_WIDTH, PhysicsEngine.SPACE_HEIGHT), 20)
         upper_boundary_segment.collision_type = PhysicsEngine.COLLISION_TYPE_1
-        self.space.add(upper_boundary_segment)
+        self.space.add(upper_boundary_body, upper_boundary_segment)
 
-        lower_boundary_segment = pymunk.Segment(self.space.static_body, (0, 0), (PhysicsEngine.SPACE_WIDTH, 0), 100)
+        lower_boundary_obstacle = Obstacle(-4, Vector2(0, 0), 0, 0)
+        lower_boundary_body = pymunk.Body(mass=0, moment=0, body_type=pymunk.Body.STATIC)
+        self.bodies[-4] = lower_boundary_body
+        self.object_states.append(lower_boundary_obstacle)
+        lower_boundary_segment = pymunk.Segment(lower_boundary_body, (0, 0), (PhysicsEngine.SPACE_WIDTH, 0), 40)
         lower_boundary_segment.collision_type = PhysicsEngine.COLLISION_TYPE_1
-        self.space.add(lower_boundary_segment)
+        self.space.add(lower_boundary_body, lower_boundary_segment)
 
 
 if __name__ == '__main__':
@@ -347,7 +363,7 @@ if __name__ == '__main__':
     def callback(x, y):
         print("callback!")
 
-    pe.addOnCollisionCallback(callback)
+    pe.add_on_collision_callback(callback)
     pe.run_render_test()
 
     # categories can be used to ignore some collisions, like an agent and their own bullet

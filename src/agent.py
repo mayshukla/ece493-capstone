@@ -115,6 +115,11 @@ class Agent:
     def get_shield_cooldown_time(self):
         return self.shield_cooldown_time
 
+    def set_velocity(self, speed, angle):
+        magnitude = speed if speed <= Agent.MAX_SPEED else Agent.MAX_SPEED
+        velocity = Vector2.from_angle_magnitude(angle, magnitude)
+        self.agent_state.velocity = self._clip_velocity(velocity)
+
     def set_movement_speed(self, speed):
         """Sets the current speed of the agent in units of pixels per second.
 
@@ -124,34 +129,49 @@ class Agent:
         Args:
             speed: Desired speed in units of pixels per second.
         """
-        print("setting speed: " + str(speed))
+        # print("setting speed: " + str(speed))
         angle = self.agent_state.velocity.get_angle()
         magnitude = speed if speed <= Agent.MAX_SPEED else Agent.MAX_SPEED
-        velocity = Vector2.from_angle_magnitude(angle, magnitude)
-        #print(velocity)
-        self.agent_state.velocity = self._clip_velocity(velocity)
-        #self.agent_state.velocity = velocity
+        self.agent_state.velocity = Vector2.from_angle_magnitude(angle, magnitude)
         #print(self.agent_state.velocity)
 
-    def _clip_velocity(self, velocity):
-        print("before: " + str(velocity.x) + ", " + str(velocity.y))
+    def _clip_velocity(self):
+        # ("before: " + str(self.agent_state.velocity.x) + ", " + str(self.agent_state.velocity.y))
+        # print(self.collisions)
         for collision in self.collisions:
-            if self.collisions[collision].y - self.get_position().y < 0:
-                velocity.y = max(0, velocity.y)
-                print("clipping y")
-            elif self.collisions[collision].y - self.get_position().y > 0:
-                velocity.y = min(0, velocity.y)
-                print("clipping y")
+            if abs(self.collisions[collision].y - self.get_position().y) >= AGENT_RADIUS:
+                if self.collisions[collision].y < self.get_position().y:
+                    if self.agent_state.velocity.y < 0:
+                        self.agent_state.velocity.x = 0
+                        self.agent_state.velocity.y = 0
+                    # print("y must be positive")
+                    # print("contact at: " + str(self.collisions[collision].y))
+                    # print("current pos: " + str(self.get_position().y))
+                elif self.collisions[collision].y > self.get_position().y:
+                    if self.agent_state.velocity.y > 0:
+                        self.agent_state.velocity.x = 0
+                        self.agent_state.velocity.y = 0
+                    # print("y must be negative")
+                    # print("contact at: " + str(self.collisions[collision].y))
+                    # print("current pos: " + str(self.get_position().y))
+            if abs(self.collisions[collision].x - self.get_position().x) >= AGENT_RADIUS:
+                if self.collisions[collision].x < self.get_position().x:
+                    if self.agent_state.velocity.x < 0:
+                        self.agent_state.velocity.x = 0
+                        self.agent_state.velocity.y = 0
+                    # print("x must be positive")
+                    # print("contact at: " + str(self.collisions[collision].x))
+                    # print("current pos: " + str(self.get_position().x))
+                elif self.collisions[collision].x > self.get_position().x:
+                    if self.agent_state.velocity.x > 0:
+                        self.agent_state.velocity.x = 0
+                        self.agent_state.velocity.y = 0
+                    # print("x must be negative")
+                    # print("contact at: " + str(self.collisions[collision].x))
+                    # print("current pos: " + str(self.get_position().x))
 
-            if self.collisions[collision].x - self.get_position().x < 0:
-                velocity.x = max(0, velocity.x)
-                print("clipping x")
-            elif self.collisions[collision].x - self.get_position().x > 0:
-                velocity.x = min(0, velocity.x)
-                print("clipping x")
-
-        print("after: " + str(velocity.x) + ", " + str(velocity.y))
-        return velocity
+        # print("after: " + str(self.agent_state.velocity.x) + ", " + str(self.agent_state.velocity.y))
+        return self.agent_state.velocity
 
     def set_movement_direction(self, angle):
         """Sets the current direction of movement.
@@ -163,12 +183,9 @@ class Agent:
         Args:
             angle: Desired angle in degrees.
         """
-        print("setting angle: " + str(angle))
+        # print("setting angle: " + str(angle))
         magnitude = self.agent_state.velocity.get_magnitude()
-        velocity = Vector2.from_angle_magnitude(angle, magnitude)
-
-        self.agent_state.velocity = self._clip_velocity(velocity)
-        #self.agent_state.velocity = velocity
+        self.agent_state.velocity = Vector2.from_angle_magnitude(angle, magnitude)
 
     def _set_position(self, position):
         """
@@ -206,6 +223,7 @@ class Agent:
                 self.shield_cooldown_time = 0
 
         self.run()
+        self._clip_velocity()
 
     def on_enemy_scanned(self, enemy_position):
         """Callback that players can override. Called when an enemy is nearby."""
