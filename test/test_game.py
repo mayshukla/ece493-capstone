@@ -9,6 +9,7 @@ class TestGame(unittest.TestCase):
     def setUp(self):
         self.game = Game([])
         self.client = MagicMock()
+        self.num_boundaries = 4
 
     def mock_agents(self):
         self.game.agents = [MagicMock(), MagicMock()]
@@ -47,7 +48,7 @@ class MyAgent(Agent):
         # TODO add more asserts as we add functionality to Game.tick
 
     def test_obstacle_hit_callback(self):
-        self.game.physics.addOnCollisionCallback(self.game.collision_callback)
+        self.game.physics.add_on_collision_callback(self.game.collision_callback)
         agent = Agent(self.game.gen_id(), self.game)
         obstacle = Obstacle(self.game.gen_id(), Vector2(100, 70), 30, 30)
         agent.on_obstacle_hit = MagicMock()
@@ -60,7 +61,7 @@ class MyAgent(Agent):
         assert(agent.on_obstacle_hit.called)
 
     def test_damage_taken_callback(self):
-        self.game.physics.addOnCollisionCallback(self.game.collision_callback)
+        self.game.physics.add_on_collision_callback(self.game.collision_callback)
         agent = Agent(self.game.gen_id(), self.game)
         projectile = ProjectileState(self.game.gen_id(), Vector2(0, 100), Vector2(100, 0), self.game.gen_id())
         agent.on_damage_taken = MagicMock()
@@ -73,33 +74,33 @@ class MyAgent(Agent):
 
     def test_obstacle_scanned_callback(self):
         collision_callback = MagicMock()
-        self.game.physics.addOnCollisionCallback(collision_callback)
+        self.game.physics.add_on_collision_callback(collision_callback)
         agent = Agent(self.game.gen_id(), self.game)
-        obstacle = Obstacle(self.game.gen_id(), Vector2(100, 70), 30, 30)
+        obstacle = Obstacle(self.game.gen_id(), Vector2(200, 70), 30, 30)
         agent.on_obstacle_scanned = MagicMock()
         self.game.agents = [[MagicMock(), agent]]
-        agent._set_position(Vector2(0, 100))
+        agent._set_position(Vector2(100, 100))
         agent.agent_state.velocity = Vector2(100, 0)
         self.game.physics.add_agent(agent.agent_state)
         self.game.physics.add_obstacle(obstacle)
-        for i in range(40):
+        for _ in range(70):
             self.game.tick()
         collision_callback.assert_not_called()
         agent.on_obstacle_scanned.assert_called_with(obstacle)
 
     def test_enemy_scanned_callback(self):
         collision_callback = MagicMock()
-        self.game.physics.addOnCollisionCallback(collision_callback)
+        self.game.physics.add_on_collision_callback(collision_callback)
         agent = Agent(self.game.gen_id(), self.game)
         enemy = Agent(self.game.gen_id(), self.game)
         agent.on_enemy_scanned = MagicMock()
         self.game.agents = [[MagicMock(), agent]]
-        agent._set_position(Vector2(0, 100))
+        agent._set_position(Vector2(200, 100))
         agent.agent_state.velocity = Vector2(100, 0)
-        enemy._set_position(Vector2(100, 100))
+        enemy._set_position(Vector2(300, 100))
         self.game.physics.add_agent(agent.agent_state)
         self.game.physics.add_agent(enemy.agent_state)
-        for i in range(10):
+        for _ in range(10):
             self.game.tick()
         collision_callback.assert_not_called()
         agent.on_enemy_scanned.assert_called_with(enemy.get_position())
@@ -120,7 +121,7 @@ class MyAgent(Agent):
         self.assertEqual(attackee.get_health(), Agent.MAX_HEALTH - Agent.DAMAGE_AMOUNT)
 
         # Ensure projectile destroyed
-        self.assertEqual(len(self.game.physics.bodies), 2)
+        self.assertEqual(len(self.game.physics.bodies), 2 + self.num_boundaries)
 
     def test_attack_shielded(self):
         attacker = Agent(self.game.gen_id(), self.game)
@@ -139,7 +140,7 @@ class MyAgent(Agent):
         self.assertEqual(attackee.get_health(), Agent.MAX_HEALTH)
 
         # Ensure projectile destroyed
-        self.assertEqual(len(self.game.physics.bodies), 2)
+        self.assertEqual(len(self.game.physics.bodies), 2 + self.num_boundaries)
 
     def test_attack_cooldown(self):
         attacker = Agent(self.game.gen_id(), self.game)
@@ -167,7 +168,7 @@ class MyAgent(Agent):
         self.assertEqual(attackee.get_health(), Agent.MAX_HEALTH - 2 * Agent.DAMAGE_AMOUNT)
 
         # Ensure projectile destroyed
-        self.assertEqual(len(self.game.physics.bodies), 2)
+        self.assertEqual(len(self.game.physics.bodies), 2 + self.num_boundaries)
 
     def test_attack_movement_speed(self):
         attacker = Agent(self.game.gen_id(), self.game)
@@ -186,6 +187,32 @@ class MyAgent(Agent):
 
         attacker.set_movement_speed(Agent.MAX_SPEED)
         self.assertAlmostEqual(attacker.agent_state.velocity.get_magnitude(), Agent.MAX_SPEED)
+
+    def test_boundaries_stop_movement(self):
+        agent = Agent(self.game.gen_id(), self.game)
+        agent2 = Agent(self.game.gen_id(), self.game)
+        self.game.agents = [[MagicMock(), agent], [MagicMock(), agent2]]
+        agent._set_position(Vector2(500, 500))
+        agent2._set_position(Vector2(100, 100))
+        self.game.physics.add_agent(agent.agent_state)
+        self.game.physics.add_agent(agent2.agent_state)
+
+        agent.agent_state.velocity = Vector2(600, 0)
+        for _ in range(30):
+            self.game.tick()
+        self.assertLessEqual(agent.agent_state.position.x, self.game.physics.SPACE_WIDTH)
+        agent.agent_state.velocity = Vector2(-2000, 0)
+        for _ in range(30):
+            self.game.tick()
+        self.assertGreaterEqual(agent.agent_state.position.x, 0)
+        agent.agent_state.velocity = Vector2(0, 2000)
+        for _ in range(30):
+            self.game.tick()
+        self.assertLessEqual(agent.agent_state.position.y, self.game.physics.SPACE_HEIGHT)
+        agent.agent_state.velocity = Vector2(0, -2000)
+        for _ in range(30):
+            self.game.tick()
+        self.assertGreaterEqual(agent.agent_state.position.y, 0)
 
 
 if __name__ == '__main__':

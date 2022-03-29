@@ -36,6 +36,9 @@ class Agent:
 
         self.game = game
 
+        # Dict to map any objects that are colliding with this agent to the point at which they have collided.
+        self.collisions = {}
+
     def run(self):
         """This function will be called repeatedly in the main game loop.
 
@@ -162,6 +165,46 @@ class Agent:
         angle = self.agent_state.velocity.get_angle()
         magnitude = speed if speed <= max_speed else max_speed
         self.agent_state.velocity = Vector2.from_angle_magnitude(angle, magnitude)
+        #print(self.agent_state.velocity)
+
+    def _clip_velocity(self):
+        """
+        Sets the agent's velocity to 0 if their current velocity would cause them to clip through an object they are colliding with.
+        """
+        for collision, contact_point in self.collisions.items():
+            if abs(contact_point.y - self.get_position().y) >= AGENT_RADIUS:
+                if contact_point.y < self.get_position().y:
+                    if self.agent_state.velocity.y < 0:
+                        self.agent_state.velocity.x = 0
+                        self.agent_state.velocity.y = 0
+                    # print("y must be positive")
+                    # print("contact at: " + str(self.collisions[collision].y))
+                    # print("current pos: " + str(self.get_position().y))
+                elif contact_point.y > self.get_position().y:
+                    if self.agent_state.velocity.y > 0:
+                        self.agent_state.velocity.x = 0
+                        self.agent_state.velocity.y = 0
+                    # print("y must be negative")
+                    # print("contact at: " + str(self.collisions[collision].y))
+                    # print("current pos: " + str(self.get_position().y))
+            if abs(contact_point.x - self.get_position().x) >= AGENT_RADIUS:
+                if contact_point.x < self.get_position().x:
+                    if self.agent_state.velocity.x < 0:
+                        self.agent_state.velocity.x = 0
+                        self.agent_state.velocity.y = 0
+                    # print("x must be positive")
+                    # print("contact at: " + str(self.collisions[collision].x))
+                    # print("current pos: " + str(self.get_position().x))
+                elif contact_point.x > self.get_position().x:
+                    if self.agent_state.velocity.x > 0:
+                        self.agent_state.velocity.x = 0
+                        self.agent_state.velocity.y = 0
+                    # print("x must be negative")
+                    # print("contact at: " + str(self.collisions[collision].x))
+                    # print("current pos: " + str(self.get_position().x))
+
+        # print("after: " + str(self.agent_state.velocity.x) + ", " + str(self.agent_state.velocity.y))
+        return self.agent_state.velocity
 
     def set_movement_direction(self, angle):
         """Sets the current direction of movement.
@@ -173,6 +216,7 @@ class Agent:
         Args:
             angle: Desired angle in degrees.
         """
+        # print("setting angle: " + str(angle))
         magnitude = self.agent_state.velocity.get_magnitude()
         self.agent_state.velocity = Vector2.from_angle_magnitude(angle, magnitude)
 
@@ -188,6 +232,25 @@ class Agent:
         """
         self.agent_state.health -= Agent.DAMAGE_AMOUNT
 
+    def _add_collision(self, colliding_object_state, collision_point):
+        """
+        Adds an object that is currently colliding with this agent.
+
+        Arguments:
+            collising_object_state: the object_state that has collided with this agent.
+            collision_point: The approximate coordinates at which the object and this agent collided.
+        """
+        self.collisions[colliding_object_state] = collision_point
+
+    def _remove_collision(self, colliding_object_state):
+        """
+        Removes an object that is no longer colliding with this agent.
+
+        Arguments:
+            collising_object_state: the object_state that is no longer colliding with this agent.
+        """
+        self.collisions.pop(colliding_object_state)
+
     def _tick(self):
         """Main interface for game loop.
 
@@ -201,6 +264,7 @@ class Agent:
         self.attack_cooldown_timer.tick()
 
         self.run()
+        self._clip_velocity()
 
     def on_enemy_scanned(self, enemy_position):
         """Callback that players can override. Called when an enemy is nearby."""
