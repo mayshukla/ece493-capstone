@@ -83,7 +83,7 @@ class MyAgent(Agent):
         agent.agent_state.velocity = Vector2(100, 0)
         self.game.physics.add_agent(agent.agent_state)
         self.game.physics.add_obstacle(obstacle)
-        for i in range(70):
+        for _ in range(70):
             self.game.tick()
         collision_callback.assert_not_called()
         agent.on_obstacle_scanned.assert_called_with(obstacle)
@@ -100,7 +100,7 @@ class MyAgent(Agent):
         enemy._set_position(Vector2(300, 100))
         self.game.physics.add_agent(agent.agent_state)
         self.game.physics.add_agent(enemy.agent_state)
-        for i in range(10):
+        for _ in range(10):
             self.game.tick()
         collision_callback.assert_not_called()
         agent.on_enemy_scanned.assert_called_with(enemy.get_position())
@@ -187,6 +187,32 @@ class MyAgent(Agent):
 
         attacker.set_movement_speed(Agent.MAX_SPEED)
         self.assertAlmostEqual(attacker.agent_state.velocity.get_magnitude(), Agent.MAX_SPEED)
+
+    def test_boundaries_stop_movement(self):
+        agent = Agent(self.game.gen_id(), self.game)
+        agent2 = Agent(self.game.gen_id(), self.game)
+        self.game.agents = [[MagicMock(), agent], [MagicMock(), agent2]]
+        agent._set_position(Vector2(500, 500))
+        agent2._set_position(Vector2(100, 100))
+        self.game.physics.add_agent(agent.agent_state)
+        self.game.physics.add_agent(agent2.agent_state)
+
+        agent.agent_state.velocity = Vector2(600, 0)
+        for _ in range(30):
+            self.game.tick()
+        self.assertLessEqual(agent.agent_state.position.x, self.game.physics.SPACE_WIDTH)
+        agent.agent_state.velocity = Vector2(-2000, 0)
+        for _ in range(30):
+            self.game.tick()
+        self.assertGreaterEqual(agent.agent_state.position.x, 0)
+        agent.agent_state.velocity = Vector2(0, 2000)
+        for _ in range(30):
+            self.game.tick()
+        self.assertLessEqual(agent.agent_state.position.y, self.game.physics.SPACE_HEIGHT)
+        agent.agent_state.velocity = Vector2(0, -2000)
+        for _ in range(30):
+            self.game.tick()
+        self.assertGreaterEqual(agent.agent_state.position.y, 0)
 
 
 if __name__ == '__main__':
