@@ -83,8 +83,9 @@ class Game():
             # TODO do we need to handle both agents reaching 0 health in the
             # same tick?
             game_ended = True
+            destroyed_id = agent[1].agent_state.id
             for agent in self.agents:
-                agent[0].send_destroy_message(agent[1].agent_state.id, "agent")
+                agent[0].send_destroy_message(destroyed_id, "agent")
 
         # send updates to clients
         for agent in self.agents:
