@@ -103,7 +103,7 @@ class PhysicsEngine:
         # use pygame for testing
         GRAY = (220, 220, 220)
         pygame.init()
-        size = 1074, 700
+        size = PhysicsEngine.SPACE_WIDTH, PhysicsEngine.SPACE_HEIGHT
         screen = pygame.display.set_mode(size)
         draw_options = pymunk.pygame_util.DrawOptions(screen)
 
