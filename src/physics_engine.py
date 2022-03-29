@@ -65,6 +65,17 @@ class PhysicsEngine:
         return True
 
     def separate_collision_handler(self, arbiter, space, data):
+        """
+        Called once when two objects that collided have now separated.
+
+        Args:
+            arbiter: Contains information about the objects that collided.
+            space: Contains information about all objects currently instantiated. This is the same as self.space.
+            data: A dict that contains any additional parameters.
+        Returns:
+            True if the collision should be processed normally.
+            False if the collision should be ignored.
+        """
         object_id_1 = self._get_body_id(arbiter.shapes[0].body)
         object_id_2 = self._get_body_id(arbiter.shapes[1].body)
         object_state_1 = self._get_object_state_from_id(object_id_1)
@@ -290,7 +301,9 @@ class PhysicsEngine:
         return hits
 
     def set_boundaries(self):
-
+        """
+        Initializes the boundaries of the game as obstacles in the physics space.
+        """
         left_boundary_obstacle = Obstacle(-1, Vector2(0, 0), 0, 0)
         left_boundary_body = pymunk.Body(mass=0, moment=0, body_type=pymunk.Body.STATIC)
         self.bodies[-1] = left_boundary_body

@@ -31,6 +31,8 @@ class Agent:
         self.shield_cooldown_time = 0
 
         self.game = game
+
+        # Dict to map any objects that are colliding with this agent to the point at which they have collided.
         self.collisions = {}
 
     def run(self):
@@ -115,11 +117,6 @@ class Agent:
     def get_shield_cooldown_time(self):
         return self.shield_cooldown_time
 
-    def set_velocity(self, speed, angle):
-        magnitude = speed if speed <= Agent.MAX_SPEED else Agent.MAX_SPEED
-        velocity = Vector2.from_angle_magnitude(angle, magnitude)
-        self.agent_state.velocity = self._clip_velocity(velocity)
-
     def set_movement_speed(self, speed):
         """Sets the current speed of the agent in units of pixels per second.
 
@@ -136,8 +133,9 @@ class Agent:
         #print(self.agent_state.velocity)
 
     def _clip_velocity(self):
-        # ("before: " + str(self.agent_state.velocity.x) + ", " + str(self.agent_state.velocity.y))
-        # print(self.collisions)
+        """
+        Sets the agent's velocity to 0 if their current velocity would cause them to clip through an object they are colliding with.
+        """
         for collision in self.collisions:
             if abs(self.collisions[collision].y - self.get_position().y) >= AGENT_RADIUS:
                 if self.collisions[collision].y < self.get_position().y:
@@ -200,9 +198,22 @@ class Agent:
         self.agent_state.health -= Agent.DAMAGE_AMOUNT
 
     def _add_collision(self, colliding_object_state, collision_point):
+        """
+        Adds an object that is currently colliding with this agent.
+
+        Arguments:
+            collising_object_state: the object_state that has collided with this agent.
+            collision_point: The approximate coordinates at which the object and this agent collided.
+        """
         self.collisions[colliding_object_state] = collision_point
 
     def _remove_collision(self, colliding_object_state):
+        """
+        Removes an object that is no longer colliding with this agent.
+
+        Arguments:
+            collising_object_state: the object_state that is no longer colliding with this agent.
+        """
         self.collisions.pop(colliding_object_state)
 
     def _tick(self):

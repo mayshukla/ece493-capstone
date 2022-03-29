@@ -14,7 +14,6 @@ from src.globals import *
 class TestPhysicsEngine(unittest.TestCase):
 
     def setUp(self):
-        print("starting...")
         self.pe = PhysicsEngine()
         self.callback = MagicMock()
         self.pe.add_on_collision_callback(self.callback)
