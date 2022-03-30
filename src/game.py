@@ -79,7 +79,7 @@ class Game():
 
         self.physics.step(1 / TICKS_PER_SECOND)
         for agent in self.agents:
-            agent[1]._tick()
+            self.run_player_defined_method(lambda: agent[1]._tick(), agent[0])
 
         # determine if agents have scanned anything
         for agent in self.agents:
@@ -89,9 +89,9 @@ class Game():
                 if object == agent[1].agent_state:
                     continue
                 elif isinstance(object, AgentState):
-                    agent[1].on_enemy_scanned(object.position)
+                    self.run_player_defined_method(lambda: agent[1].on_enemy_scanned(object.position), agent[0])
                 elif isinstance(object, Obstacle):
-                    agent[1].on_obstacle_scanned(object)
+                    self.run_player_defined_method(lambda: agent[1].on_obstacle_scanned(object), agent[0])
 
         # check if an agent has been eliminated
         for agent in self.agents:
@@ -144,15 +144,17 @@ class Game():
                 # handle projectile-agent collision
                 if isinstance(object_state_1, AgentState):
                     agent = self.get_agent_from_state(object_state_1)
+                    client = self.get_client_from_state(object_state_1)
                     projectile = object_state_2
                 else:
                     agent = self.get_agent_from_state(object_state_2)
+                    client = self.get_client_from_state(object_state_2)
                     projectile = object_state_1
                 # damage the agent if their shields are not active
                 if not agent.is_shield_activated():
                     agent._decrement_health()
                     # callback
-                    agent.on_damage_taken()
+                    self.run_player_defined_method(lambda: agent.on_damage_taken(), client)
                 # remove the projectile
                 self.physics.remove_object(projectile.id)
                 for agent in self.agents:
@@ -171,12 +173,15 @@ class Game():
             # handle agent-obstacle collision
             if isinstance(object_state_1, AgentState):
                 agent = self.get_agent_from_state(object_state_1)
+                client = self.get_client_from_state(object_state_1)
                 obstacle = object_state_2
             else:
                 agent = self.get_agent_from_state(object_state_2)
+                client = self.get_client_from_state(object_state_2)
                 obstacle = object_state_1
             # callback
             agent._add_collision(obstacle, contact_point)
+            self.run_player_defined_method(lambda: agent.on_obstacle_hit(), client)
             agent.on_obstacle_hit()
 
     def separate_callback(self, object_state_1, object_state_2):
@@ -198,6 +203,14 @@ class Game():
         for agent in self.agents:
             if agent[1].agent_state.id == agent_state.id:
                 return agent[1]
+        return None
+
+    def get_client_from_state(self, agent_state):
+        """Returns the client that corresponds to the agent_state.
+        Returns None if the client cannot be found."""
+        for agent in self.agents:
+            if agent[1].agent_state.id == agent_state.id:
+                return agent[0]
         return None
 
     def exec_player_code(self, client, player_code, class_name):
@@ -290,3 +303,16 @@ class Game():
         )
 
         self.physics.add_projectile(projectile_state)
+
+    def run_player_defined_method(self, method, client):
+        """Runs a player-defined method such as Agent.run() with proper error
+        handling.
+
+        Exceptions are caught and sent to the client.
+        """
+
+        try:
+            method()
+        except Exception as e:
+            client.send_python_error(e)
+            return False
