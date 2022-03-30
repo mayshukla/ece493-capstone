@@ -78,6 +78,23 @@ class ServerToClientConnection(tornado.websocket.WebSocketHandler):
         )
         self.send_message(message)
 
+    def send_results(self, winner, tie, agents):
+        message = Message(Message.RESULTS, {
+            "winner": winner,
+            "tie": tie,
+            "players": [
+                {
+                    "class_name": type(agents[0][1]).__name__,
+                    "survival_time": agents[0][1].survival_time
+                },
+                {
+                    "class_name": type(agents[1][1]).__name__,
+                    "survival_time": agents[1][1].survival_time
+                }
+            ]
+        })
+        self.send_message(message)
+
     def handle_player_code_message(self, message):
         code = message.data["code"]
         class_name = message.data["class_name"]
@@ -90,6 +107,13 @@ class ServerToClientConnection(tornado.websocket.WebSocketHandler):
 
     def send_projectile_states(self, projectile_states):
         message = Message(Message.PROJECTILE_STATES, projectile_states)
+        self.write_message(message.to_json())
+
+    def send_destroy_message(self, object_id, object_type):
+        message = Message(Message.DESTROY, {
+            "id": object_id,
+            "type": object_type
+        })
         self.write_message(message.to_json())
 
 

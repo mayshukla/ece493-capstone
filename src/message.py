@@ -24,6 +24,13 @@ class Message():
     # data: a list of ProjectileStates
     PROJECTILE_STATES = "projectile_states"
 
+    # Send client the id of an object that was destroyed
+    # data: {
+    #     id: id of destroyed object
+    #     type: type of destroyed object. Possible values: "agent", "projectile"
+    # }
+    DESTROY = "destroy"
+
     # Tell client that the simulation is starting. (Code submission is done)
     # data: None
     START_SIMULATION = "start_simulation"
@@ -39,6 +46,17 @@ class Message():
     # errors.
     # data: error message as string
     PYTHON_ERROR = "python_error"
+
+    # Tells the client that the game has ended and provides the results to display
+    # data: {
+    #     winner: bool indicating whether the client receiving this message won
+    #     tie: bool indicating whether the game ended in a tie
+    #     players: {
+    #        class_name: name of the class submitted by the player
+    #        survival_time: float survival time in seconds or None if the player survived the entire game
+    #     }
+    # }
+    RESULTS = "results"
 
     def __init__(self, _type, data):
         """Constructor
@@ -58,6 +76,10 @@ class Message():
         if isinstance(self.data, list):
             # if data is a list convert it to a json array
             data = [object.to_json_dict() for object in self.data]
+        elif isinstance(self.data, dict):
+            # a dict will be converted by json.dumps. don't convert it to a
+            # string.
+            data = self.data
         elif self.data is not None:
             # otherwise if data is not none convert it to a string
             data = self.data.__str__()

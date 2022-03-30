@@ -9,6 +9,7 @@ from src.projectile_state import ProjectileState
 from src.agent_state import AgentState
 from src.obstacle import Obstacle
 from src.vector2 import Vector2
+from time import time
 
 class Game():
     """Represents a single game.
@@ -30,7 +31,8 @@ class Game():
         self.next_id = 0
 
         self.physics = PhysicsEngine()
-        self.physics.addOnCollisionCallback(self.collision_callback)
+        self.physics.add_on_collision_callback(self.collision_callback)
+        self.physics.add_on_separate_callback(self.separate_callback)
 
         for client in self.clients:
             def callback(client, code, class_name):
@@ -39,17 +41,38 @@ class Game():
 
         self.projectiles = []
 
+        self.game_start_time = None
+
     async def run_game_loop(self):
         """Continuously steps physics engine and updates clients"""
         self.prepare_to_start_simulation()
+        self.game_start_time = time()
 
         while True:
-            self.tick()
+            game_ended = self.tick()
+            if game_ended:
+                tie = True
+                for agent in self.agents:
+                    if agent[1].get_health() > 0:
+                        tie = False
+                for agent in self.agents:
+                    winner = False
+                    if agent[1].get_health() > 0:
+                        winner = True
+                    agent[0].send_results(winner, tie, self.agents)
+                return
             await asyncio.sleep(1 / TICKS_PER_SECOND)
 
     def tick(self):
-        """Performs one iteration of game loop"""
-        # self.physics.step(1 / TICKS_PER_SECOND)
+        """Performs one iteration of game loop
+
+        Returns:
+            True if game end condition has been reached.
+            False otherwise.
+        """
+        game_ended = False
+
+        self.physics.step(1 / TICKS_PER_SECOND)
         for agent in self.agents:
             agent[1]._tick()
             agent[1].agent_state.velocity = Vector2(2, 2)
@@ -66,10 +89,25 @@ class Game():
                 elif isinstance(object, Obstacle):
                     agent[1].on_obstacle_scanned(object)
 
+        # check if an agent has been eliminated
+        for agent in self.agents:
+            if agent[1].get_health() != 0:
+                continue
+            # TODO do we need to handle both agents reaching 0 health in the
+            # same tick?
+            game_ended = True
+            agent[1].survival_time = time() - self.game_start_time
+            destroyed_id = agent[1].agent_state.id
+            for agent in self.agents:
+                agent[0].send_destroy_message(destroyed_id, "agent")
+
         # send updates to clients
         for agent in self.agents:
+            #print(agent[1].agent_state.position)
             agent[0].send_agent_states([agent[1].agent_state for agent in self.agents])
             agent[0].send_projectile_states([projectile for projectile in self.projectiles])
+
+        return game_ended
 
     def prepare_to_start_simulation(self):
         """Does setup work that needs to be done after all agents are created but before game loop starts.
@@ -78,7 +116,7 @@ class Game():
         - Initializes physics engine
         """
         # TODO figure out what starting positions should be
-        self.agents[0][1]._set_position(Vector2(65, 350))
+        self.agents[0][1]._set_position(Vector2(400, 350))
         self.agents[1][1]._set_position(Vector2(959, 350))
 
         # TODO set obstacle positions and add to physics
@@ -86,7 +124,7 @@ class Game():
         for agent in self.agents:
             self.physics.add_agent(agent[1].agent_state)
 
-    def collision_callback(self, object_state_1, object_state_2):
+    def collision_callback(self, object_state_1, object_state_2, contact_point):
         """Callback for when physics engine detects collision."""
         if isinstance(object_state_1, ProjectileState) and isinstance(object_state_2, ProjectileState):
             # handle projectile-projectile collision
@@ -94,8 +132,6 @@ class Game():
             self.physics.remove_object(object_state_1.id)
             self.physics.remove_object(object_state_2.id)
         elif isinstance(object_state_1, AgentState) and isinstance(object_state_2, AgentState):
-            # TODO: handle agent-agent collision
-            # does this require any special handling?
             pass
         elif isinstance(object_state_1, ProjectileState) or isinstance(object_state_2, ProjectileState):
             if isinstance(object_state_1, AgentState) or isinstance(object_state_2, AgentState):
@@ -112,7 +148,9 @@ class Game():
                     # callback
                     agent.on_damage_taken()
                 # remove the projectile
-                self.physics.remove_object(projectile)
+                self.physics.remove_object(projectile.id)
+                for agent in self.agents:
+                    agent[0].send_destroy_message(projectile.id, "projectile")
             else:
                 # handle projectile-obstacle collision
                 if isinstance(object_state_1, ProjectileState):
@@ -120,16 +158,33 @@ class Game():
                 else:
                     projectile = object_state_1
                 # remove the projectile
-                self.physics.remove_object(projectile)
+                self.physics.remove_object(projectile.id)
+                for agent in self.agents:
+                    agent[0].send_destroy_message(projectile.id, "projectile")
         else:
             # handle agent-obstacle collision
             if isinstance(object_state_1, AgentState):
                 agent = self.get_agent_from_state(object_state_1)
+                obstacle = object_state_2
             else:
                 agent = self.get_agent_from_state(object_state_2)
+                obstacle = object_state_1
             # callback
+            agent._add_collision(obstacle, contact_point)
             agent.on_obstacle_hit()
 
+    def separate_callback(self, object_state_1, object_state_2):
+        """Callback for when physics engine detects that two colliding objects have now separated."""
+        if isinstance(object_state_1, AgentState) or isinstance(object_state_2, AgentState):
+            if isinstance(object_state_1, Obstacle) or isinstance(object_state_2, Obstacle):
+                # handle agent-obstacle separation
+                if isinstance(object_state_1, AgentState):
+                    agent = self.get_agent_from_state(object_state_1)
+                    obstacle = object_state_2
+                else:
+                    agent = self.get_agent_from_state(object_state_2)
+                    obstacle = object_state_1
+                agent._remove_collision(obstacle)
 
     def get_agent_from_state(self, agent_state):
         """Returns the agent that corresponds to the agent_state.
@@ -216,3 +271,16 @@ class Game():
 
     def get_agents(self):
         return self.agents
+
+    def create_projectile(self, position, direction, attackerId):
+        """Creates a new projectile and passes it to the physics engine."""
+        velocity = Vector2.from_angle_magnitude(direction, Agent.PROJECTILE_SPEED)
+
+        projectile_state = ProjectileState(
+            self.gen_id(),
+            position,
+            velocity,
+            attackerId
+        )
+
+        self.physics.add_projectile(projectile_state)
