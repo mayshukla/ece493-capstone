@@ -78,10 +78,11 @@ class ServerToClientConnection(tornado.websocket.WebSocketHandler):
         )
         self.send_message(message)
 
-    def send_results(self, winner, tie, agents):
+    def send_results(self, winner, tie, agents, error=False):
         message = Message(Message.RESULTS, {
             "winner": winner,
             "tie": tie,
+            "error": error,
             "players": [
                 {
                     "class_name": type(agents[0][1]).__name__,
