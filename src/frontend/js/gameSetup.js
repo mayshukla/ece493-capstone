@@ -26,13 +26,12 @@ let app,
   gameState,
   obstacleSheet,
   obstacleSSheet,
-  projectileMap,
   projectileSpeed;
 
-export var agents = [];
+export let agents = [];
+export let projectileMap;
 
 export default function initPixi() {
-
   //Create a Pixi Application
   app = new Application({
     width: 1024, // default: 800
@@ -57,7 +56,6 @@ export default function initPixi() {
     .add("../assets/bulletSprite.png")
     .load(setup);
 }
-
 
 //This `setup` function will run when the image has loaded
 function setup() {
@@ -86,7 +84,7 @@ function setup() {
   app.stage.addChild(agents[0], agents[1]);
 
   //   Start game loop
-  app.ticker.add((delta) => gameLoop(delta));
+  // app.ticker.add((delta) => gameLoop(delta));
 
   // // start listening for key input to move shoooter
   // moveShooter();
@@ -126,39 +124,36 @@ function changeAgentAnimation(agent, animation) {
 
 function gameLoop(delta) {
   // this calls the play fxn 60 times per minute
-  gameState(delta);
+  // gameState(delta);
 }
 
 function play(delta) {
-  if (agents[0].angle !== agents[0].targetAngle) {
-    if (agents[0].angle < agents[0].targetAngle) {
-      updateAgentAngle(agents[0], true);
-    } else {
-      updateAgentAngle(agents[0], false);
-    }
-  }
-
-  if (agents[1].angle !== agents[1].targetAngle) {
-    if (agents[1].angle < agents[1].targetAngle) {
-      updateAgentAngle(agents[1], true);
-    } else {
-      updateAgentAngle(agents[1], false);
-    }
-  }
-
-  if (
-    agents[0].vx !== agents[0].targetVx ||
-    agents[0].vy !== agents[0].targetVy
-  ) {
-    updateAgentPosition(agents[0]);
-  }
-
-  if (
-    agents[1].vx !== agents[1].targetVx ||
-    agents[1].vy !== agents[1].targetVy
-  ) {
-    updateAgentPosition(agents[1]);
-  }
+  // if (agents[0].angle !== agents[0].targetAngle) {
+  //   if (agents[0].angle < agents[0].targetAngle) {
+  //     updateAgentAngle(agents[0], true);
+  //   } else {
+  //     updateAgentAngle(agents[0], false);
+  //   }
+  // }
+  // if (agents[1].angle !== agents[1].targetAngle) {
+  //   if (agents[1].angle < agents[1].targetAngle) {
+  //     updateAgentAngle(agents[1], true);
+  //   } else {
+  //     updateAgentAngle(agents[1], false);
+  //   }
+  // }
+  // if (
+  //   agents[0].vx !== agents[0].targetVx ||
+  //   agents[0].vy !== agents[0].targetVy
+  // ) {
+  //   updateAgentPosition(agents[0]);
+  // }
+  // if (
+  //   agents[1].vx !== agents[1].targetVx ||
+  //   agents[1].vy !== agents[1].targetVy
+  // ) {
+  //   updateAgentPosition(agents[1]);
+  // }
 }
 
 function updateAgentAngle(agent, positiveRotation) {
@@ -291,43 +286,39 @@ function createAgents(agentSheet) {
   let agents = [];
 
   // create an animated sprite from the json sheet in assets
+  let agent0 = new AnimatedSprite(
+    agentSheet.spritesheet.animations["survivor-idle_handgun"]
+  );
   let agent1 = new AnimatedSprite(
     agentSheet.spritesheet.animations["survivor-idle_handgun"]
   );
-  let agent2 = new AnimatedSprite(
-    agentSheet.spritesheet.animations["survivor-idle_handgun"]
-  );
 
-  agents.push(agent1, agent2);
+  agents.push(agent0, agent1);
 
   // set speed, start playback and add it to the stage
+  agent0.animationSpeed = 0.3;
+  agent0.play();
+  agent0.x = PLAYABLE_AREA_X_MIN + 65;
+  agent0.y = 350;
+  agent0.scale.set(0.197628458, 0.23148148);
+  agent0.vx = 0;
+  agent0.vy = 0;
+  agent0.angle = 0;
+  agent0["id"] = 0;
+  agent0["Moving"] = false;
+  agent0.anchor.set(0.95652, 0.75);
+
   agent1.animationSpeed = 0.3;
   agent1.play();
-  agent1.x = PLAYABLE_AREA_X_MIN + 65;
+  agent1.x = PLAYABLE_AREA_X_MAX - 65;
   agent1.y = 350;
   agent1.scale.set(0.197628458, 0.23148148);
   agent1.vx = 0;
   agent1.vy = 0;
-  agent1.angle = 0;
-  agent1["targetAngle"] = 0;
-  agent1["targetVx"] = 0;
-  agent1["targetVy"] = 0;
+  agent1.angle = 180;
+  agent1["id"] = 1;
   agent1["Moving"] = false;
   agent1.anchor.set(0.95652, 0.75);
-
-  agent2.animationSpeed = 0.3;
-  agent2.play();
-  agent2.x = PLAYABLE_AREA_X_MAX - 65;
-  agent2.y = 350;
-  agent2.scale.set(0.197628458, 0.23148148);
-  agent2.vx = 0;
-  agent2.vy = 0;
-  agent2.angle = 180;
-  agent2["targetAngle"] = 0;
-  agent2["targetVx"] = 0;
-  agent2["targetVy"] = 0;
-  agent2["Moving"] = false;
-  agent2.anchor.set(0.95652, 0.75);
 
   console.log(agents);
 
@@ -372,13 +363,13 @@ function createProjectile(rotation, startPosition) {
   app.stage.addChild(projectile);
 }
 
-function changeAgentVelocity(agentId, vx, vy) {
-  agents[agentId].targetVx = vx;
-  agents[agentId].targetVy = vy;
+export function setAgentPosition(agent, x, y) {
+  agent.x = x;
+  agent.y = y;
 }
 
-function changeAgentDirection(agentId, endAngle) {
-  agents[agentId].targetAngle = endAngle;
+export function setAgentDirection(agent, angle) {
+  agent.angle = angle;
 }
 
 function toggleShield(playerAgent, shieldEngaged) {

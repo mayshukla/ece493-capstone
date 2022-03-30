@@ -1,5 +1,5 @@
 import Message from './message.js';
-import {agents} from './gameSetup.js';
+import { agents, setAgentPosition, setAgentDirection } from "./gameSetup.js";
 
 /**
  * Represents connection from client to server.
@@ -104,7 +104,11 @@ export default class ClientToServerConnection {
                 return false;
             }
             else {
-                // setAgentPosition(agent, agent_state.position.x, agent_state.position.y);
+                setAgentPosition(agent, agent_state.position.x, agent_state.position.y);
+                setAgentDirection(
+                  agent,
+                  agent_state.angle
+                );
             }
         }
     }
