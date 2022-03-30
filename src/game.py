@@ -9,6 +9,7 @@ from src.projectile_state import ProjectileState
 from src.agent_state import AgentState
 from src.obstacle import Obstacle
 from src.vector2 import Vector2
+from time import time
 
 class Game():
     """Represents a single game.
@@ -40,14 +41,25 @@ class Game():
 
         self.projectiles = []
 
+        self.game_start_time = None
+
     async def run_game_loop(self):
         """Continuously steps physics engine and updates clients"""
         self.prepare_to_start_simulation()
+        self.game_start_time = time()
 
         while True:
             game_ended = self.tick()
             if game_ended:
-                # TODO send results here
+                tie = True
+                for agent in self.agents:
+                    if agent[1].get_health() > 0:
+                        tie = False
+                for agent in self.agents:
+                    winner = False
+                    if agent[1].get_health() > 0:
+                        winner = True
+                    agent[0].send_results(winner, tie, self.agents)
                 return
             await asyncio.sleep(1 / TICKS_PER_SECOND)
 
@@ -83,6 +95,7 @@ class Game():
             # TODO do we need to handle both agents reaching 0 health in the
             # same tick?
             game_ended = True
+            agent[1].survival_time = time() - self.game_start_time
             destroyed_id = agent[1].agent_state.id
             for agent in self.agents:
                 agent[0].send_destroy_message(destroyed_id, "agent")

@@ -47,6 +47,17 @@ class Message():
     # data: error message as string
     PYTHON_ERROR = "python_error"
 
+    # Tells the client that the game has ended and provides the results to display
+    # data: {
+    #     winner: bool indicating whether the client receiving this message won
+    #     tie: bool indicating whether the game ended in a tie
+    #     players: {
+    #        class_name: name of the class submitted by the player
+    #        survival_time: float survival time in seconds or None if the player survived the entire game
+    #     }
+    # }
+    RESULTS = "results"
+
     def __init__(self, _type, data):
         """Constructor
 

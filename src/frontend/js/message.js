@@ -11,6 +11,7 @@ export default class Message {
     static PROJECTILE_STATES = "projectile_states";
     static DESTROY = "destroy";
     static AGENT_STATES = "agent_states";
+    static RESULTS = "results";
 
     constructor(type, data) {
         this.type = type;

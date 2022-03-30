@@ -39,6 +39,8 @@ class Agent:
         # Dict to map any objects that are colliding with this agent to the point at which they have collided.
         self.collisions = {}
 
+        self.survival_time = None
+
     def run(self):
         """This function will be called repeatedly in the main game loop.
 
