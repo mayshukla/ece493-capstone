@@ -14,6 +14,7 @@ export default class Renderer {
     #resultsScreen;
     #declareWinnerArea;
     #individualResultsArea;
+    #declareErrorArea;
 
     constructor(clientToServerConnection) {
         this.#server = clientToServerConnection;
@@ -28,7 +29,7 @@ export default class Renderer {
 
         this.#server.onStartGame = () => { this.#onStartGame(); };
         this.#server.onStartSimulation = () => { this.#onStartSimulation(); };
-        this.#server.onReceiveResults = (winner, tie, player_results) => { this.#onReceiveResults(winner, tie, player_results); };
+        this.#server.onReceiveResults = (winner, tie, player_results, error) => { this.#onReceiveResults(winner, tie, player_results, error); };
 
         this.#queueScreen = document.getElementById("queueScreen");
         this.#codeInputScreen = document.getElementById("codeInputScreen");
@@ -36,6 +37,7 @@ export default class Renderer {
         this.#resultsScreen = document.getElementById("resultsScreen");
         this.#declareWinnerArea = document.getElementById("declareWinnerArea");
         this.#individualResultsArea = document.getElementById("individualResultsArea");
+        this.#declareErrorArea = document.getElementById("declareErrorArea");
     }
 
     #sendCodeToServer() {
@@ -61,10 +63,13 @@ export default class Renderer {
         initPixi();
     }
 
-    #onReceiveResults(winner, tie, player_results) {
+    #onReceiveResults(winner, tie, player_results, error) {
         console.log("showing results!");
         document.getElementsByTagName("canvas")[0].classList.add("hidden");
         this.#resultsScreen.classList.remove("hidden");
+        if (error) {
+            this.#declareErrorArea.innerHTML = "Game ended due to error in player code."
+        }
         if (tie) {
             this.#declareWinnerArea.innerHTML = "It's a Tie!";
         }
