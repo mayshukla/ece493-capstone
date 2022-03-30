@@ -45,11 +45,21 @@ class Game():
         self.prepare_to_start_simulation()
 
         while True:
-            self.tick()
+            game_ended = self.tick()
+            if game_ended:
+                # TODO send results here
+                return
             await asyncio.sleep(1 / TICKS_PER_SECOND)
 
     def tick(self):
-        """Performs one iteration of game loop"""
+        """Performs one iteration of game loop
+
+        Returns:
+            True if game end condition has been reached.
+            False otherwise.
+        """
+        game_ended = False
+
         self.physics.step(1 / TICKS_PER_SECOND)
         for agent in self.agents:
             agent[1]._tick()
@@ -66,11 +76,24 @@ class Game():
                 elif isinstance(object, Obstacle):
                     agent[1].on_obstacle_scanned(object)
 
+        # check if an agent has been eliminated
+        for agent in self.agents:
+            if agent[1].get_health() != 0:
+                continue
+            # TODO do we need to handle both agents reaching 0 health in the
+            # same tick?
+            game_ended = True
+            destroyed_id = agent[1].agent_state.id
+            for agent in self.agents:
+                agent[0].send_destroy_message(destroyed_id, "agent")
+
         # send updates to clients
         for agent in self.agents:
             #print(agent[1].agent_state.position)
             agent[0].send_agent_states([agent[1].agent_state for agent in self.agents])
             agent[0].send_projectile_states([projectile for projectile in self.projectiles])
+
+        return game_ended
 
     def prepare_to_start_simulation(self):
         """Does setup work that needs to be done after all agents are created but before game loop starts.
@@ -112,6 +135,8 @@ class Game():
                     agent.on_damage_taken()
                 # remove the projectile
                 self.physics.remove_object(projectile.id)
+                for agent in self.agents:
+                    agent[0].send_destroy_message(projectile.id, "projectile")
             else:
                 # handle projectile-obstacle collision
                 if isinstance(object_state_1, ProjectileState):
@@ -120,6 +145,8 @@ class Game():
                     projectile = object_state_1
                 # remove the projectile
                 self.physics.remove_object(projectile.id)
+                for agent in self.agents:
+                    agent[0].send_destroy_message(projectile.id, "projectile")
         else:
             # handle agent-obstacle collision
             if isinstance(object_state_1, AgentState):

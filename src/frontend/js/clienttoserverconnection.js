@@ -37,6 +37,10 @@ export default class ClientToServerConnection {
             case Message.PROJECTILE_STATES:
                 this.onReceiveProjectileStates(message.data);
                 break;
+            case Message.DESTROY:
+                console.log(message);
+                this.onReceiveDestroy(message.data.id, message.data.type);
+                break;
             default:
                 console.error("ERROR: unhandled message type. Message:", message);
         }
@@ -103,5 +107,9 @@ export default class ClientToServerConnection {
 
     onReceiveProjectileStates(projectile_states) {
         console.log(projectile_states);
+    }
+
+    onReceiveDestroy(id, type) {
+        console.log(`DESTROY id: ${id}, type: ${type}`);
     }
 }

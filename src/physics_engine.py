@@ -48,17 +48,13 @@ class PhysicsEngine:
             False if the collision should be ignored.
         """
         # stop the objects from moving
-        print("Colliding...")
         arbiter.shapes[0].body.velocity = (0, 0)
         arbiter.shapes[1].body.velocity = (0, 0)
-        # print(arbiter.shapes[0].body.position)
-        # print(arbiter.shapes[1].body.position)
-        # print(arbiter.contact_point_set)
-        print("Collision!")
         object_id_1 = self._get_body_id(arbiter.shapes[0].body)
         object_id_2 = self._get_body_id(arbiter.shapes[1].body)
         object_state_1 = self._get_object_state_from_id(object_id_1)
         object_state_2 = self._get_object_state_from_id(object_id_2)
+        print(f"Collision between object ids: {object_id_1} and {object_id_2}")
         # call the optional callback function
         if "collision_callback" in data:
             data["collision_callback"](object_state_1, object_state_2, arbiter.contact_point_set.points[0].point_a)

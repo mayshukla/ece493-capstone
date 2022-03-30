@@ -92,6 +92,13 @@ class ServerToClientConnection(tornado.websocket.WebSocketHandler):
         message = Message(Message.PROJECTILE_STATES, projectile_states)
         self.write_message(message.to_json())
 
+    def send_destroy_message(self, object_id, object_type):
+        message = Message(Message.DESTROY, {
+            "id": object_id,
+            "type": object_type
+        })
+        self.write_message(message.to_json())
+
 
 def main():
     parser = argparse.ArgumentParser()

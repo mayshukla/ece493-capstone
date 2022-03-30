@@ -214,6 +214,38 @@ class MyAgent(Agent):
             self.game.tick()
         self.assertGreaterEqual(agent.agent_state.position.y, 0)
 
+    def test_destroy_projectile_message(self):
+        attacker = Agent(self.game.gen_id(), self.game)
+        attackee = Agent(self.game.gen_id(), self.game)
+        self.game.agents = [[MagicMock(), attacker], [MagicMock(), attackee]]
+
+        self.game.prepare_to_start_simulation()
+
+        attacker.attack_ranged(0)
+
+        for _ in range(TICKS_PER_SECOND * 10):
+            self.game.tick()
+
+        for agent in self.game.agents:
+            agent[0].send_destroy_message.assert_called_with(2, "projectile")
+
+    def test_destroy_agent_message(self):
+        attacker = Agent(self.game.gen_id(), self.game)
+        attackee = Agent(self.game.gen_id(), self.game)
+        self.game.agents = [[MagicMock(), attacker], [MagicMock(), attackee]]
+
+        self.game.prepare_to_start_simulation()
+
+        # Perform enough attacks to eliminate attackee
+        for _ in range(math.ceil(Agent.MAX_HEALTH / Agent.DAMAGE_AMOUNT)):
+            attacker.attack_ranged(0)
+
+            for _ in range(TICKS_PER_SECOND * 10):
+                self.game.tick()
+
+        for agent in self.game.agents:
+            agent[0].send_destroy_message.assert_called_with(1, "agent")
+
 
 if __name__ == '__main__':
     unittest.main()

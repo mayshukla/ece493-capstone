@@ -24,6 +24,13 @@ class Message():
     # data: a list of ProjectileStates
     PROJECTILE_STATES = "projectile_states"
 
+    # Send client the id of an object that was destroyed
+    # data: {
+    #     id: id of destroyed object
+    #     type: type of destroyed object. Possible values: "agent", "projectile"
+    # }
+    DESTROY = "destroy"
+
     # Tell client that the simulation is starting. (Code submission is done)
     # data: None
     START_SIMULATION = "start_simulation"
@@ -58,6 +65,10 @@ class Message():
         if isinstance(self.data, list):
             # if data is a list convert it to a json array
             data = [object.to_json_dict() for object in self.data]
+        elif isinstance(self.data, dict):
+            # a dict will be converted by json.dumps. don't convert it to a
+            # string.
+            data = self.data
         elif self.data is not None:
             # otherwise if data is not none convert it to a string
             data = self.data.__str__()
