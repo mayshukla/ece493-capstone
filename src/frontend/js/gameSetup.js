@@ -20,19 +20,16 @@ const PI = 3.14,
   AGENT_GUN_X_NORM = 0.95686,
   AGENT_GUN_Y_NORM = 0.75349;
 
-let app;
-
-let agentSheet,
+let app,
+  agentSheet,
   id,
-  agent,
-  agentMoving = false,
   gameState,
   obstacleSheet,
   obstacleSSheet,
   projectileSpeed;
 
 export let agents = [];
-export let projectileList = [];
+export let projectileMap;
 
 export default function initPixi() {
   //Create a Pixi Application
@@ -63,96 +60,20 @@ export default function initPixi() {
 //This `setup` function will run when the image has loaded
 function setup() {
   //#region SpriteAssetsCreation
+  // console.log(TextureCache);
 
   //Create the shooter sprite
   id = resources["../assets/dungeon.json"].textures;
   agentSheet = resources["../assets/agentsheet.json"];
-
-  //#region Creating Obstacles
-  let obstacles = new ParticleContainer(1500, {
-    rotation: true,
-    tint: true,
-    vertices: true,
-    uvs: true,
-  });
   obstacleSSheet = new PIXI.BaseTexture.from("../assets/obstacleboxes.png");
-  obstacleSheet = {};
 
-  obstacleSheet["yellowBox"] = [
-    new Texture(obstacleSSheet, new Rectangle(0 * 32, 0, 32, 32)),
-  ];
-  obstacleSheet["blueBox"] = [
-    new Texture(obstacleSSheet, new Rectangle(1 * 32, 0, 32, 32)),
-  ];
-  obstacleSheet["orangeBox"] = [
-    new Texture(obstacleSSheet, new Rectangle(2 * 32, 0, 32, 32)),
-  ];
-  obstacleSheet["greyBox1"] = [
-    new Texture(obstacleSSheet, new Rectangle(3 * 32, 0, 32, 32)),
-  ];
-  obstacleSheet["greyBox2"] = [
-    new Texture(obstacleSSheet, new Rectangle(4 * 32, 0, 32, 32)),
-  ];
-  obstacleSheet["pinkBox"] = [
-    new Texture(obstacleSSheet, new Rectangle(5 * 32, 0, 32, 32)),
-  ];
+  let obstacles = createObstacles(obstacleSSheet);
+  agents = createAgents(agentSheet);
 
-  let yellowBox = new Sprite(obstacleSheet["yellowBox"][0]);
-  yellowBox.x = getRndInteger(PLAYABLE_AREA_X_MIN, PLAYABLE_AREA_X_MAX);
-  yellowBox.y = getRndInteger(PLAYABLE_AREA_Y_MAX, PLAYABLE_AREA_Y_MIN);
-  obstacles.addChild(yellowBox);
-
-  let blueBox = new Sprite(obstacleSheet["blueBox"][0]);
-  blueBox.x = getRndInteger(PLAYABLE_AREA_X_MIN, PLAYABLE_AREA_X_MAX);
-  blueBox.y = getRndInteger(PLAYABLE_AREA_Y_MAX, PLAYABLE_AREA_Y_MIN);
-  obstacles.addChild(blueBox);
-
-  let orangeBox = new Sprite(obstacleSheet["orangeBox"][0]);
-  orangeBox.x = getRndInteger(PLAYABLE_AREA_X_MIN, PLAYABLE_AREA_X_MAX);
-  orangeBox.y = getRndInteger(PLAYABLE_AREA_Y_MAX, PLAYABLE_AREA_Y_MIN);
-  obstacles.addChild(orangeBox);
-
-  let greyBox1 = new Sprite(obstacleSheet["greyBox1"][0]);
-  greyBox1.x = getRndInteger(PLAYABLE_AREA_X_MIN, PLAYABLE_AREA_X_MAX);
-  greyBox1.y = getRndInteger(PLAYABLE_AREA_Y_MAX, PLAYABLE_AREA_Y_MIN);
-  obstacles.addChild(greyBox1);
-
-  let greyBox2 = new Sprite(obstacleSheet["greyBox2"][0]);
-  greyBox2.x = getRndInteger(PLAYABLE_AREA_X_MIN, PLAYABLE_AREA_X_MAX);
-  greyBox2.y = getRndInteger(PLAYABLE_AREA_Y_MAX, PLAYABLE_AREA_Y_MIN);
-  obstacles.addChild(greyBox2);
-
-  let pinkBox = new Sprite(obstacleSheet["pinkBox"][0]);
-  pinkBox.x = getRndInteger(PLAYABLE_AREA_X_MIN, PLAYABLE_AREA_X_MAX);
-  pinkBox.y = getRndInteger(PLAYABLE_AREA_Y_MAX, PLAYABLE_AREA_Y_MIN);
-  obstacles.addChild(pinkBox);
-
-  //#endregion
-
-  // create an animated sprite from the json sheet in assets
-  agent = new AnimatedSprite(
-    agentSheet.spritesheet.animations["survivor-idle_handgun"]
-  );
-  console.log(agent);
-
-  agents.push(agent);
-
-  // set speed, start playback and add it to the stage
-  agent.animationSpeed = 0.3;
-  agent.play();
-  agent.x = 65;
-  agent.y = 350;
-  agent.scale.set(0.197628458, 0.23148148);
-  agent.vx = 0;
-  agent.vy = 0;
-  agent.angle = 100;
-  agent["vAngle"] = 0;
-  agent.anchor.set(0.95652, 0.75);
-  agent.id = 0;
-
+  projectileMap = new Map();
   projectileSpeed = 5;
 
-  const background = new Sprite(id["dungeon.png"]);
+  let background = new Sprite(id["dungeon.png"]);
   background.scale.set(2, 1.367);
   //   agent size and obstacle size are 50 px
 
@@ -160,74 +81,101 @@ function setup() {
 
   app.stage.addChild(background);
   app.stage.addChild(obstacles);
-  app.stage.addChild(agent);
+  app.stage.addChild(agents[0], agents[1]);
 
   //   Start game loop
-  app.ticker.add((delta) => gameLoop(delta));
+  // app.ticker.add((delta) => gameLoop(delta));
 
-  // start listening for key input to move shoooter
-  moveShooter(agent);
-  fireProjectile(agent);
+  // // start listening for key input to move shoooter
+  // moveShooter();
+  // fireProjectile(agent);
 
   //   set the game state to play
   gameState = play;
 }
 
-function gameLoop(delta) {
-  // this calls the play fxn 60 times per minute
-  gameState(delta);
-}
+function changeAgentAnimation(agent, animation) {
+  switch (animation) {
+    case "survivor-shield_handgun":
+      agent.textures =
+        agentSheet.spritesheet.animations["survivor-shield_handgun"];
+      break;
 
-function play(delta) {
-  updateAgentPosition(agent, agent.vx, agent.vy);
-  updateProjectiles(projectileList, projectileSpeed);
-  updateAgentAngle(agent, agent.vAngle);
-
-  if (agentMoving) {
-    if (!agent.playing) {
+    case "survivor-move_handgun":
       agent.textures =
         agentSheet.spritesheet.animations["survivor-move_handgun"];
       agent.loop = true;
       agent.animationSpeed = 0.3;
       agent.play();
-    }
-  }
+      break;
 
-  if (!agentMoving) {
-    if (!agent.playing) {
+    case "survivor-idle_handgun":
       agent.textures =
         agentSheet.spritesheet.animations["survivor-idle_handgun"];
       agent.loop = true;
       agent.animationSpeed = 0.3;
       agent.play();
-    }
+      break;
+
+    default:
+      break;
   }
 }
 
-function updateAgentAngle(agent, angle) {
+function gameLoop(delta) {
+  // this calls the play fxn 60 times per minute
+  // gameState(delta);
+}
+
+function play(delta) {
+  // if (agents[0].angle !== agents[0].targetAngle) {
+  //   if (agents[0].angle < agents[0].targetAngle) {
+  //     updateAgentAngle(agents[0], true);
+  //   } else {
+  //     updateAgentAngle(agents[0], false);
+  //   }
+  // }
+  // if (agents[1].angle !== agents[1].targetAngle) {
+  //   if (agents[1].angle < agents[1].targetAngle) {
+  //     updateAgentAngle(agents[1], true);
+  //   } else {
+  //     updateAgentAngle(agents[1], false);
+  //   }
+  // }
+  // if (
+  //   agents[0].vx !== agents[0].targetVx ||
+  //   agents[0].vy !== agents[0].targetVy
+  // ) {
+  //   updateAgentPosition(agents[0]);
+  // }
+  // if (
+  //   agents[1].vx !== agents[1].targetVx ||
+  //   agents[1].vy !== agents[1].targetVy
+  // ) {
+  //   updateAgentPosition(agents[1]);
+  // }
+}
+
+function updateAgentAngle(agent, positiveRotation) {
   // For testing purposes this is disabled, but when client
   // starts receiving messages concerning agent movements
   // this will be enabled
 
-  // if (agent.angle !== angle) {
-  //   for (let index = agent.angle; index <= angle; index++) {
-  //     agent.angle += index;
-  //   }
-  // }
-
-  agent.angle += agent.vAngle;
-}
-
-export function setAgentPosition(agent, x, y){
-  agent.x = x;
-  agent.y = y;
-}
-
-function updateAgentPosition(agent, vx, vy) {
-  if (vx === 0 && vy === 0) {
-    agentMoving = false;
+  if (positiveRotation) {
+    agent.angle += 2;
   } else {
-    agentMoving = true;
+    agent.angle -= 2;
+  }
+}
+
+function updateAgentPosition(agent) {
+  agent.vx = agent.targetVx;
+  agent.vy = agent.targetVy;
+
+  if (agent.vx === 0 && agent.vy === 0) {
+    agent.Moving = false;
+  } else {
+    agent.Moving = true;
   }
 
   // console.log(agentMoving);
@@ -238,164 +186,25 @@ function updateAgentPosition(agent, vx, vy) {
   agent.y += vy;
 }
 
-function updateProjectiles(projectileList, speed) {
-  for (let index = 0; index < projectileList.length; index++) {
-    currentProjectile = projectileList[index];
+function updateProjectiles(projectileMap, projId) {
+  let speed = 5;
+  for (let index = 0; index < projectileMap.length; index++) {
+    currentProjectile = projectileMap.get(projId);
     currentProjectile.position.x +=
       Math.cos(currentProjectile.rotation) * speed;
     currentProjectile.position.y +=
       Math.sin(currentProjectile.rotation) * speed;
 
-    if (
-      currentProjectile.position.x < PLAYABLE_AREA_X_MIN ||
-      currentProjectile.position.x > PLAYABLE_AREA_X_MAX ||
-      currentProjectile.position.y < PLAYABLE_AREA_Y_MIN ||
-      currentProjectile.position.y > PLAYABLE_AREA_Y_MAX
-    ) {
-      currentProjectile.dead = true;
-    }
-
-    if (currentProjectile.dead) {
-      currentProjectile.visible = false;
-      app.stage.removeChild(currentProjectile);
+    if (isDestroyed) {
+      destroyProjectiles(currentProjectile);
     }
   }
 }
 
-function keyboard(value) {
-  const key = {};
-  key.value = value;
-  key.isDown = false;
-  key.isUp = true;
-  key.press = undefined;
-  key.release = undefined;
-  //The `key pressed handler`
-  key.downHandler = (event) => {
-    if (event.key === key.value) {
-      if (key.isUp && key.press) {
-        key.press();
-      }
-      key.isDown = true;
-      key.isUp = false;
-      event.preventDefault();
-    }
-  };
-
-  //The `key released handler`
-  key.upHandler = (event) => {
-    if (event.key === key.value) {
-      if (key.isDown && key.release) {
-        key.release();
-      }
-      key.isDown = false;
-      key.isUp = true;
-      event.preventDefault();
-    }
-  };
-
-  //Attach event listeners
-  const downListener = key.downHandler.bind(key);
-  const upListener = key.upHandler.bind(key);
-
-  window.addEventListener("keydown", downListener, false);
-  window.addEventListener("keyup", upListener, false);
-
-  // Detach event listeners
-  key.unsubscribe = () => {
-    window.removeEventListener("keydown", downListener);
-    window.removeEventListener("keyup", upListener);
-  };
-
-  return key;
-}
-
-function moveShooter(shooter) {
-  //Capture the keyboard arrow keys
-  const left = keyboard("ArrowLeft"),
-    up = keyboard("ArrowUp"),
-    right = keyboard("ArrowRight"),
-    down = keyboard("ArrowDown"),
-    angleLeft = keyboard("e"),
-    angleRight = keyboard("q");
-
-  //Left arrow key `press` method
-  left.press = () => {
-    //Change the shooter's velocity when the key is pressed
-    shooter.vx = -2;
-    // shooter.vy = 0;
-  };
-
-  //Left arrow key `release` method
-  left.release = () => {
-    //If the left arrow has been released, and the right arrow isn't down,
-    //and the shooter isn't moving vertically:
-    //Stop the shooter
-    if (!right.isDown) {
-      shooter.vx = 0;
-    }
-  };
-
-  //Up
-  up.press = () => {
-    shooter.vy = -2;
-    // shooter.vx = 0;
-  };
-
-  up.release = () => {
-    if (!down.isDown) {
-      shooter.vy = 0;
-    }
-  };
-
-  //Right
-  right.press = () => {
-    shooter.vx = 2;
-    // shooter.vy = 0;
-  };
-
-  right.release = () => {
-    if (!left.isDown) {
-      shooter.vx = 0;
-    }
-  };
-
-  //Down
-  down.press = () => {
-    shooter.vy = 2;
-    // shooter.vx = 0;
-  };
-
-  down.release = () => {
-    if (!up.isDown) {
-      shooter.vy = 0;
-    }
-  };
-
-  //angle left
-  angleLeft.press = () => {
-    shooter["vAngle"] = -2;
-
-    console.log(agent.vAngle);
-    // shooter.vx = 0;
-  };
-
-  angleLeft.release = () => {
-    if (!angleRight.isDown) {
-      shooter["vAngle"] = 0;
-    }
-  };
-
-  //angle right
-  angleRight.press = () => {
-    shooter["vAngle"] = 2;
-    // shooter.vx = 0;
-  };
-
-  angleRight.release = () => {
-    if (!angleLeft.isDown) {
-      shooter["vAngle"] = 0;
-    }
-  };
+function destroyProjectiles(projectile) {
+  projectile.dead;
+  projectile.visible = false;
+  app.stage.removeChild(projectile);
 }
 
 function createSpriteFromSheet(path, x, y, width, height) {
@@ -404,6 +213,116 @@ function createSpriteFromSheet(path, x, y, width, height) {
   texture.frame = textureRect;
   let sprite = new Sprite(texture);
   return sprite;
+}
+
+function createObstacles(obstacleSSheet) {
+  let obstacles = new Container();
+  let midObstacles = new Container();
+  let leftObstacles = new Container();
+  let rightObstacles = new Container();
+
+  obstacleSheet = {};
+  obstacleSheet["blueBox"] = [
+    new Texture(obstacleSSheet, new Rectangle(1 * 32, 0, 32, 32)),
+  ];
+  obstacleSheet["greyBox1"] = [
+    new Texture(obstacleSSheet, new Rectangle(3 * 32, 0, 32, 32)),
+  ];
+  obstacleSheet["pinkBox"] = [
+    new Texture(obstacleSSheet, new Rectangle(5 * 32, 0, 32, 32)),
+  ];
+
+  let blueBox = new Sprite(obstacleSheet["blueBox"][0]);
+  let blueBox2 = new Sprite(obstacleSheet["blueBox"][0]);
+  let blueBox3 = new Sprite(obstacleSheet["blueBox"][0]);
+  let blueBox4 = new Sprite(obstacleSheet["blueBox"][0]);
+  let blueBox5 = new Sprite(obstacleSheet["blueBox"][0]);
+  blueBox.x = PLAYABLE_AREA_X_MAX / 6;
+  blueBox.y = PLAYABLE_AREA_Y_MAX / 6;
+  blueBox2.x = blueBox.x - 32;
+  blueBox2.y = blueBox.y;
+  blueBox3.x = blueBox.x;
+  blueBox3.y = blueBox.y + 32;
+  blueBox4.x = blueBox2.x - 32;
+  blueBox4.y = blueBox.y;
+  blueBox5.x = blueBox3.x;
+  blueBox5.y = blueBox3.y + 32;
+  leftObstacles.addChild(blueBox, blueBox2, blueBox3, blueBox4, blueBox5);
+
+  let pinkBox = new Sprite(obstacleSheet["pinkBox"][0]);
+  let pinkBox2 = new Sprite(obstacleSheet["pinkBox"][0]);
+  let pinkBox3 = new Sprite(obstacleSheet["pinkBox"][0]);
+  let pinkBox4 = new Sprite(obstacleSheet["pinkBox"][0]);
+  let pinkBox5 = new Sprite(obstacleSheet["pinkBox"][0]);
+  pinkBox.x = (PLAYABLE_AREA_X_MAX * 5) / 6;
+  pinkBox.y = (PLAYABLE_AREA_Y_MAX * 5) / 6;
+  pinkBox2.x = pinkBox.x + 32;
+  pinkBox2.y = pinkBox.y;
+  pinkBox3.x = pinkBox.x;
+  pinkBox3.y = pinkBox.y - 32;
+  pinkBox4.x = pinkBox2.x + 32;
+  pinkBox4.y = pinkBox.y;
+  pinkBox5.x = pinkBox3.x;
+  pinkBox5.y = pinkBox3.y - 32;
+  rightObstacles.addChild(pinkBox, pinkBox2, pinkBox3, pinkBox4, pinkBox5);
+
+  let greyBox1 = new Sprite(obstacleSheet["greyBox1"][0]);
+  let greyBox2 = new Sprite(obstacleSheet["greyBox1"][0]);
+  let greyBox3 = new Sprite(obstacleSheet["greyBox1"][0]);
+  greyBox1.x = PLAYABLE_AREA_X_MAX / 2;
+  greyBox1.y = PLAYABLE_AREA_Y_MAX / 2;
+  greyBox2.x = greyBox1.x + 32;
+  greyBox2.y = greyBox1.y + 32;
+  greyBox3.x = greyBox1.x - 32;
+  greyBox3.y = greyBox1.y - 32;
+  midObstacles.addChild(greyBox1, greyBox2, greyBox3);
+
+  obstacles.addChild(leftObstacles, midObstacles, rightObstacles);
+
+  return obstacles;
+}
+
+function createAgents(agentSheet) {
+  let agents = [];
+
+  // create an animated sprite from the json sheet in assets
+  let agent0 = new AnimatedSprite(
+    agentSheet.spritesheet.animations["survivor-idle_handgun"]
+  );
+  let agent1 = new AnimatedSprite(
+    agentSheet.spritesheet.animations["survivor-idle_handgun"]
+  );
+
+  agents.push(agent0, agent1);
+
+  // set speed, start playback and add it to the stage
+  agent0.animationSpeed = 0.3;
+  agent0.play();
+  agent0.x = PLAYABLE_AREA_X_MIN + 65;
+  agent0.y = 350;
+  agent0.scale.set(0.197628458, 0.23148148);
+  agent0.vx = 0;
+  agent0.vy = 0;
+  agent0.angle = 0;
+  agent0["id"] = 0;
+  agent0["Moving"] = false;
+  agent0.anchor.set(0.95652, 0.75);
+
+  agent1.animationSpeed = 0.3;
+  agent1.play();
+  agent1.x = PLAYABLE_AREA_X_MAX - 65;
+  agent1.y = 350;
+  agent1.scale.set(0.197628458, 0.23148148);
+  agent1.vx = 0;
+  agent1.vy = 0;
+  agent1.angle = 180;
+  agent1["id"] = 1;
+  agent1["Moving"] = false;
+  agent1.anchor.set(0.95652, 0.75);
+
+  console.log(agents);
+
+  return agents;
 }
 
 function fireProjectile(agent) {
@@ -442,6 +361,29 @@ function createProjectile(rotation, startPosition) {
 
   projectileList.push(projectile);
   app.stage.addChild(projectile);
+}
+
+export function setAgentPosition(agent, x, y) {
+  agent.x = x;
+  agent.y = y;
+}
+
+export function setAgentDirection(agent, angle) {
+  agent.angle = angle;
+}
+
+function toggleShield(playerAgent, shieldEngaged) {
+  playerAgent.stop();
+  if (shieldEngaged) {
+    agent.textures = agentSheet.spritesheet.animations["survivor-idle_handgun"];
+  } else {
+    agent.textures =
+      agentSheet.spritesheet.animations["survivor-shield_handgun"];
+  }
+  agentShieldEquipped = !agentShieldEquipped;
+  agent.loop = false;
+  agent.animationSpeed = 0.5;
+  agent.play();
 }
 
 function getRndInteger(min, max) {
