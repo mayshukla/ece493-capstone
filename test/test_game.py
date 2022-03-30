@@ -249,6 +249,22 @@ class MyAgent(Agent):
         for agent in self.game.agents:
             agent[0].send_destroy_message.assert_called_with(1, "agent")
 
+    def test_player_exception_handling(self):
+        exception = Exception()
+        class MyAgent(Agent):
+            def run(self):
+                raise exception
+        player = MyAgent(self.game.gen_id(), self.game)
+
+        client = MagicMock()
+        self.game.agents = [[client, player], [MagicMock(), MagicMock()]]
+
+        self.game.prepare_to_start_simulation()
+
+        self.game.tick()
+
+        client.send_python_error.assert_called_with(exception)
+
 
 if __name__ == '__main__':
     unittest.main()
