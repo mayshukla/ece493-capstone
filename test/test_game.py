@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import MagicMock
 import math
 from time import time
+import sys
 
 from src.game import *
 from src.vector2 import Vector2
@@ -263,7 +264,9 @@ class MyAgent(Agent):
 
         self.game.tick()
 
-        client.send_python_error.assert_called_with(exception)
+        print(sys.exc_info())
+
+        client.send_python_error.assert_called()
 
 
 if __name__ == '__main__':
