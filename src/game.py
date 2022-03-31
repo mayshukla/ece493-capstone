@@ -10,6 +10,7 @@ from src.agent_state import AgentState
 from src.obstacle import Obstacle
 from src.vector2 import Vector2
 from time import time
+import sys
 
 PLAYABLE_AREA_X_MIN = 65
 PLAYABLE_AREA_X_MAX = 1024 - PLAYABLE_AREA_X_MIN
@@ -280,7 +281,8 @@ class Game():
             return True
         except Exception as e:
             client.send_debug_message("Failed to create Agent instance from player code")
-            client.send_python_error(e)
+            e_type, e_value, e_traceback = sys.exc_info()
+            client.send_python_error(e_type, e_value, e_traceback)
             return False
 
     def get_index_of_client_agent(self, client):
@@ -330,6 +332,7 @@ class Game():
         try:
             method()
         except Exception as e:
-            client.send_python_error(e)
+            e_type, e_value, e_traceback = sys.exc_info()
+            client.send_python_error(e_type, e_value, e_traceback)
             agent.had_error = True
             self.player_error = True
