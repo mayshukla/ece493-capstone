@@ -29,7 +29,7 @@ let app,
   projectileSpeed;
 
 export let agents = [];
-export let projectileMap;
+export let projectileMap = new Map();
 
 export default function initPixi() {
   //Create a Pixi Application
@@ -60,9 +60,7 @@ export default function initPixi() {
 //This `setup` function will run when the image has loaded
 function setup() {
   //#region SpriteAssetsCreation
-  // console.log(TextureCache);
 
-  //Create the shooter sprite
   id = resources["../assets/dungeon.json"].textures;
   agentSheet = resources["../assets/agentsheet.json"];
   obstacleSSheet = new PIXI.BaseTexture.from("../assets/obstacleboxes.png");
@@ -70,7 +68,6 @@ function setup() {
   let obstacles = createObstacles(obstacleSSheet);
   agents = createAgents(agentSheet);
 
-  projectileMap = new Map();
   projectileSpeed = 5;
 
   let background = new Sprite(id["dungeon.png"]);
@@ -85,10 +82,6 @@ function setup() {
 
   //   Start game loop
   // app.ticker.add((delta) => gameLoop(delta));
-
-  // // start listening for key input to move shoooter
-  // moveShooter();
-  // fireProjectile(agent);
 
   //   set the game state to play
   gameState = play;
@@ -186,27 +179,6 @@ function updateAgentPosition(agent) {
   agent.y += vy;
 }
 
-function updateProjectiles(projectileMap, projId) {
-  let speed = 5;
-  for (let index = 0; index < projectileMap.length; index++) {
-    currentProjectile = projectileMap.get(projId);
-    currentProjectile.position.x +=
-      Math.cos(currentProjectile.rotation) * speed;
-    currentProjectile.position.y +=
-      Math.sin(currentProjectile.rotation) * speed;
-
-    if (isDestroyed) {
-      destroyProjectiles(currentProjectile);
-    }
-  }
-}
-
-function destroyProjectiles(projectile) {
-  projectile.dead;
-  projectile.visible = false;
-  app.stage.removeChild(projectile);
-}
-
 function createSpriteFromSheet(path, x, y, width, height) {
   let texture = TextureCache[path];
   let textureRect = new Rectangle(x, y, width, height);
@@ -277,6 +249,20 @@ function createObstacles(obstacleSSheet) {
   greyBox3.y = greyBox1.y - 32;
   midObstacles.addChild(greyBox1, greyBox2, greyBox3);
 
+  // console.log(greyBox1.x, greyBox1.y);
+  // console.log(greyBox2.x, greyBox2.y);
+  // console.log(greyBox3.x, greyBox3.y);
+  // console.log(pinkBox.x, pinkBox.y);
+  // console.log(pinkBox2.x, pinkBox2.y);
+  // console.log(pinkBox3.x, pinkBox3.y);
+  // console.log(pinkBox4.x, pinkBox4.y);
+  // console.log(pinkBox5.x, pinkBox5.y);
+  // console.log(blueBox.x, blueBox.y);
+  // console.log(blueBox2.x, blueBox2.y);
+  // console.log(blueBox3.x, blueBox3.y);
+  // console.log(blueBox4.x, blueBox4.y);
+  // console.log(blueBox5.x, blueBox5.y);
+
   obstacles.addChild(leftObstacles, midObstacles, rightObstacles);
 
   return obstacles;
@@ -305,7 +291,7 @@ function createAgents(agentSheet) {
   agent0.vy = 0;
   agent0.angle = 0;
   agent0["id"] = 0;
-  agent0["Moving"] = false;
+  agent0["ShieldEquipped"] = false;
   agent0.anchor.set(0.95652, 0.75);
 
   agent1.animationSpeed = 0.3;
@@ -317,7 +303,7 @@ function createAgents(agentSheet) {
   agent1.vy = 0;
   agent1.angle = 180;
   agent1["id"] = 1;
-  agent1["Moving"] = false;
+  agent1["ShieldEquipped"] = false;
   agent1.anchor.set(0.95652, 0.75);
 
   console.log(agents);
@@ -325,20 +311,12 @@ function createAgents(agentSheet) {
   return agents;
 }
 
-function fireProjectile(agent) {
-  const space = keyboard(" ");
-
-  space.press = () => {
-    createProjectile(agent.rotation, {
-      x: agent.position.x,
-      y: agent.position.y,
-    });
-  };
-
-  space.release = () => {};
+function destroyAgent(agent) {
+  agent.visible = false;
+  app.stage.removeChild(agent);
 }
 
-function createProjectile(rotation, startPosition) {
+function createProjectile(id, angle, startPosition) {
   agent.stop();
   agent.textures = agentSheet.spritesheet.animations["survivor-idle_handgun"];
   agent.loop = false;
@@ -357,10 +335,22 @@ function createProjectile(rotation, startPosition) {
   projectile.anchor.set(0.5, 0.5);
   projectile.position.x = startPosition.x;
   projectile.position.y = startPosition.y;
-  projectile.rotation = rotation;
+  projectile.angle = angle;
 
-  projectileList.push(projectile);
+  projectileMap.set(id, projectile);
   app.stage.addChild(projectile);
+}
+
+function updateProjectilePosition(projId, x, y) {
+  let projectile = projectileMap.get(projId);
+  projectile.x = x;
+  projectile.y = y;
+}
+
+function destroyProjectiles(projId) {
+  let projectile = projectileMap.get(projId);
+  projectile.visible = false;
+  app.stage.removeChild(projectile);
 }
 
 export function setAgentPosition(agent, x, y) {
@@ -372,15 +362,15 @@ export function setAgentDirection(agent, angle) {
   agent.angle = angle;
 }
 
-function toggleShield(playerAgent, shieldEngaged) {
-  playerAgent.stop();
-  if (shieldEngaged) {
-    agent.textures = agentSheet.spritesheet.animations["survivor-idle_handgun"];
-  } else {
+function toggleShield(agent, shieldEnabled) {
+  agent.stop();
+  if (shieldEnabled) {
     agent.textures =
       agentSheet.spritesheet.animations["survivor-shield_handgun"];
+  } else {
+    agent.textures = agentSheet.spritesheet.animations["survivor-idle_handgun"];
   }
-  agentShieldEquipped = !agentShieldEquipped;
+  agent.ShieldEquipped = !agent.ShieldEquipped;
   agent.loop = false;
   agent.animationSpeed = 0.5;
   agent.play();

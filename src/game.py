@@ -126,6 +126,19 @@ class Game():
         self.agents[1][1].set_movement_direction(180)
 
         # TODO set obstacle positions and add to physics
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(479.5, 337.5), 32, 32))
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(511.5, 369.5), 32, 32))
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(447.5, 305.5), 32, 32))
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(799.1666666666666, 562.5), 32, 32))
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(831.1666666666666, 562.5), 32, 32))
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(799.1666666666666, 530.5), 32, 32))
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(863.1666666666666, 562.5), 32, 32))
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(799.1666666666666, 498.5), 32, 32))
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(159.83333333333334, 112.5), 32, 32))
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(127.83333333333334, 112.5), 32, 32))
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(159.83333333333334, 144.5), 32, 32))
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(95.83333333333334, 112.5), 32, 32))
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(159.83333333333334, 176.5), 32, 32))
 
         for agent in self.agents:
             self.physics.add_agent(agent[1].agent_state)

@@ -1,5 +1,5 @@
 import Message from './message.js';
-import { agents, setAgentPosition, setAgentDirection } from "./gameSetup.js";
+import { agents, setAgentPosition, setAgentDirection, projectileMap } from "./gameSetup.js";
 
 /**
  * Represents connection from client to server.
@@ -115,6 +115,11 @@ export default class ClientToServerConnection {
 
     onReceiveProjectileStates(projectile_states) {
         console.log(projectile_states);
+        // for (var projectile_state of projectile_states) {
+        //     if (projectileMap.get(projectile_state.id) === undefined) {
+
+        //     }
+        // }
     }
 
     onReceiveDestroy(id, type) {
