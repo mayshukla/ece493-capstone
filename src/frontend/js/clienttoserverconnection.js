@@ -43,7 +43,7 @@ export default class ClientToServerConnection {
                 break;
             case Message.RESULTS:
                 console.log(message.data);
-                this.onReceiveResults(message.data["winner"], message.data["tie"], message.data["players"]);
+                this.onReceiveResults(message.data["winner"], message.data["tie"], message.data["players"], message.data["error"]);
                 break;
             default:
                 console.error("ERROR: unhandled message type. Message:", message);
@@ -126,7 +126,7 @@ export default class ClientToServerConnection {
         console.log(`DESTROY id: ${id}, type: ${type}`);
     }
 
-    onReceiveResults(winner, tie, player_results) {
+    onReceiveResults(winner, tie, player_results, error) {
         console.log(player_results);
     }
 }

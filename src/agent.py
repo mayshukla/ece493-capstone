@@ -39,6 +39,9 @@ class Agent:
 
         self.survival_time = None
 
+        # True if player code had an error.
+        self.had_error = False
+
     def run(self):
         """This function will be called repeatedly in the main game loop.
         Players can override this function to implement agent behavior.

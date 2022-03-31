@@ -69,8 +69,8 @@ class ServerToClientConnection(tornado.websocket.WebSocketHandler):
         )
         self.send_message(message)
 
-    def send_python_error(self, exception):
-        error_str = format_exception(exception)
+    def send_python_error(self, e_type, e_value, e_traceback):
+        error_str = format_exception(e_type, e_value, e_traceback)
         error_str = "".join(error_str)
         message = Message(
             Message.PYTHON_ERROR,
@@ -78,10 +78,11 @@ class ServerToClientConnection(tornado.websocket.WebSocketHandler):
         )
         self.send_message(message)
 
-    def send_results(self, winner, tie, agents):
+    def send_results(self, winner, tie, agents, error=False):
         message = Message(Message.RESULTS, {
             "winner": winner,
             "tie": tie,
+            "error": error,
             "players": [
                 {
                     "class_name": type(agents[0][1]).__name__,

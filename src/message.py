@@ -51,6 +51,7 @@ class Message():
     # data: {
     #     winner: bool indicating whether the client receiving this message won
     #     tie: bool indicating whether the game ended in a tie
+    #     error: bool indicating whether the game ended due to an error in player code
     #     players: {
     #        class_name: name of the class submitted by the player
     #        survival_time: float survival time in seconds or None if the player survived the entire game

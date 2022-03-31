@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import MagicMock
 import math
 from time import time
+import sys
 
 from src.game import *
 from src.vector2 import Vector2
@@ -248,6 +249,24 @@ class MyAgent(Agent):
 
         for agent in self.game.agents:
             agent[0].send_destroy_message.assert_called_with(1, "agent")
+
+    def test_player_exception_handling(self):
+        exception = Exception()
+        class MyAgent(Agent):
+            def run(self):
+                raise exception
+        player = MyAgent(self.game.gen_id(), self.game)
+
+        client = MagicMock()
+        self.game.agents = [[client, player], [MagicMock(), MagicMock()]]
+
+        self.game.prepare_to_start_simulation()
+
+        self.game.tick()
+
+        print(sys.exc_info())
+
+        client.send_python_error.assert_called()
 
 
 if __name__ == '__main__':

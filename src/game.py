@@ -10,6 +10,7 @@ from src.agent_state import AgentState
 from src.obstacle import Obstacle
 from src.vector2 import Vector2
 from time import time
+import sys
 
 PLAYABLE_AREA_X_MIN = 65
 PLAYABLE_AREA_X_MAX = 1024 - PLAYABLE_AREA_X_MIN
@@ -48,6 +49,9 @@ class Game():
 
         self.game_start_time = None
 
+        # True if there was an error in player code.
+        self.player_error = False
+
     async def run_game_loop(self):
         """Continuously steps physics engine and updates clients"""
         self.prepare_to_start_simulation()
@@ -55,6 +59,19 @@ class Game():
 
         while True:
             game_ended = self.tick()
+
+            if self.player_error:
+                tie = True
+                for agent in self.agents:
+                    if not agent[1].had_error:
+                        tie = False
+                for agent in self.agents:
+                    winner = False
+                    if not agent[1].had_error:
+                        winner = True
+                    agent[0].send_results(winner, tie, self.agents, error=True)
+                return
+
             if game_ended:
                 tie = True
                 for agent in self.agents:
@@ -79,7 +96,7 @@ class Game():
 
         self.physics.step(1 / TICKS_PER_SECOND)
         for agent in self.agents:
-            agent[1]._tick()
+            self.run_player_defined_method(agent[1], lambda: agent[1]._tick(), agent[0])
 
         # determine if agents have scanned anything
         for agent in self.agents:
@@ -89,9 +106,9 @@ class Game():
                 if object == agent[1].agent_state:
                     continue
                 elif isinstance(object, AgentState):
-                    agent[1].on_enemy_scanned(object.position)
+                    self.run_player_defined_method(agent[1], lambda: agent[1].on_enemy_scanned(object.position), agent[0])
                 elif isinstance(object, Obstacle):
-                    agent[1].on_obstacle_scanned(object)
+                    self.run_player_defined_method(agent[1], lambda: agent[1].on_obstacle_scanned(object), agent[0])
 
         # check if an agent has been eliminated
         for agent in self.agents:
@@ -157,15 +174,17 @@ class Game():
                 # handle projectile-agent collision
                 if isinstance(object_state_1, AgentState):
                     agent = self.get_agent_from_state(object_state_1)
+                    client = self.get_client_from_state(object_state_1)
                     projectile = object_state_2
                 else:
                     agent = self.get_agent_from_state(object_state_2)
+                    client = self.get_client_from_state(object_state_2)
                     projectile = object_state_1
                 # damage the agent if their shields are not active
                 if not agent.is_shield_activated():
                     agent._decrement_health()
                     # callback
-                    agent.on_damage_taken()
+                    self.run_player_defined_method(agent, lambda: agent.on_damage_taken(), client)
                 # remove the projectile
                 self.physics.remove_object(projectile.id)
                 for agent in self.agents:
@@ -173,9 +192,9 @@ class Game():
             else:
                 # handle projectile-obstacle collision
                 if isinstance(object_state_1, ProjectileState):
-                    projectile = object_state_2
-                else:
                     projectile = object_state_1
+                else:
+                    projectile = object_state_2
                 # remove the projectile
                 self.physics.remove_object(projectile.id)
                 for agent in self.agents:
@@ -184,12 +203,15 @@ class Game():
             # handle agent-obstacle collision
             if isinstance(object_state_1, AgentState):
                 agent = self.get_agent_from_state(object_state_1)
+                client = self.get_client_from_state(object_state_1)
                 obstacle = object_state_2
             else:
                 agent = self.get_agent_from_state(object_state_2)
+                client = self.get_client_from_state(object_state_2)
                 obstacle = object_state_1
             # callback
             agent._add_collision(obstacle, contact_point)
+            self.run_player_defined_method(agent, lambda: agent.on_obstacle_hit(), client)
             agent.on_obstacle_hit()
 
     def separate_callback(self, object_state_1, object_state_2):
@@ -211,6 +233,14 @@ class Game():
         for agent in self.agents:
             if agent[1].agent_state.id == agent_state.id:
                 return agent[1]
+        return None
+
+    def get_client_from_state(self, agent_state):
+        """Returns the client that corresponds to the agent_state.
+        Returns None if the client cannot be found."""
+        for agent in self.agents:
+            if agent[1].agent_state.id == agent_state.id:
+                return agent[0]
         return None
 
     def exec_player_code(self, client, player_code, class_name):
@@ -264,7 +294,8 @@ class Game():
             return True
         except Exception as e:
             client.send_debug_message("Failed to create Agent instance from player code")
-            client.send_python_error(e)
+            e_type, e_value, e_traceback = sys.exc_info()
+            client.send_python_error(e_type, e_value, e_traceback)
             return False
 
     def get_index_of_client_agent(self, client):
@@ -303,3 +334,18 @@ class Game():
         )
 
         self.physics.add_projectile(projectile_state)
+
+    def run_player_defined_method(self, agent, method, client):
+        """Runs a player-defined method such as Agent.run() with proper error
+        handling.
+
+        Exceptions are caught and sent to the client.
+        """
+
+        try:
+            method()
+        except Exception as e:
+            e_type, e_value, e_traceback = sys.exc_info()
+            client.send_python_error(e_type, e_value, e_traceback)
+            agent.had_error = True
+            self.player_error = True

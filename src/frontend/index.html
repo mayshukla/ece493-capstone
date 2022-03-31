@@ -7,6 +7,10 @@
 
   <title>ECE 493 Capstone Project</title>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="css/style.css">
 
   <script src="./pixifiles/pixi.min.js"></script>
@@ -15,22 +19,58 @@
 <body>
   <script src="js/main.js" type="module"></script>
 
-  <h1>ECE 493 Capstone Project</h1>
+  <h1>ECE 493 CAPSTONE PROJECT</h1>
 
   <div id="queueScreen">Waiting in matchmaking queue.</div>
 
   <div id="codeInputScreen" class="hidden">
-    <label for="classNameArea">Class name:</label>
-    <textarea id="classNameArea" rows="1" cols="80">
-MyAgent
-    </textarea>
-    <textarea id="codeArea" rows="30" cols="80">
+    <div>
+      <label for="classNameArea">Class name:</label>
+      <div>
+        <textarea id="classNameArea" rows="1" cols="80">MyAgent</textarea>
+      </div>
+    </div>
+    <div>
+      <label for="codeArea">Your code:</label>
+      <div>
+        <textarea id="codeArea" rows="30" cols="80">
 class MyAgent(Agent):
-    """Enter your code here ..."""</textarea>
+  """Enter your code here ..."""
+
+  def run(self):
+    """This function will be called repeatedly in the main game loop.
+    You should override this function to implement agent behavior.
+    """
+    pass
+
+  def on_enemy_scanned(self, enemy_position):
+    """Callback that is called when an enemy is nearby.
+    Override this function to respond to a nearby enemy!"""
+    pass
+
+  def on_obstacle_scanned(self, obstacle):
+    """Callback that is called when an obstacle is nearby. 
+    Override this function to navigate obstacles!."""
+    pass
+
+  def on_damage_taken(self):
+    """Callback that is called when your agent is damaged by a projectile.
+    Override this function to respond to an enemies attacks!"""
+    pass
+
+  def on_obstacle_hit(self):
+    """Callback that is called when your agent runs into an obstacle.
+    Override this function to navigate obstacles!."""
+    pass
+        </textarea>
+      </div>
+
+    </div>
     <button type="button" id="submitButton">Submit Code</button>
   </div>
 
   <div id="resultsScreen" class="hidden">
+    <p id="declareErrorArea"></p>
     <p id="declareWinnerArea"></p>
     <p id="individualResultsArea"></p>
   </div>
