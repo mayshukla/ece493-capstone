@@ -50,6 +50,7 @@ class PhysicsEngine:
         # stop the objects from moving
         arbiter.shapes[0].body.velocity = (0, 0)
         arbiter.shapes[1].body.velocity = (0, 0)
+        # print(self.bodies)
         object_id_1 = self._get_body_id(arbiter.shapes[0].body)
         object_id_2 = self._get_body_id(arbiter.shapes[1].body)
         object_state_1 = self._get_object_state_from_id(object_id_1)
@@ -156,6 +157,7 @@ class PhysicsEngine:
             raise ValueError(f"Duplicate id {agent_state.id} found")
         self.bodies[agent_state.id] = agent_body
         self.object_states.append(agent_state)
+        print(f"added agent {agent_state.id}")
 
     def add_obstacle(self, obstacle):
         """
