@@ -178,9 +178,9 @@ class Game():
             else:
                 # handle projectile-obstacle collision
                 if isinstance(object_state_1, ProjectileState):
-                    projectile = object_state_2
-                else:
                     projectile = object_state_1
+                else:
+                    projectile = object_state_2
                 # remove the projectile
                 self.physics.remove_object(projectile.id)
                 for agent in self.agents:
