@@ -311,12 +311,13 @@ function createAgents(agentSheet) {
   return agents;
 }
 
-function destroyAgent(agent) {
+export function destroyAgent(agent) {
   agent.visible = false;
   app.stage.removeChild(agent);
 }
 
-function createProjectile(id, angle, startPosition) {
+export function createProjectile(agentId, projId, angle, startPosition) {
+  let agent = findAgent(agentId);
   agent.stop();
   agent.textures = agentSheet.spritesheet.animations["survivor-idle_handgun"];
   agent.loop = false;
@@ -337,17 +338,18 @@ function createProjectile(id, angle, startPosition) {
   projectile.position.y = startPosition.y;
   projectile.angle = angle;
 
-  projectileMap.set(id, projectile);
+  projectileMap.set(projId, projectile);
+  console.log(projectileMap);
   app.stage.addChild(projectile);
 }
 
-function updateProjectilePosition(projId, x, y) {
+export function updateProjectilePosition(projId, x, y) {
   let projectile = projectileMap.get(projId);
   projectile.x = x;
   projectile.y = y;
 }
 
-function destroyProjectiles(projId) {
+export function destroyProjectile(projId) {
   let projectile = projectileMap.get(projId);
   projectile.visible = false;
   app.stage.removeChild(projectile);
@@ -362,7 +364,7 @@ export function setAgentDirection(agent, angle) {
   agent.angle = angle;
 }
 
-function toggleShield(agent, shieldEnabled) {
+export function toggleAgentShield(agent, shieldEnabled) {
   agent.stop();
   if (shieldEnabled) {
     agent.textures =
@@ -378,4 +380,14 @@ function toggleShield(agent, shieldEnabled) {
 
 function getRndInteger(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function findAgent(agentId) {
+  var agent = agents.find((obj) => {
+    console.log(obj.id);
+    console.log(agentId);
+    return obj.id === agentId;
+  });
+
+  return agent;
 }
