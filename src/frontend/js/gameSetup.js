@@ -192,6 +192,8 @@ function createObstacles(obstacleSSheet) {
   let midObstacles = new Container();
   let leftObstacles = new Container();
   let rightObstacles = new Container();
+  let scaleX = 50 / 32;
+  let scaleY = 50 / 32;
 
   obstacleSheet = {};
   obstacleSheet["blueBox"] = [
@@ -211,14 +213,19 @@ function createObstacles(obstacleSSheet) {
   let blueBox5 = new Sprite(obstacleSheet["blueBox"][0]);
   blueBox.x = PLAYABLE_AREA_X_MAX / 6;
   blueBox.y = PLAYABLE_AREA_Y_MAX / 6;
+  blueBox.scale.set(scaleX, scaleY);
   blueBox2.x = blueBox.x - 32;
   blueBox2.y = blueBox.y;
+  blueBox2.scale.set(scaleX, scaleY);
   blueBox3.x = blueBox.x;
   blueBox3.y = blueBox.y + 32;
+  blueBox3.scale.set(scaleX, scaleY);
   blueBox4.x = blueBox2.x - 32;
   blueBox4.y = blueBox.y;
+  blueBox4.scale.set(scaleX, scaleY);
   blueBox5.x = blueBox3.x;
   blueBox5.y = blueBox3.y + 32;
+  blueBox5.scale.set(scaleX, scaleY);
   leftObstacles.addChild(blueBox, blueBox2, blueBox3, blueBox4, blueBox5);
 
   let pinkBox = new Sprite(obstacleSheet["pinkBox"][0]);
@@ -228,14 +235,19 @@ function createObstacles(obstacleSSheet) {
   let pinkBox5 = new Sprite(obstacleSheet["pinkBox"][0]);
   pinkBox.x = (PLAYABLE_AREA_X_MAX * 5) / 6;
   pinkBox.y = (PLAYABLE_AREA_Y_MAX * 5) / 6;
+  pinkBox.scale.set(scaleX, scaleY);
   pinkBox2.x = pinkBox.x + 32;
   pinkBox2.y = pinkBox.y;
+  pinkBox2.scale.set(scaleX, scaleY);
   pinkBox3.x = pinkBox.x;
   pinkBox3.y = pinkBox.y - 32;
+  pinkBox3.scale.set(scaleX, scaleY);
   pinkBox4.x = pinkBox2.x + 32;
   pinkBox4.y = pinkBox.y;
+  pinkBox4.scale.set(scaleX, scaleY);
   pinkBox5.x = pinkBox3.x;
   pinkBox5.y = pinkBox3.y - 32;
+  pinkBox5.scale.set(scaleX, scaleY);
   rightObstacles.addChild(pinkBox, pinkBox2, pinkBox3, pinkBox4, pinkBox5);
 
   let greyBox1 = new Sprite(obstacleSheet["greyBox1"][0]);
@@ -243,10 +255,13 @@ function createObstacles(obstacleSSheet) {
   let greyBox3 = new Sprite(obstacleSheet["greyBox1"][0]);
   greyBox1.x = PLAYABLE_AREA_X_MAX / 2;
   greyBox1.y = PLAYABLE_AREA_Y_MAX / 2;
+  greyBox1.scale.set(scaleX, scaleY);
   greyBox2.x = greyBox1.x + 32;
   greyBox2.y = greyBox1.y + 32;
+  greyBox2.scale.set(scaleX, scaleY);
   greyBox3.x = greyBox1.x - 32;
   greyBox3.y = greyBox1.y - 32;
+  greyBox3.scale.set(scaleX, scaleY);
   midObstacles.addChild(greyBox1, greyBox2, greyBox3);
 
   // console.log(greyBox1.x, greyBox1.y);
@@ -311,18 +326,21 @@ function createAgents(agentSheet) {
   return agents;
 }
 
-export function destroyAgent(agent) {
+export function destroyAgent(agentId) {
+  let agent = findAgent(agentId);
   agent.visible = false;
+  console.log("app before", app);
   app.stage.removeChild(agent);
+  console.log("app after", app);
 }
 
-export function createProjectile(agentId, projId, angle, startPosition) {
-  let agent = findAgent(agentId);
-  agent.stop();
-  agent.textures = agentSheet.spritesheet.animations["survivor-idle_handgun"];
-  agent.loop = false;
-  agent.animationSpeed = 1;
-  agent.play();
+export function createProjectile(projId, angle, x, y) {
+  // let agent = findAgent(agentId);
+  // agent.stop();
+  // agent.textures = agentSheet.spritesheet.animations["survivor-idle_handgun"];
+  // agent.loop = false;
+  // agent.animationSpeed = 1;
+  // agent.play();
 
   var projectile = createSpriteFromSheet(
     "../assets/bulletSprite.png",
@@ -334,8 +352,8 @@ export function createProjectile(agentId, projId, angle, startPosition) {
   projectile.width = 10;
   projectile.height = 5;
   projectile.anchor.set(0.5, 0.5);
-  projectile.position.x = startPosition.x;
-  projectile.position.y = startPosition.y;
+  projectile.position.x = x;
+  projectile.position.y = y;
   projectile.angle = angle;
 
   projectileMap.set(projId, projectile);

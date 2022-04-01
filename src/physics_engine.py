@@ -37,7 +37,7 @@ class PhysicsEngine:
 
     def begin_collision_handler(self, arbiter, space, data):
         """
-        Called when two objects collide for the first time. 
+        Called when two objects collide for the first time.
 
         Args:
             arbiter: Contains information about the objects that collided.
@@ -80,7 +80,7 @@ class PhysicsEngine:
         if "separate_callback" in data:
             data["separate_callback"](object_state_1, object_state_2)
         return True
-        
+
     def add_on_collision_callback(self, callback):
         """
         Adds a callback function that will be called in "begin_collision_handler".
@@ -183,7 +183,7 @@ class PhysicsEngine:
         lower_right_point = (obstacle.position.x + obstacle.width/2, obstacle.position.y - obstacle.height/2)
         start_points = [lower_left_point, upper_left_point, upper_right_point, lower_right_point]
         end_points = [upper_left_point, upper_right_point, lower_right_point, lower_left_point]
-        
+
         for i in range(4):
             segment = pymunk.Segment(obstacle_body, start_points[i], end_points[i], 15)
             segment.collision_type = PhysicsEngine.COLLISION_TYPE_1
@@ -333,7 +333,7 @@ class PhysicsEngine:
         right_boundary_segment = pymunk.Segment(right_boundary_body, (PhysicsEngine.SPACE_WIDTH, 0), (PhysicsEngine.SPACE_WIDTH, PhysicsEngine.SPACE_HEIGHT), 100)
         right_boundary_segment.collision_type = PhysicsEngine.COLLISION_TYPE_1
         self.space.add(right_boundary_body, right_boundary_segment)
-        
+
         upper_boundary_obstacle = Obstacle(-3, Vector2(0, 0), 0, 0)
         upper_boundary_body = pymunk.Body(mass=0, moment=0, body_type=pymunk.Body.STATIC)
         self.bodies[-3] = upper_boundary_body
@@ -397,7 +397,7 @@ if __name__ == '__main__':
     '''circle2.filter = pymunk.ShapeFilter(categories=0b1)
 
     # can query area around a point for shapes
-    # useful for implementing scan functions 
+    # useful for implementing scan functions
     query = pe.space.point_query(point=body.position, max_distance=500, shape_filter=pymunk.ShapeFilter())
     print(query)
 

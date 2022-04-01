@@ -4,9 +4,11 @@ import {
   setAgentPosition,
   setAgentDirection,
   toggleAgentShield,
+  projectileMap,
   createProjectile,
   updateProjectilePosition,
   destroyProjectile,
+  destroyAgent,
 } from "./gameSetup.js";
 
 /**
@@ -136,19 +138,30 @@ export default class ClientToServerConnection {
     console.log(projectile_states);
     for (var projectile_state of projectile_states) {
       console.log(projectile_state);
-    //   if (projectileMap.get(projectile_state.id) === undefined) {
-    //     createProjectile(
-    //       projectile_state.attackerId,
-    //       projectile_state.id,
-    //       projectile_state.angle,
-    //       projectile_state.position
-    //     );
-    //   }
+      if (projectileMap.get(projectile_state.id) === undefined) {
+        createProjectile(
+          projectile_state.id,
+          projectile_state.angle,
+          projectile_state.position.x,
+          projectile_state.position.y
+        );
+      } else {
+        updateProjectilePosition(
+          projectile_state.id,
+          projectile_state.position.x,
+          projectile_state.position.y
+        );
+      }
     }
   }
 
   onReceiveDestroy(id, type) {
     console.log(`DESTROY id: ${id}, type: ${type}`);
+    if (type === "projectile") {
+      destroyProjectile(id);
+    } else if (type === "agent") {
+      destroyAgent(id);
+    }
   }
 
   onReceiveResults(winner, tie, player_results, error) {
