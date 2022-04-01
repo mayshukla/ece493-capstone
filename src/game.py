@@ -107,15 +107,15 @@ class Game():
                     continue
                 elif isinstance(object, AgentState):
                     self.run_player_defined_method(agent[1], lambda: agent[1].on_enemy_scanned(object.position), agent[0])
+                    agent[1]._clip_velocity()
                 elif isinstance(object, Obstacle):
                     self.run_player_defined_method(agent[1], lambda: agent[1].on_obstacle_scanned(object), agent[0])
+                    agent[1]._clip_velocity()
 
         # check if an agent has been eliminated
         for agent in self.agents:
             if agent[1].get_health() != 0:
                 continue
-            # TODO do we need to handle both agents reaching 0 health in the
-            # same tick?
             game_ended = True
             agent[1].survival_time = time() - self.game_start_time
             destroyed_id = agent[1].agent_state.id
@@ -341,6 +341,7 @@ class Game():
         try:
             method()
         except Exception as e:
+            print(e)
             e_type, e_value, e_traceback = sys.exc_info()
             client.send_python_error(e_type, e_value, e_traceback)
             agent.had_error = True
