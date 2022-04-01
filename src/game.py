@@ -167,6 +167,11 @@ class Game():
             # destroy both projectiles
             self.physics.remove_object(object_state_1.id)
             self.physics.remove_object(object_state_2.id)
+            self.projectiles.remove(object_state_1)
+            self.projectiles.remove(object_state_2)
+            for agent in self.agents:
+                    agent[0].send_destroy_message(object_state_1.id, "projectile")
+                    agent[0].send_destroy_message(object_state_2.id, "projectile")
         elif isinstance(object_state_1, AgentState) and isinstance(object_state_2, AgentState):
             pass
         elif isinstance(object_state_1, ProjectileState) or isinstance(object_state_2, ProjectileState):
@@ -187,6 +192,7 @@ class Game():
                     self.run_player_defined_method(agent, lambda: agent.on_damage_taken(), client)
                 # remove the projectile
                 self.physics.remove_object(projectile.id)
+                self.projectiles.remove(projectile)
                 for agent in self.agents:
                     agent[0].send_destroy_message(projectile.id, "projectile")
             else:
@@ -197,6 +203,7 @@ class Game():
                     projectile = object_state_2
                 # remove the projectile
                 self.physics.remove_object(projectile.id)
+                self.projectiles.remove(projectile)
                 for agent in self.agents:
                     agent[0].send_destroy_message(projectile.id, "projectile")
         else:
@@ -332,6 +339,8 @@ class Game():
             velocity,
             attackerId
         )
+
+        self.projectiles.append(projectile_state)
 
         self.physics.add_projectile(projectile_state)
 
