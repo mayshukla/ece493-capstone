@@ -3,7 +3,9 @@ import pymunk.pygame_util
 import pygame
 import pymunk.vec2d
 from src.globals import *
+from src.agent_state import AgentState
 from src.obstacle import Obstacle
+from src.projectile_state import ProjectileState
 from src.vector2 import Vector2
 
 class PhysicsEngine:
@@ -47,14 +49,16 @@ class PhysicsEngine:
             True if the collision should be processed normally.
             False if the collision should be ignored.
         """
-        # stop the objects from moving
-        arbiter.shapes[0].body.velocity = (0, 0)
-        arbiter.shapes[1].body.velocity = (0, 0)
         # print(self.bodies)
         object_id_1 = self._get_body_id(arbiter.shapes[0].body)
         object_id_2 = self._get_body_id(arbiter.shapes[1].body)
         object_state_1 = self._get_object_state_from_id(object_id_1)
         object_state_2 = self._get_object_state_from_id(object_id_2)
+        if (not (isinstance(object_state_1, ProjectileState) and isinstance(object_state_2, AgentState))) \
+            and (not (isinstance(object_state_1, AgentState) and isinstance(object_state_2, ProjectileState))):
+            # stop the objects from moving
+            arbiter.shapes[0].body.velocity = (0, 0)
+            arbiter.shapes[1].body.velocity = (0, 0)
         print(f"Collision between object ids: {object_id_1} and {object_id_2}")
         # call the optional callback function
         if "collision_callback" in data:
