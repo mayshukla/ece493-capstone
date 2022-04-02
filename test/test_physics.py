@@ -48,7 +48,7 @@ class TestPhysicsEngine(unittest.TestCase):
         obstacle = Obstacle(2, Vector2(100, 70), 30, 30)
         self.pe.add_agent(agent_state)
         self.pe.add_obstacle(obstacle)
-        self.pe.step(2)
+        self.pe.step(1)
         assert(self.callback.called)
         assert(len(self.pe.space.bodies) == 2 + self.num_boundaries)
 
