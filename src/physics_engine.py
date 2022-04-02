@@ -177,10 +177,10 @@ class PhysicsEngine:
         self.space.add(obstacle_body)
 
         # TODO: make the obstacle shapes match the obstacle sprites
-        lower_left_point = (obstacle.position.x - obstacle.width/2, obstacle.position.y - obstacle.height/2)
-        upper_left_point = (obstacle.position.x - obstacle.width/2, obstacle.position.y + obstacle.height/2)
-        upper_right_point = (obstacle.position.x + obstacle.width/2, obstacle.position.y + obstacle.height/2)
-        lower_right_point = (obstacle.position.x + obstacle.width/2, obstacle.position.y - obstacle.height/2)
+        lower_left_point = (-obstacle.width/2, -obstacle.height/2)
+        upper_left_point = (-obstacle.width/2, +obstacle.height/2)
+        upper_right_point = (+obstacle.width/2, +obstacle.height/2)
+        lower_right_point = (+obstacle.width/2, -obstacle.height/2)
         start_points = [lower_left_point, upper_left_point, upper_right_point, lower_right_point]
         end_points = [upper_left_point, upper_right_point, lower_right_point, lower_left_point]
         
