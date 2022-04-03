@@ -1,3 +1,9 @@
+"""
+The game server that matches opponents and creates games.
+
+Implements the following requirement:
+FR18 - Online.Matchmaking
+"""
 from collections import deque
 
 from src.game import Game

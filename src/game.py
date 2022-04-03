@@ -1,3 +1,16 @@
+'''
+Controls the initialization of a game and the main game loop.
+Implements the game rules and logic.
+
+This module satisfies parts of the following functional requirments:
+FR2 - UI.RunGame
+FR4 - UI.ConsistentState
+FR6 - Python.Interpret
+FR15 - Agent.Elimination
+FR16 - Agent.Win
+FR17 - API
+'''
+
 import asyncio
 
 import tornado.ioloop
@@ -206,6 +219,7 @@ class Game():
             # callback
             agent._add_collision(obstacle, contact_point)
             self.run_player_defined_method(agent, lambda: agent.on_obstacle_hit(), client)
+            agent.on_obstacle_hit()
 
     def separate_callback(self, object_state_1, object_state_2):
         """Callback for when physics engine detects that two colliding objects have now separated."""

@@ -1,3 +1,9 @@
+'''
+Class to represent obstacles in the game.
+
+Supports the implementation of the following requirements:
+FR14 - Map.Walls
+'''
 from src.object_state import ObjectState
 
 class Obstacle(ObjectState):

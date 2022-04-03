@@ -1,3 +1,17 @@
+"""
+Implements the player API and part of the game logic.
+
+Part of the implementation of the following requirements:
+FR7 - Agent.HealthState
+FR8 - Agent.RangedAttack
+FR9 - Agent.Shields
+FR10 - Agent.PositionState
+FR11 - Agent.Movement
+FR12 - Movement.Direction
+FR13 - Movement.Speed
+FR17 - API
+"""
+
 from src.agent_state import AgentState
 from src.vector2 import Vector2
 from src.globals import *

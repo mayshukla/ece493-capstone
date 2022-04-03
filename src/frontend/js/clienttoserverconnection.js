@@ -1,3 +1,12 @@
+/*
+* Handles server-client communication.
+*
+* This module is part of the following functional requirments:
+* FR2 - UI.RunGame
+* FR4 - UI.ConsistentState
+* FR5 - UI.ResultsScreen
+*
+*/
 import Message from './message.js';
 import { agents, setAgentPosition, setAgentDirection } from "./gameSetup.js";
 
