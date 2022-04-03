@@ -1,3 +1,10 @@
+"""
+Handles starting the game server and server-client communication.
+
+This module is part of the implementation of the following requirement:
+FR4 - UI.ConsistentState
+"""
+
 import argparse
 from traceback import format_exception
 import tornado.ioloop

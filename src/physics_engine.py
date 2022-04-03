@@ -1,3 +1,14 @@
+"""
+The PhysicsEngine class is part of the implementation of the following requirements:
+
+FR8 - Agent.RangedAttack
+FR10 - Agent.PositionState
+FR11 - Agent.Movement
+FR12 - Movement.Direction
+FR13 - Movement.Speed
+FR14 - Map.Walls
+"""
+
 import pymunk
 import pymunk.pygame_util
 import pygame

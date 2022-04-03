@@ -1,3 +1,12 @@
+"""
+Message class supports the implementation of the following requirements:
+
+FR1 - UI.InputCode
+FR2 - UI.RunGame
+FR4 - UI.ConsistentState
+FR5 - UI.ResultsScreen
+"""
+
 import json
 
 class Message():

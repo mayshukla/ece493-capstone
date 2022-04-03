@@ -1,3 +1,10 @@
+'''
+Class that represents projectiles in the game.
+
+Part of the implementation of the following requirement:
+FR8 - Agent.RangedAttack
+'''
+
 from src.dynamic_object_state import DynamicObjectState
 
 class ProjectileState(DynamicObjectState):

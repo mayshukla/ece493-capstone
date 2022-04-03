@@ -2,6 +2,12 @@ import initPixi from "./gameSetup.js";
 
 /**
  * Deals with UI and rendering.
+ * 
+ * Implements parts of the following requirements:
+ * FR1 - UI.InputCode
+ * FR2 - UI.RunGame
+ * FR3 - UI.RenderGame
+ * FR5 - UI.ResultsScreen
  */
 export default class Renderer {
     #server;

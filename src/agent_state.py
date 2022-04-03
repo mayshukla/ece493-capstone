@@ -1,7 +1,18 @@
+'''
+Class that represents that state of agents within the game.
+
+Part of the implementation of the following requirements:
+FR7 - Agent.HealthState
+FR9 - Agent.Shields
+FR10 - Agent.PositionState
+FR11 - Agent.Movement
+FR12 - Movement.Direction
+FR13 - Movement.Speed
+'''
 from src.dynamic_object_state import DynamicObjectState
 
 class AgentState(DynamicObjectState):
-    """Extends DynamicObjectState for projectiles."""
+    """Extends DynamicObjectState for agents."""
 
     def __init__(self, id, position, velocity, health, shieldEnabled=False):
         """Constructor
