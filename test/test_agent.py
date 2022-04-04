@@ -94,6 +94,7 @@ class TestAgent(unittest.TestCase):
 
     def test_set_movement_speed(self):
         self.agent.agent_state.velocity = Vector2.from_angle_magnitude(240, 5.5)
+        self.agent.agent_state.angle = 240
 
         self.agent.set_movement_speed(6.6)
         self.assertAlmostEqual(self.agent.agent_state.velocity.get_magnitude(), 6.6)
