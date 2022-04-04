@@ -27,13 +27,14 @@ class AgentState(DynamicObjectState):
         super().__init__(id, position, velocity)
         self.health = health
         self.shieldEnabled = shieldEnabled
+        self.angle = velocity.get_angle()
 
     def to_json_dict(self):
         json_dict = {
             'id': self.id,
             'position': {'x': self.position.x, 'y': self.position.y},
             'velocity': {'x': self.velocity.x, 'y': self.velocity.y},
-            'angle': self.velocity.get_angle(),
+            'angle': self.angle,
             'health': self.health,
             'shieldEnabled': self.shieldEnabled
         }

@@ -173,7 +173,7 @@ class Agent:
         if self.attack_cooldown_timer.get_time() > 0:
             max_speed = Agent.MAX_SPEED_DURING_ATTACK
 
-        angle = self.agent_state.velocity.get_angle()
+        angle = self.agent_state.angle
         magnitude = speed if speed <= max_speed else max_speed
         self.agent_state.velocity = Vector2.from_angle_magnitude(angle, magnitude)
         #print(self.agent_state.velocity)
@@ -244,6 +244,7 @@ class Agent:
         # print("setting angle: " + str(angle))
         magnitude = self.agent_state.velocity.get_magnitude()
         self.agent_state.velocity = Vector2.from_angle_magnitude(angle, magnitude)
+        self.agent_state.angle = angle
 
     def _set_position(self, position):
         """
