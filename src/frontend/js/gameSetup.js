@@ -312,6 +312,7 @@ function createAgents(agentSheet) {
   agent0["id"] = 0;
   agent0["ShieldEquipped"] = false;
   agent0.anchor.set(0.95652, 0.75);
+  agent0.health = 100;
 
   agent1.animationSpeed = 0.3;
   agent1.play();
@@ -324,6 +325,7 @@ function createAgents(agentSheet) {
   agent1["id"] = 1;
   agent1["ShieldEquipped"] = false;
   agent1.anchor.set(0.95652, 0.75);
+  agent1.health = 100;
 
   console.log(agents);
 
@@ -384,6 +386,13 @@ export function setAgentPosition(agent, x, y) {
 
 export function setAgentDirection(agent, angle) {
   agent.angle = angle;
+}
+
+export function setAgentHealth(agent, health) {
+  if (agent.health !== health) {
+    // Damage taken
+  }
+  agent.health = health;
 }
 
 export function toggleAgentShield(agent, shieldEnabled) {
