@@ -150,17 +150,35 @@ class Game():
         - Initializes physics engine
         """
         # TODO figure out what starting positions should be
-        self.agents[0][1]._set_position(Vector2(PLAYABLE_AREA_X_MIN + 65, 350))
+        self.agents[0][1]._set_position(Vector2(PLAYABLE_AREA_X_MIN + 72, 350))
         self.agents[0][1].set_movement_direction(0)
-        self.agents[1][1]._set_position(Vector2(PLAYABLE_AREA_X_MAX - 65, 350))
+        self.agents[1][1]._set_position(Vector2(PLAYABLE_AREA_X_MAX - 96 - 72, 350))
         self.agents[1][1].set_movement_direction(180)
 
         # TODO set obstacle positions and add to physics
 
         # left obstacles
-        init_x = PLAYABLE_AREA_X_MIN + 65
-        init_y = 350 + 200
+        init_x = PLAYABLE_AREA_X_MIN + 72 + 64
+        init_y = 137
         self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x, init_y), 32, 32))
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x, init_y + 10 + 32), 32, 32))
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x, init_y + 10 + 64), 32, 32))
+
+        # middle obstacles
+        init_x = PLAYABLE_AREA_X_MAX/2
+        init_y = 350
+
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x, init_y), 32, 32))
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x - 32, init_y - 32), 32, 32))
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x + 32, init_y + 32), 32, 32))
+
+        # right obstacles
+        init_x = PLAYABLE_AREA_X_MAX - 96 - 72
+        init_y = 570
+
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x, init_y), 32, 32))
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x, init_y - 10 - 32), 32, 32))
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x, init_y - 10 - 64), 32, 32))
 
 
         for agent in self.agents:

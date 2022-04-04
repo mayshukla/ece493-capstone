@@ -1,10 +1,10 @@
 /*
-* Initializes the game visuals and updates the rendering based on server messages.
-*
-* This module satisfies the following functional requirements:
-* FR3 - UI.RenderGame
-* FR4 - UI.ConsistentState
-*/
+ * Initializes the game visuals and updates the rendering based on server messages.
+ *
+ * This module satisfies the following functional requirements:
+ * FR3 - UI.RenderGame
+ * FR4 - UI.ConsistentState
+ */
 
 //Aliases
 const Application = PIXI.Application,
@@ -55,7 +55,6 @@ export default function initPixi() {
 
   //load an image and run the `setup` function when it's done
   loader
-    .add("../assets/sample.png")
     .add("../assets/dungeon.json")
     .add("../assets/agentsheet.json")
     .add("../assets/agentsheet.png")
@@ -200,8 +199,10 @@ function createObstacles(obstacleSSheet) {
   let midObstacles = new Container();
   let leftObstacles = new Container();
   let rightObstacles = new Container();
-  let scaleX = 50 / 32;
-  let scaleY = 50 / 32;
+  // server x - 45, server y - 32
+  let init_x = PLAYABLE_AREA_X_MIN + 27 + 64;
+  let init_y = 105;
+  let ratio = 1.25;
 
   obstacleSheet = {};
   obstacleSheet["blueBox"] = [
@@ -215,63 +216,63 @@ function createObstacles(obstacleSSheet) {
   ];
 
   let blueBox = new Sprite(obstacleSheet["blueBox"][0]);
+  blueBox.scale.set(ratio);
   let blueBox2 = new Sprite(obstacleSheet["blueBox"][0]);
+  blueBox2.scale.set(ratio);
   let blueBox3 = new Sprite(obstacleSheet["blueBox"][0]);
-  let blueBox4 = new Sprite(obstacleSheet["blueBox"][0]);
-  let blueBox5 = new Sprite(obstacleSheet["blueBox"][0]);
-  blueBox.x = PLAYABLE_AREA_X_MAX / 6;
-  blueBox.y = PLAYABLE_AREA_Y_MAX / 6;
-  blueBox.scale.set(scaleX, scaleY);
-  blueBox2.x = blueBox.x - 32;
-  blueBox2.y = blueBox.y;
-  blueBox2.scale.set(scaleX, scaleY);
-  blueBox3.x = blueBox.x;
-  blueBox3.y = blueBox.y + 32;
-  blueBox3.scale.set(scaleX, scaleY);
-  blueBox4.x = blueBox2.x - 32;
-  blueBox4.y = blueBox.y;
-  blueBox4.scale.set(scaleX, scaleY);
-  blueBox5.x = blueBox3.x;
-  blueBox5.y = blueBox3.y + 32;
-  blueBox5.scale.set(scaleX, scaleY);
-  leftObstacles.addChild(blueBox, blueBox2, blueBox3, blueBox4, blueBox5);
+  blueBox3.scale.set(ratio);
 
-  let pinkBox = new Sprite(obstacleSheet["pinkBox"][0]);
-  let pinkBox2 = new Sprite(obstacleSheet["pinkBox"][0]);
-  let pinkBox3 = new Sprite(obstacleSheet["pinkBox"][0]);
-  let pinkBox4 = new Sprite(obstacleSheet["pinkBox"][0]);
-  let pinkBox5 = new Sprite(obstacleSheet["pinkBox"][0]);
-  pinkBox.x = (PLAYABLE_AREA_X_MAX * 5) / 6;
-  pinkBox.y = (PLAYABLE_AREA_Y_MAX * 5) / 6;
-  pinkBox.scale.set(scaleX, scaleY);
-  pinkBox2.x = pinkBox.x + 32;
-  pinkBox2.y = pinkBox.y;
-  pinkBox2.scale.set(scaleX, scaleY);
-  pinkBox3.x = pinkBox.x;
-  pinkBox3.y = pinkBox.y - 32;
-  pinkBox3.scale.set(scaleX, scaleY);
-  pinkBox4.x = pinkBox2.x + 32;
-  pinkBox4.y = pinkBox.y;
-  pinkBox4.scale.set(scaleX, scaleY);
-  pinkBox5.x = pinkBox3.x;
-  pinkBox5.y = pinkBox3.y - 32;
-  pinkBox5.scale.set(scaleX, scaleY);
-  rightObstacles.addChild(pinkBox, pinkBox2, pinkBox3, pinkBox4, pinkBox5);
+  console.log(blueBox);
+
+  blueBox.x = init_x;
+  blueBox.y = init_y;
+  blueBox2.x = blueBox.x;
+  blueBox2.y = blueBox.y + 15 + 32;
+  blueBox3.x = blueBox2.x;
+  blueBox3.y = blueBox2.y + 15 + 32;
+  leftObstacles.addChild(blueBox, blueBox2, blueBox3);
+
+  init_x = PLAYABLE_AREA_X_MAX / 2 - 45;
+  init_y = 350 - 30;
 
   let greyBox1 = new Sprite(obstacleSheet["greyBox1"][0]);
+  greyBox1.scale.set(ratio);
   let greyBox2 = new Sprite(obstacleSheet["greyBox1"][0]);
+  greyBox2.scale.set(ratio);
   let greyBox3 = new Sprite(obstacleSheet["greyBox1"][0]);
-  greyBox1.x = PLAYABLE_AREA_X_MAX / 2;
-  greyBox1.y = PLAYABLE_AREA_Y_MAX / 2;
-  greyBox1.scale.set(scaleX, scaleY);
-  greyBox2.x = greyBox1.x + 32;
-  greyBox2.y = greyBox1.y + 32;
-  greyBox2.scale.set(scaleX, scaleY);
-  greyBox3.x = greyBox1.x - 32;
-  greyBox3.y = greyBox1.y - 32;
-  greyBox3.scale.set(scaleX, scaleY);
+  greyBox3.scale.set(ratio);
+
+  greyBox1.x = init_x;
+  greyBox1.y = init_y;
+  greyBox2.x = greyBox1.x + 20 + 32;
+  greyBox2.y = greyBox1.y + 20 + 32;
+  greyBox3.x = greyBox1.x - 20 - 32;
+  greyBox3.y = greyBox1.y - 20 - 32;
   midObstacles.addChild(greyBox1, greyBox2, greyBox3);
 
+  init_x = PLAYABLE_AREA_X_MAX - 69 - 96;
+  init_y = 570 - 10;
+
+  let pinkBox = new Sprite(obstacleSheet["pinkBox"][0]);
+  pinkBox.scale.set(ratio);
+  let pinkBox2 = new Sprite(obstacleSheet["pinkBox"][0]);
+  pinkBox2.scale.set(ratio);
+  let pinkBox3 = new Sprite(obstacleSheet["pinkBox"][0]);
+  pinkBox3.scale.set(ratio);
+
+  pinkBox.x = init_x;
+  pinkBox.y = init_y;
+  pinkBox2.x = pinkBox.x;
+  pinkBox2.y = pinkBox.y - 15 - 32;
+  pinkBox3.x = pinkBox2.x;
+  pinkBox3.y = pinkBox2.y - 15 - 32;
+  rightObstacles.addChild(pinkBox, pinkBox2, pinkBox3);
+
+  // console.log(blueBox.x, blueBox.y);
+  // console.log(blueBox2.x, blueBox2.y);
+  // console.log(blueBox3.x, blueBox3.y);
+  // console.log(blueBox4.x, blueBox4.y);
+  // console.log(blueBox5.x, blueBox5.y);
   // console.log(greyBox1.x, greyBox1.y);
   // console.log(greyBox2.x, greyBox2.y);
   // console.log(greyBox3.x, greyBox3.y);
@@ -280,11 +281,6 @@ function createObstacles(obstacleSSheet) {
   // console.log(pinkBox3.x, pinkBox3.y);
   // console.log(pinkBox4.x, pinkBox4.y);
   // console.log(pinkBox5.x, pinkBox5.y);
-  // console.log(blueBox.x, blueBox.y);
-  // console.log(blueBox2.x, blueBox2.y);
-  // console.log(blueBox3.x, blueBox3.y);
-  // console.log(blueBox4.x, blueBox4.y);
-  // console.log(blueBox5.x, blueBox5.y);
 
   obstacles.addChild(leftObstacles, midObstacles, rightObstacles);
 
