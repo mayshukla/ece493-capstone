@@ -1,3 +1,11 @@
+/*
+* Initializes the game visuals and updates the rendering based on server messages.
+*
+* This module satisfies the following functional requirements:
+* FR3 - UI.RenderGame
+* FR4 - UI.ConsistentState
+*/
+
 //Aliases
 const Application = PIXI.Application,
   loader = PIXI.Loader.shared,

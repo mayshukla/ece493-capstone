@@ -1,9 +1,22 @@
+"""
+The PhysicsEngine class is part of the implementation of the following requirements:
+
+FR8 - Agent.RangedAttack
+FR10 - Agent.PositionState
+FR11 - Agent.Movement
+FR12 - Movement.Direction
+FR13 - Movement.Speed
+FR14 - Map.Walls
+"""
+
 import pymunk
 import pymunk.pygame_util
 import pygame
 import pymunk.vec2d
 from src.globals import *
+from src.agent_state import AgentState
 from src.obstacle import Obstacle
+from src.projectile_state import ProjectileState
 from src.vector2 import Vector2
 
 class PhysicsEngine:
@@ -47,14 +60,16 @@ class PhysicsEngine:
             True if the collision should be processed normally.
             False if the collision should be ignored.
         """
-        # stop the objects from moving
-        arbiter.shapes[0].body.velocity = (0, 0)
-        arbiter.shapes[1].body.velocity = (0, 0)
         # print(self.bodies)
         object_id_1 = self._get_body_id(arbiter.shapes[0].body)
         object_id_2 = self._get_body_id(arbiter.shapes[1].body)
         object_state_1 = self._get_object_state_from_id(object_id_1)
         object_state_2 = self._get_object_state_from_id(object_id_2)
+        if (not (isinstance(object_state_1, ProjectileState) and isinstance(object_state_2, AgentState))) \
+            and (not (isinstance(object_state_1, AgentState) and isinstance(object_state_2, ProjectileState))):
+            # stop the objects from moving
+            arbiter.shapes[0].body.velocity = (0, 0)
+            arbiter.shapes[1].body.velocity = (0, 0)
         print(f"Collision between object ids: {object_id_1} and {object_id_2}")
         # call the optional callback function
         if "collision_callback" in data:
@@ -177,10 +192,10 @@ class PhysicsEngine:
         self.space.add(obstacle_body)
 
         # TODO: make the obstacle shapes match the obstacle sprites
-        lower_left_point = (obstacle.position.x - obstacle.width/2, obstacle.position.y - obstacle.height/2)
-        upper_left_point = (obstacle.position.x - obstacle.width/2, obstacle.position.y + obstacle.height/2)
-        upper_right_point = (obstacle.position.x + obstacle.width/2, obstacle.position.y + obstacle.height/2)
-        lower_right_point = (obstacle.position.x + obstacle.width/2, obstacle.position.y - obstacle.height/2)
+        lower_left_point = (-obstacle.width/2, -obstacle.height/2)
+        upper_left_point = (-obstacle.width/2, +obstacle.height/2)
+        upper_right_point = (+obstacle.width/2, +obstacle.height/2)
+        lower_right_point = (+obstacle.width/2, -obstacle.height/2)
         start_points = [lower_left_point, upper_left_point, upper_right_point, lower_right_point]
         end_points = [upper_left_point, upper_right_point, lower_right_point, lower_left_point]
 

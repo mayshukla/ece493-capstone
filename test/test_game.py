@@ -59,7 +59,7 @@ class MyAgent(Agent):
         agent.agent_state.velocity = Vector2(100, 0)
         self.game.physics.add_agent(agent.agent_state)
         self.game.physics.add_obstacle(obstacle)
-        self.game.physics.step(2)
+        self.game.physics.step(1)
         assert(agent.on_obstacle_hit.called)
 
     def test_damage_taken_callback(self):
@@ -85,7 +85,7 @@ class MyAgent(Agent):
         agent.agent_state.velocity = Vector2(100, 0)
         self.game.physics.add_agent(agent.agent_state)
         self.game.physics.add_obstacle(obstacle)
-        for _ in range(70):
+        for _ in range(10):
             self.game.tick()
         collision_callback.assert_not_called()
         agent.on_obstacle_scanned.assert_called_with(obstacle)

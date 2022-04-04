@@ -1,6 +1,13 @@
 /**
  * JS implementation of Message class.
  * See message.py
+ * Specifies the types of messages that may be passed between the server and client.
+ * 
+ * This module is part of the implementation of the following requirements:
+ * FR1 - UI.InputCode
+ * FR2 - UI.RunGame
+ * FR4 - UI.ConsistentState
+ * FR5 - UI.ResultsScreen
  */
 export default class Message {
     static DEBUG = "debug";

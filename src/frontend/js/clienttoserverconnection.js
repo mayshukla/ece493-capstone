@@ -1,4 +1,4 @@
-import Message from "./message.js";
+import Message from './message.js';
 import {
   agents,
   setAgentPosition,
@@ -10,6 +10,17 @@ import {
   destroyProjectile,
   destroyAgent,
 } from "./gameSetup.js";
+
+/*
+* Handles server-client communication.
+*
+* This module is part of the following functional requirments:
+* FR2 - UI.RunGame
+* FR4 - UI.ConsistentState
+* FR5 - UI.ResultsScreen
+*
+*/
+
 
 /**
  * Represents connection from client to server.

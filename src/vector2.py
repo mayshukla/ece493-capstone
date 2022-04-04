@@ -1,3 +1,14 @@
+"""
+Vector2 class is used to represent vectors and coordinates within the game.
+
+Part of the implementation of the following requirements:
+FR8 - Agent.RangedAttack
+FR10 - Agent.PositionState
+FR11 - Agent.Movement
+FR12 - Movement.Direction
+FR13 - Movement.Speed
+"""
+
 import math
 
 class Vector2():

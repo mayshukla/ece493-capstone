@@ -1,3 +1,17 @@
+"""
+Implements the player API and part of the game logic.
+
+Part of the implementation of the following requirements:
+FR7 - Agent.HealthState
+FR8 - Agent.RangedAttack
+FR9 - Agent.Shields
+FR10 - Agent.PositionState
+FR11 - Agent.Movement
+FR12 - Movement.Direction
+FR13 - Movement.Speed
+FR17 - API
+"""
+
 from src.agent_state import AgentState
 from src.vector2 import Vector2
 from src.globals import *
@@ -168,40 +182,54 @@ class Agent:
         """
         Sets the agent's velocity to 0 if their current velocity would cause them to clip through an object they are colliding with.
         """
+        # print("agent" + str(self.agent_state.id))
         for collision, contact_point in self.collisions.items():
+            # print("contact x: " + str(contact_point.x))
+            # print("contact y: " + str(contact_point.y))
+            # print("current x: " + str(self.get_position().x))
+            # print("current y: " + str(self.get_position().y))
             if abs(contact_point.y - self.get_position().y) >= AGENT_RADIUS:
+                # print("vertical collision")
                 if contact_point.y < self.get_position().y:
+                    # print("y must be positive")
                     if self.agent_state.velocity.y < 0:
+                        # print("clipping")
                         self.agent_state.velocity.x = 0
                         self.agent_state.velocity.y = 0
                     # print("y must be positive")
                     # print("contact at: " + str(self.collisions[collision].y))
                     # print("current pos: " + str(self.get_position().y))
                 elif contact_point.y > self.get_position().y:
+                    # print("y must be negative")
                     if self.agent_state.velocity.y > 0:
+                        # print("clipping")
                         self.agent_state.velocity.x = 0
                         self.agent_state.velocity.y = 0
                     # print("y must be negative")
                     # print("contact at: " + str(self.collisions[collision].y))
                     # print("current pos: " + str(self.get_position().y))
             if abs(contact_point.x - self.get_position().x) >= AGENT_RADIUS:
+                # print("horizontal collision")
                 if contact_point.x < self.get_position().x:
+                    # print("x must be positive")
                     if self.agent_state.velocity.x < 0:
+                        # print("clipping")
                         self.agent_state.velocity.x = 0
                         self.agent_state.velocity.y = 0
                     # print("x must be positive")
                     # print("contact at: " + str(self.collisions[collision].x))
                     # print("current pos: " + str(self.get_position().x))
                 elif contact_point.x > self.get_position().x:
+                    # print("x must be negative")
                     if self.agent_state.velocity.x > 0:
+                        # print("clipping")
                         self.agent_state.velocity.x = 0
                         self.agent_state.velocity.y = 0
                     # print("x must be negative")
                     # print("contact at: " + str(self.collisions[collision].x))
                     # print("current pos: " + str(self.get_position().x))
 
-        # print("after: " + str(self.agent_state.velocity.x) + ", " + str(self.agent_state.velocity.y))
-        return self.agent_state.velocity
+        # print("clipped velocity: " + str(self.agent_state.velocity.x) + ", " + str(self.agent_state.velocity.y))
 
     def set_movement_direction(self, angle):
         """Sets the current direction of movement.
