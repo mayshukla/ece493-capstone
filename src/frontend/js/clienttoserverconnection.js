@@ -154,6 +154,7 @@ export default class ClientToServerConnection {
       if (projectileMap.get(projectile_state.id) === undefined) {
         createProjectile(
           projectile_state.id,
+          projectile_state.attackerId,
           projectile_state.angle,
           projectile_state.position.x,
           projectile_state.position.y
