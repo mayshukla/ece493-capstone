@@ -110,13 +110,18 @@ class MyAgent(Agent):
     def test_attack(self):
         attacker = Agent(self.game.gen_id(), self.game)
         attackee = Agent(self.game.gen_id(), self.game)
-        self.game.agents = [[MagicMock(), attacker], [MagicMock(), attackee]]
+        attacker._set_position(Vector2(100, 800))
+        attackee._set_position(Vector2(200, 800))
+        attacker.game = self.game
+        attackee.game = self.game
 
-        self.game.prepare_to_start_simulation()
+        self.game.agents = [[MagicMock(), attacker], [MagicMock(), attackee]]
+        for agent in self.game.agents:
+            self.game.physics.add_agent(agent[1].agent_state)
 
         attacker.attack_ranged(0)
 
-        for _ in range(TICKS_PER_SECOND * 10):
+        for _ in range(TICKS_PER_SECOND * 30):
             self.game.tick()
 
         self.assertEqual(attacker.get_health(), Agent.MAX_HEALTH)
@@ -128,9 +133,14 @@ class MyAgent(Agent):
     def test_attack_shielded(self):
         attacker = Agent(self.game.gen_id(), self.game)
         attackee = Agent(self.game.gen_id(), self.game)
-        self.game.agents = [[MagicMock(), attacker], [MagicMock(), attackee]]
+        attacker._set_position(Vector2(100, 800))
+        attackee._set_position(Vector2(200, 800))
+        attacker.game = self.game
+        attackee.game = self.game
 
-        self.game.prepare_to_start_simulation()
+        self.game.agents = [[MagicMock(), attacker], [MagicMock(), attackee]]
+        for agent in self.game.agents:
+            self.game.physics.add_agent(agent[1].agent_state)
 
         attackee.activate_shield()
         attacker.attack_ranged(0)
@@ -147,9 +157,14 @@ class MyAgent(Agent):
     def test_attack_cooldown(self):
         attacker = Agent(self.game.gen_id(), self.game)
         attackee = Agent(self.game.gen_id(), self.game)
-        self.game.agents = [[MagicMock(), attacker], [MagicMock(), attackee]]
+        attacker._set_position(Vector2(100, 800))
+        attackee._set_position(Vector2(200, 800))
+        attacker.game = self.game
+        attackee.game = self.game
 
-        self.game.prepare_to_start_simulation()
+        self.game.agents = [[MagicMock(), attacker], [MagicMock(), attackee]]
+        for agent in self.game.agents:
+            self.game.physics.add_agent(agent[1].agent_state)
 
         attacker.attack_ranged(0)
         attacker.attack_ranged(0)
@@ -219,9 +234,14 @@ class MyAgent(Agent):
     def test_destroy_projectile_message(self):
         attacker = Agent(self.game.gen_id(), self.game)
         attackee = Agent(self.game.gen_id(), self.game)
-        self.game.agents = [[MagicMock(), attacker], [MagicMock(), attackee]]
+        attacker._set_position(Vector2(100, 800))
+        attackee._set_position(Vector2(200, 800))
+        attacker.game = self.game
+        attackee.game = self.game
 
-        self.game.prepare_to_start_simulation()
+        self.game.agents = [[MagicMock(), attacker], [MagicMock(), attackee]]
+        for agent in self.game.agents:
+            self.game.physics.add_agent(agent[1].agent_state)
 
         attacker.attack_ranged(0)
 
@@ -234,9 +254,14 @@ class MyAgent(Agent):
     def test_destroy_agent_message(self):
         attacker = Agent(self.game.gen_id(), self.game)
         attackee = Agent(self.game.gen_id(), self.game)
-        self.game.agents = [[MagicMock(), attacker], [MagicMock(), attackee]]
+        attacker._set_position(Vector2(100, 800))
+        attackee._set_position(Vector2(200, 800))
+        attacker.game = self.game
+        attackee.game = self.game
 
-        self.game.prepare_to_start_simulation()
+        self.game.agents = [[MagicMock(), attacker], [MagicMock(), attackee]]
+        for agent in self.game.agents:
+            self.game.physics.add_agent(agent[1].agent_state)
         
         self.game.game_start_time = time()
 

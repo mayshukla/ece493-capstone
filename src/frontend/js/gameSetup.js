@@ -1,10 +1,10 @@
 /*
-* Initializes the game visuals and updates the rendering based on server messages.
-*
-* This module satisfies the following functional requirements:
-* FR3 - UI.RenderGame
-* FR4 - UI.ConsistentState
-*/
+ * Initializes the game visuals and updates the rendering based on server messages.
+ *
+ * This module satisfies the following functional requirements:
+ * FR3 - UI.RenderGame
+ * FR4 - UI.ConsistentState
+ */
 
 //Aliases
 const Application = PIXI.Application,
@@ -37,7 +37,7 @@ let app,
   projectileSpeed;
 
 export let agents = [];
-export let projectileMap;
+export let projectileMap = new Map();
 
 export default function initPixi() {
   //Create a Pixi Application
@@ -55,7 +55,6 @@ export default function initPixi() {
 
   //load an image and run the `setup` function when it's done
   loader
-    .add("../assets/sample.png")
     .add("../assets/dungeon.json")
     .add("../assets/agentsheet.json")
     .add("../assets/agentsheet.png")
@@ -68,9 +67,7 @@ export default function initPixi() {
 //This `setup` function will run when the image has loaded
 function setup() {
   //#region SpriteAssetsCreation
-  // console.log(TextureCache);
 
-  //Create the shooter sprite
   id = resources["../assets/dungeon.json"].textures;
   agentSheet = resources["../assets/agentsheet.json"];
   obstacleSSheet = new PIXI.BaseTexture.from("../assets/obstacleboxes.png");
@@ -78,7 +75,6 @@ function setup() {
   let obstacles = createObstacles(obstacleSSheet);
   agents = createAgents(agentSheet);
 
-  projectileMap = new Map();
   projectileSpeed = 5;
 
   let background = new Sprite(id["dungeon.png"]);
@@ -93,10 +89,6 @@ function setup() {
 
   //   Start game loop
   // app.ticker.add((delta) => gameLoop(delta));
-
-  // // start listening for key input to move shoooter
-  // moveShooter();
-  // fireProjectile(agent);
 
   //   set the game state to play
   gameState = play;
@@ -194,27 +186,6 @@ function updateAgentPosition(agent) {
   agent.y += vy;
 }
 
-function updateProjectiles(projectileMap, projId) {
-  let speed = 5;
-  for (let index = 0; index < projectileMap.length; index++) {
-    currentProjectile = projectileMap.get(projId);
-    currentProjectile.position.x +=
-      Math.cos(currentProjectile.rotation) * speed;
-    currentProjectile.position.y +=
-      Math.sin(currentProjectile.rotation) * speed;
-
-    if (isDestroyed) {
-      destroyProjectiles(currentProjectile);
-    }
-  }
-}
-
-function destroyProjectiles(projectile) {
-  projectile.dead;
-  projectile.visible = false;
-  app.stage.removeChild(projectile);
-}
-
 function createSpriteFromSheet(path, x, y, width, height) {
   let texture = TextureCache[path];
   let textureRect = new Rectangle(x, y, width, height);
@@ -228,6 +199,10 @@ function createObstacles(obstacleSSheet) {
   let midObstacles = new Container();
   let leftObstacles = new Container();
   let rightObstacles = new Container();
+  // server x - 45, server y - 32
+  let init_x = PLAYABLE_AREA_X_MIN + 27 + 64;
+  let init_y = 105;
+  let ratio = 1.25;
 
   obstacleSheet = {};
   obstacleSheet["blueBox"] = [
@@ -241,49 +216,71 @@ function createObstacles(obstacleSSheet) {
   ];
 
   let blueBox = new Sprite(obstacleSheet["blueBox"][0]);
+  blueBox.scale.set(ratio);
   let blueBox2 = new Sprite(obstacleSheet["blueBox"][0]);
+  blueBox2.scale.set(ratio);
   let blueBox3 = new Sprite(obstacleSheet["blueBox"][0]);
-  let blueBox4 = new Sprite(obstacleSheet["blueBox"][0]);
-  let blueBox5 = new Sprite(obstacleSheet["blueBox"][0]);
-  blueBox.x = PLAYABLE_AREA_X_MAX / 6;
-  blueBox.y = PLAYABLE_AREA_Y_MAX / 6;
-  blueBox2.x = blueBox.x - 32;
-  blueBox2.y = blueBox.y;
-  blueBox3.x = blueBox.x;
-  blueBox3.y = blueBox.y + 32;
-  blueBox4.x = blueBox2.x - 32;
-  blueBox4.y = blueBox.y;
-  blueBox5.x = blueBox3.x;
-  blueBox5.y = blueBox3.y + 32;
-  leftObstacles.addChild(blueBox, blueBox2, blueBox3, blueBox4, blueBox5);
+  blueBox3.scale.set(ratio);
 
-  let pinkBox = new Sprite(obstacleSheet["pinkBox"][0]);
-  let pinkBox2 = new Sprite(obstacleSheet["pinkBox"][0]);
-  let pinkBox3 = new Sprite(obstacleSheet["pinkBox"][0]);
-  let pinkBox4 = new Sprite(obstacleSheet["pinkBox"][0]);
-  let pinkBox5 = new Sprite(obstacleSheet["pinkBox"][0]);
-  pinkBox.x = (PLAYABLE_AREA_X_MAX * 5) / 6;
-  pinkBox.y = (PLAYABLE_AREA_Y_MAX * 5) / 6;
-  pinkBox2.x = pinkBox.x + 32;
-  pinkBox2.y = pinkBox.y;
-  pinkBox3.x = pinkBox.x;
-  pinkBox3.y = pinkBox.y - 32;
-  pinkBox4.x = pinkBox2.x + 32;
-  pinkBox4.y = pinkBox.y;
-  pinkBox5.x = pinkBox3.x;
-  pinkBox5.y = pinkBox3.y - 32;
-  rightObstacles.addChild(pinkBox, pinkBox2, pinkBox3, pinkBox4, pinkBox5);
+  console.log(blueBox);
+
+  blueBox.x = init_x;
+  blueBox.y = init_y;
+  blueBox2.x = blueBox.x;
+  blueBox2.y = blueBox.y + 15 + 32;
+  blueBox3.x = blueBox2.x;
+  blueBox3.y = blueBox2.y + 15 + 32;
+  leftObstacles.addChild(blueBox, blueBox2, blueBox3);
+
+  init_x = PLAYABLE_AREA_X_MAX / 2 - 45;
+  init_y = 350 - 30;
 
   let greyBox1 = new Sprite(obstacleSheet["greyBox1"][0]);
+  greyBox1.scale.set(ratio);
   let greyBox2 = new Sprite(obstacleSheet["greyBox1"][0]);
+  greyBox2.scale.set(ratio);
   let greyBox3 = new Sprite(obstacleSheet["greyBox1"][0]);
-  greyBox1.x = PLAYABLE_AREA_X_MAX / 2;
-  greyBox1.y = PLAYABLE_AREA_Y_MAX / 2;
-  greyBox2.x = greyBox1.x + 32;
-  greyBox2.y = greyBox1.y + 32;
-  greyBox3.x = greyBox1.x - 32;
-  greyBox3.y = greyBox1.y - 32;
+  greyBox3.scale.set(ratio);
+
+  greyBox1.x = init_x;
+  greyBox1.y = init_y;
+  greyBox2.x = greyBox1.x + 20 + 32;
+  greyBox2.y = greyBox1.y + 20 + 32;
+  greyBox3.x = greyBox1.x - 20 - 32;
+  greyBox3.y = greyBox1.y - 20 - 32;
   midObstacles.addChild(greyBox1, greyBox2, greyBox3);
+
+  init_x = PLAYABLE_AREA_X_MAX - 69 - 96;
+  init_y = 570 - 10;
+
+  let pinkBox = new Sprite(obstacleSheet["pinkBox"][0]);
+  pinkBox.scale.set(ratio);
+  let pinkBox2 = new Sprite(obstacleSheet["pinkBox"][0]);
+  pinkBox2.scale.set(ratio);
+  let pinkBox3 = new Sprite(obstacleSheet["pinkBox"][0]);
+  pinkBox3.scale.set(ratio);
+
+  pinkBox.x = init_x;
+  pinkBox.y = init_y;
+  pinkBox2.x = pinkBox.x;
+  pinkBox2.y = pinkBox.y - 15 - 32;
+  pinkBox3.x = pinkBox2.x;
+  pinkBox3.y = pinkBox2.y - 15 - 32;
+  rightObstacles.addChild(pinkBox, pinkBox2, pinkBox3);
+
+  // console.log(blueBox.x, blueBox.y);
+  // console.log(blueBox2.x, blueBox2.y);
+  // console.log(blueBox3.x, blueBox3.y);
+  // console.log(blueBox4.x, blueBox4.y);
+  // console.log(blueBox5.x, blueBox5.y);
+  // console.log(greyBox1.x, greyBox1.y);
+  // console.log(greyBox2.x, greyBox2.y);
+  // console.log(greyBox3.x, greyBox3.y);
+  // console.log(pinkBox.x, pinkBox.y);
+  // console.log(pinkBox2.x, pinkBox2.y);
+  // console.log(pinkBox3.x, pinkBox3.y);
+  // console.log(pinkBox4.x, pinkBox4.y);
+  // console.log(pinkBox5.x, pinkBox5.y);
 
   obstacles.addChild(leftObstacles, midObstacles, rightObstacles);
 
@@ -313,7 +310,7 @@ function createAgents(agentSheet) {
   agent0.vy = 0;
   agent0.angle = 0;
   agent0["id"] = 0;
-  agent0["Moving"] = false;
+  agent0["ShieldEquipped"] = false;
   agent0.anchor.set(0.95652, 0.75);
 
   agent1.animationSpeed = 0.3;
@@ -325,7 +322,7 @@ function createAgents(agentSheet) {
   agent1.vy = 0;
   agent1.angle = 180;
   agent1["id"] = 1;
-  agent1["Moving"] = false;
+  agent1["ShieldEquipped"] = false;
   agent1.anchor.set(0.95652, 0.75);
 
   console.log(agents);
@@ -333,25 +330,21 @@ function createAgents(agentSheet) {
   return agents;
 }
 
-function fireProjectile(agent) {
-  const space = keyboard(" ");
-
-  space.press = () => {
-    createProjectile(agent.rotation, {
-      x: agent.position.x,
-      y: agent.position.y,
-    });
-  };
-
-  space.release = () => {};
+export function destroyAgent(agentId) {
+  let agent = findAgent(agentId);
+  agent.visible = false;
+  console.log("app before", app);
+  app.stage.removeChild(agent);
+  console.log("app after", app);
 }
 
-function createProjectile(rotation, startPosition) {
-  agent.stop();
-  agent.textures = agentSheet.spritesheet.animations["survivor-idle_handgun"];
-  agent.loop = false;
-  agent.animationSpeed = 1;
-  agent.play();
+export function createProjectile(projId, angle, x, y) {
+  // let agent = findAgent(agentId);
+  // agent.stop();
+  // agent.textures = agentSheet.spritesheet.animations["survivor-idle_handgun"];
+  // agent.loop = false;
+  // agent.animationSpeed = 1;
+  // agent.play();
 
   var projectile = createSpriteFromSheet(
     "../assets/bulletSprite.png",
@@ -363,12 +356,25 @@ function createProjectile(rotation, startPosition) {
   projectile.width = 10;
   projectile.height = 5;
   projectile.anchor.set(0.5, 0.5);
-  projectile.position.x = startPosition.x;
-  projectile.position.y = startPosition.y;
-  projectile.rotation = rotation;
+  projectile.position.x = x;
+  projectile.position.y = y;
+  projectile.angle = angle;
 
-  projectileList.push(projectile);
+  projectileMap.set(projId, projectile);
+  console.log(projectileMap);
   app.stage.addChild(projectile);
+}
+
+export function updateProjectilePosition(projId, x, y) {
+  let projectile = projectileMap.get(projId);
+  projectile.x = x;
+  projectile.y = y;
+}
+
+export function destroyProjectile(projId) {
+  let projectile = projectileMap.get(projId);
+  projectile.visible = false;
+  app.stage.removeChild(projectile);
 }
 
 export function setAgentPosition(agent, x, y) {
@@ -380,15 +386,15 @@ export function setAgentDirection(agent, angle) {
   agent.angle = angle;
 }
 
-function toggleShield(playerAgent, shieldEngaged) {
-  playerAgent.stop();
-  if (shieldEngaged) {
-    agent.textures = agentSheet.spritesheet.animations["survivor-idle_handgun"];
-  } else {
+export function toggleAgentShield(agent, shieldEnabled) {
+  agent.stop();
+  if (shieldEnabled) {
     agent.textures =
       agentSheet.spritesheet.animations["survivor-shield_handgun"];
+  } else {
+    agent.textures = agentSheet.spritesheet.animations["survivor-idle_handgun"];
   }
-  agentShieldEquipped = !agentShieldEquipped;
+  agent.ShieldEquipped = !agent.ShieldEquipped;
   agent.loop = false;
   agent.animationSpeed = 0.5;
   agent.play();
@@ -396,4 +402,14 @@ function toggleShield(playerAgent, shieldEngaged) {
 
 function getRndInteger(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function findAgent(agentId) {
+  var agent = agents.find((obj) => {
+    console.log(obj.id);
+    console.log(agentId);
+    return obj.id === agentId;
+  });
+
+  return agent;
 }
