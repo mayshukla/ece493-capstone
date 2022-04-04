@@ -25,7 +25,17 @@ python3 -m src <port>
 
 ## Running tests
 
-Run the following in the root directory of this repo.
+1. Follow the first two steps under "Installation" to clone the repo and install python requirements.
+
+1. Install a recent version of Chromium on your machine. See <https://www.chromium.org/getting-involved/download-chromium/>
+   This is required since we use the selenium webdriver for chromium to test the frontend.
+
+1. Install additional python requirments for tests.
+```
+python3 -m pip install -r test/requirements.txt
+```
+
+1. Run the following in the root directory of this repo.
 
 ```
 python3 -m unittest
