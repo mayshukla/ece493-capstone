@@ -82,10 +82,10 @@ class MyAgent(Agent):
         agent.on_obstacle_scanned = MagicMock()
         self.game.agents = [[MagicMock(), agent]]
         agent._set_position(Vector2(100, 100))
-        agent.agent_state.velocity = Vector2(100, 0)
+        agent.agent_state.velocity = Vector2(40, 0)
         self.game.physics.add_agent(agent.agent_state)
         self.game.physics.add_obstacle(obstacle)
-        for _ in range(10):
+        for _ in range(TICKS_PER_SECOND):
             self.game.tick()
         collision_callback.assert_not_called()
         agent.on_obstacle_scanned.assert_called_with(obstacle)
