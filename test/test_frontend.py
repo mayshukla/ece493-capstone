@@ -104,23 +104,32 @@ improper syntax!!!
         """This test can be run in headed mode with the following command:
         GUI=1 python -m unittest test.test_frontend.TestFrontend.test_completed_game
         """
-        agent_code = self.get_code_from_file("test/agent_code/agent1.py")
-        for driver in self.drivers:
-            code_area = WebDriverWait(driver, timeout=TestFrontend.TIMEOUT).until(lambda d: d.find_element(By.ID, "codeArea"))
+        agent_code = [
+            self.get_code_from_file("test/agent_code/agent1.py"),
+            self.get_code_from_file("test/agent_code/agent2.py"),
+        ]
+        agent_names = [
+            "Agent1",
+            "Agent2",
+        ]
+        for i in range(len(self.drivers)):
+            code_area = WebDriverWait(self.drivers[i], timeout=TestFrontend.TIMEOUT).until(lambda d: d.find_element(By.ID, "codeArea"))
             code_area.clear()
-            code_area.send_keys(agent_code)
+            code_area.send_keys(agent_code[i])
 
-            class_name_area = driver.find_element(By.ID, "classNameArea")
+            class_name_area = self.drivers[i].find_element(By.ID, "classNameArea")
             class_name_area.clear()
-            class_name_area.send_keys("Agent1")
+            class_name_area.send_keys(agent_names[i])
 
         for driver in self.drivers:
             submit_button = driver.find_element(By.ID, "submitButton")
             submit_button.click()
 
-        for driver in self.drivers:
-            wait = WebDriverWait(driver, timeout=60)
-            wait.until(EC.text_to_be_present_in_element((By.ID, "declareWinnerArea"), "You!"))
+        wait = WebDriverWait(self.drivers[0], timeout=60)
+        wait.until(EC.text_to_be_present_in_element((By.ID, "declareWinnerArea"), "You Lost, Better Luck Next Time!"))
+
+        wait = WebDriverWait(self.drivers[1], timeout=60)
+        wait.until(EC.text_to_be_present_in_element((By.ID, "declareWinnerArea"), "You Win, Congratulations!"))
 
 
 if __name__ == '__main__':
