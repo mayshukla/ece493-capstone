@@ -125,10 +125,10 @@ improper syntax!!!
             submit_button = driver.find_element(By.ID, "submitButton")
             submit_button.click()
 
-        wait = WebDriverWait(self.drivers[0], timeout=60)
+        wait = WebDriverWait(self.drivers[0], timeout=60 * 5)
         wait.until(EC.text_to_be_present_in_element((By.ID, "declareWinnerArea"), "You Lost, Better Luck Next Time!"))
 
-        wait = WebDriverWait(self.drivers[1], timeout=60)
+        wait = WebDriverWait(self.drivers[1], timeout=60 * 5)
         wait.until(EC.text_to_be_present_in_element((By.ID, "declareWinnerArea"), "You Win, Congratulations!"))
 
 
