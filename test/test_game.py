@@ -89,7 +89,7 @@ class MyAgent(Agent):
         for _ in range(TICKS_PER_SECOND):
             self.game.tick()
         collision_callback.assert_not_called()
-        agent.on_obstacle_scanned.assert_called_with(obstacle)
+        agent.on_obstacle_scanned.assert_called_with(obstacle.position)
 
     def test_enemy_scanned_callback(self):
         collision_callback = MagicMock()
