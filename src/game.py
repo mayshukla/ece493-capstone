@@ -22,6 +22,7 @@ from src.projectile_state import ProjectileState
 from src.agent_state import AgentState
 from src.obstacle import Obstacle
 from src.vector2 import Vector2
+import os
 from time import time
 import sys
 
@@ -52,6 +53,11 @@ class Game():
         self.physics = PhysicsEngine()
         self.physics.add_on_collision_callback(self.collision_callback)
         self.physics.add_on_separate_callback(self.separate_callback)
+        self.debug_render = False
+        if "GUI" in os.environ and os.environ['GUI'] != "":
+            self.debug_render = True
+        if self.debug_render:
+            self.physics.init_renderer()
 
         for client in self.clients:
             def callback(client, code, class_name):
@@ -134,6 +140,9 @@ class Game():
             destroyed_id = agent[1].agent_state.id
             for agent in self.agents:
                 agent[0].send_destroy_message(destroyed_id, "agent")
+
+        if self.debug_render:
+            self.physics.render_tick()
 
         # send updates to clients
         for agent in self.agents:
