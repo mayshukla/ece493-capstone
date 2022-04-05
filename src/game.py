@@ -303,7 +303,7 @@ class Game():
 
             # Check if player has already submitted code and if so, replace
             # agent instead of appending.
-            agent_instance = agent_class(self.gen_id(), self)
+            agent_instance = agent_class(self.gen_id(), self, name=class_name)
             agent_index = self.get_index_of_client_agent(client)
             if agent_index is not None:
                 self.agents[agent_index][1] = agent_instance
