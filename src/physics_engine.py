@@ -200,13 +200,11 @@ class PhysicsEngine:
         upper_left_point = (-obstacle.width/2, +obstacle.height/2)
         upper_right_point = (+obstacle.width/2, +obstacle.height/2)
         lower_right_point = (+obstacle.width/2, -obstacle.height/2)
-        start_points = [lower_left_point, upper_left_point, upper_right_point, lower_right_point]
-        end_points = [upper_left_point, upper_right_point, lower_right_point, lower_left_point]
+        vectices = [lower_left_point, upper_left_point, upper_right_point, lower_right_point]
 
-        for i in range(4):
-            segment = pymunk.Segment(obstacle_body, start_points[i], end_points[i], 15)
-            segment.collision_type = PhysicsEngine.COLLISION_TYPE_1
-            self.space.add(segment)
+        rect = pymunk.Poly(obstacle_body, vectices)
+        rect.collision_type = PhysicsEngine.COLLISION_TYPE_1
+        self.space.add(rect)
 
     def add_projectile(self, projectile_state):
         """
