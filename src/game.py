@@ -243,7 +243,6 @@ class Game():
             # callback
             agent._add_collision(obstacle, contact_point)
             self.run_player_defined_method(agent, lambda: agent.on_obstacle_hit(), client)
-            agent.on_obstacle_hit()
 
     def separate_callback(self, object_state_1, object_state_2):
         """Callback for when physics engine detects that two colliding objects have now separated."""
