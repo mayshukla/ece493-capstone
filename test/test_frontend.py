@@ -39,7 +39,8 @@ class TestFrontend(unittest.TestCase):
         # Open 2 browsers
         options = Options()
         # Must run headless for chromedriver to work in github actions
-        options.headless = True
+        if not "GUI" in os.environ or os.environ['GUI'] == "":
+            options.headless = True
         self.drivers = []
         for _ in range(2):
             self.drivers.append(webdriver.Chrome(service=Service(TestFrontend.driver_manager), options=options))
