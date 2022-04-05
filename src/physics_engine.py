@@ -240,9 +240,12 @@ class PhysicsEngine:
         circle = pymunk.Circle(projectile_body, radius=5)
         circle.elasticity = 0
         circle.collision_type = PhysicsEngine.COLLISION_TYPE_1
-        # Ignore collisions between an agent and its own projectile
         circle.filter = pymunk.ShapeFilter(
-            group=self._id_to_collision_group(projectile_state.attackerId)
+            # Ignore collisions between an agent and its own projectile
+            group=self._id_to_collision_group(projectile_state.attackerId),
+            categories=0b1,
+            # Ignore collisions between any 2 projectiles
+            mask=pymunk.ShapeFilter.ALL_MASKS() ^ 0b1
         )
 
         if projectile_state.id in self.bodies:
