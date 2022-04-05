@@ -3,6 +3,7 @@ import {
   agents,
   setAgentPosition,
   setAgentDirection,
+  setAgentHealth,
   toggleAgentShield,
   projectileMap,
   createProjectile,
@@ -135,6 +136,7 @@ export default class ClientToServerConnection {
       } else {
         setAgentPosition(agent, agent_state.position.x, agent_state.position.y);
         setAgentDirection(agent, agent_state.angle);
+        setAgentHealth(agent, agent_state.health);
         if (agent_state.shieldEnabled && !agent.ShieldEquipped) {
           toggleAgentShield(agent, agent_state.shieldEnabled);
         }
@@ -152,6 +154,7 @@ export default class ClientToServerConnection {
       if (projectileMap.get(projectile_state.id) === undefined) {
         createProjectile(
           projectile_state.id,
+          projectile_state.attackerId,
           projectile_state.angle,
           projectile_state.position.x,
           projectile_state.position.y

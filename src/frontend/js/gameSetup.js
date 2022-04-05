@@ -312,6 +312,7 @@ function createAgents(agentSheet) {
   agent0["id"] = 0;
   agent0["ShieldEquipped"] = false;
   agent0.anchor.set(0.95652, 0.75);
+  agent0.health = 100;
 
   agent1.animationSpeed = 0.3;
   agent1.play();
@@ -324,6 +325,7 @@ function createAgents(agentSheet) {
   agent1["id"] = 1;
   agent1["ShieldEquipped"] = false;
   agent1.anchor.set(0.95652, 0.75);
+  agent1.health = 100;
 
   console.log(agents);
 
@@ -338,13 +340,9 @@ export function destroyAgent(agentId) {
   console.log("app after", app);
 }
 
-export function createProjectile(projId, angle, x, y) {
-  // let agent = findAgent(agentId);
-  // agent.stop();
-  // agent.textures = agentSheet.spritesheet.animations["survivor-idle_handgun"];
-  // agent.loop = false;
-  // agent.animationSpeed = 1;
-  // agent.play();
+export function createProjectile(projId, agentId, angle, x, y) {
+  let agent = findAgent(agentId);
+  animateAttack(agent);
 
   var projectile = createSpriteFromSheet(
     "../assets/bulletSprite.png",
@@ -386,6 +384,14 @@ export function setAgentDirection(agent, angle) {
   agent.angle = angle;
 }
 
+export function setAgentHealth(agent, health) {
+  if (agent.health !== health) {
+    // Damage taken
+    animateDamage(agent);
+  }
+  agent.health = health;
+}
+
 export function toggleAgentShield(agent, shieldEnabled) {
   agent.stop();
   if (shieldEnabled) {
@@ -398,6 +404,23 @@ export function toggleAgentShield(agent, shieldEnabled) {
   agent.loop = false;
   agent.animationSpeed = 0.5;
   agent.play();
+}
+
+function animateDamage(agent) {
+  colorTint(agent, 0xFF0000);
+}
+
+function animateAttack(agent) {
+  colorTint(agent, 0x00FF00);
+}
+
+function colorTint(agent, color) {
+  let filter = new PIXI.filters.ColorMatrixFilter();
+  filter.tint(color, true);
+  filter.contrast(1, true);
+  agent.filters = [filter];
+
+  setTimeout(() => { agent.filters = [] }, 200);
 }
 
 function getRndInteger(min, max) {
