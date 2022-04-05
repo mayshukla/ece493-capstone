@@ -1,11 +1,28 @@
 import math
+import random
 
 class Agent2(Agent):
     angle = 20
     speed = 250
 
+    random_movement_timer = 30 * 2
+    random_cooldown_timer = 0
+
     def run(self):
+        Agent2.random_movement_timer -= 1
+        if Agent2.random_movement_timer <= 0:
+            self.randomize_movement()
+            Agent2.random_movement_timer = 30 * 2
+            Agent2.random_cooldown_timer = 30
+        if Agent2.random_cooldown_timer > 0:
+            Agent2.random_cooldown_timer -= 1
+
         self.set_movement_speed(Agent2.speed)
+        if Agent2.random_cooldown_timer <= 0:
+            self.set_movement_direction(Agent2.angle)
+
+    def randomize_movement(self):
+        Agent2.angle = random.random() * 360
         self.set_movement_direction(Agent2.angle)
 
     def on_obstacle_hit(self):
