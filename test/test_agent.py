@@ -40,13 +40,20 @@ class TestAgent(unittest.TestCase):
         assert(self.agent.get_position() == expected_position)
 
     def test_get_agents_position(self):
+        clients = [MagicMock(), MagicMock()]
+        self.game = Game(clients)
+        self.agent.game = self.game
+        self.enemy_agent.game = self.game
+        self.game.physics.add_agent(self.enemy_agent.agent_state)
+        self.game.physics.add_agent(self.agent.agent_state)
         expected_position = Vector2(8.9, 4.1)
         self.enemy_agent._set_position(expected_position)
+        self.agent._set_position(Vector2(expected_position.x - Agent.SCAN_DISTANCE, expected_position.y))
         actual_positions = self.agent.get_agents_position()
         assert(len(actual_positions) == 1)
         assert(actual_positions[0] == expected_position)
 
-    def test_get_agents_position(self):
+    def test_get_agents_health(self):
         self.enemy_agent._decrement_health()
         expected_health = Agent.MAX_HEALTH - Agent.DAMAGE_AMOUNT
         actual_healths = self.agent.get_agents_health()

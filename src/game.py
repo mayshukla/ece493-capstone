@@ -128,7 +128,7 @@ class Game():
                     self.run_player_defined_method(agent[1], lambda: agent[1].on_enemy_scanned(object.position), agent[0])
                     agent[1]._clip_velocity()
                 elif isinstance(object, Obstacle):
-                    self.run_player_defined_method(agent[1], lambda: agent[1].on_obstacle_scanned(object), agent[0])
+                    self.run_player_defined_method(agent[1], lambda: agent[1].on_obstacle_scanned(object.position), agent[0])
                     agent[1]._clip_velocity()
 
         # check if an agent has been eliminated

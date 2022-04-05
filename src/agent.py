@@ -12,6 +12,7 @@ FR13 - Movement.Speed
 FR17 - API
 """
 
+from operator import pos
 from src.agent_state import AgentState
 from src.vector2 import Vector2
 from src.globals import *
@@ -81,16 +82,16 @@ class Agent:
         return self.agent_state.position
 
     def get_agents_position(self):
-        """Gets position of all agents except this agent.
+        """Gets position of all agents, within this agent's scanning distance.
         Returns:
             List of Vector2 objects representing positions.
         """
         positions = []
-        agents = self.game.get_agents()
-        for agent in agents:
-            if agent.agent_state.id == self.agent_state.id:
+        objects = self.game.physics.scan_area(self.get_position(), Agent.SCAN_DISTANCE)
+        for object in objects:
+            if not isinstance(object, AgentState) or object == self.agent_state:
                 continue
-            positions.append(agent.agent_state.position)
+            positions.append(object.position)
         return positions
 
     def get_agents_health(self):
@@ -296,7 +297,7 @@ class Agent:
         """Callback that players can override. Called when an enemy is nearby."""
         pass
 
-    def on_obstacle_scanned(self, obstacle):
+    def on_obstacle_scanned(self, obstacle_position):
         """Callback that players can override. Called when an obstacle is nearby."""
         pass
 
