@@ -116,6 +116,21 @@ class PhysicsEngine:
         """
         self.collision_handler.data["separate_callback"] = callback
 
+    def init_renderer(self):
+        """Initialize the pygame renderer. This is for debug purposes only"""
+        # use pygame for testing
+        pygame.init()
+        size = PhysicsEngine.SPACE_WIDTH, PhysicsEngine.SPACE_HEIGHT
+        self.screen = pygame.display.set_mode(size)
+        self.draw_options = pymunk.pygame_util.DrawOptions(self.screen)
+
+    def render_tick(self):
+        """Update the pygame render. This should be called in the game loop."""
+        GRAY = (220, 220, 220)
+        self.screen.fill(GRAY)
+        self.space.debug_draw(self.draw_options)
+        pygame.display.update()
+
     def run_render_test(self):
         """
         Renders the current space using pygame. This is for debug purposes only.
@@ -133,7 +148,7 @@ class PhysicsEngine:
                 if event.type == pygame.QUIT:
                     running = False
 
-            screen.fill(GRAY)
+            self.screen.fill(GRAY)
             self.space.debug_draw(draw_options)
             pygame.display.update()
 
