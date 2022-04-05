@@ -52,6 +52,11 @@ class TestFrontend(unittest.TestCase):
         for driver in self.drivers:
             driver.quit()
 
+    def get_code_from_file(self, filename):
+        with open(filename) as f:
+            contents = f.read()
+        return contents
+
     def test_exception_during_game(self):
         code_area = WebDriverWait(self.drivers[0], timeout=TestFrontend.TIMEOUT).until(lambda d: d.find_element(By.ID, "codeArea"))
         code_area.clear()
