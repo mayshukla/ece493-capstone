@@ -191,8 +191,8 @@ class Game():
             # destroy both projectiles
             self.physics.remove_object(object_state_1.id)
             self.physics.remove_object(object_state_2.id)
-            self.projectiles.remove(object_state_1)
-            self.projectiles.remove(object_state_2)
+            if object_state_1 in self.projectiles: self.projectiles.remove(object_state_1)
+            if object_state_2 in self.projectiles: self.projectiles.remove(object_state_2)
             for agent in self.agents:
                     agent[0].send_destroy_message(object_state_1.id, "projectile")
                     agent[0].send_destroy_message(object_state_2.id, "projectile")
@@ -216,7 +216,7 @@ class Game():
                     self.run_player_defined_method(agent, lambda: agent.on_damage_taken(), client)
                 # remove the projectile
                 self.physics.remove_object(projectile.id)
-                self.projectiles.remove(projectile)
+                if projectile in self.projectiles: self.projectiles.remove(projectile)
                 for agent in self.agents:
                     agent[0].send_destroy_message(projectile.id, "projectile")
             else:
@@ -227,22 +227,23 @@ class Game():
                     projectile = object_state_2
                 # remove the projectile
                 self.physics.remove_object(projectile.id)
-                self.projectiles.remove(projectile)
+                if projectile in self.projectiles: self.projectiles.remove(projectile)
                 for agent in self.agents:
                     agent[0].send_destroy_message(projectile.id, "projectile")
-        else:
-            # handle agent-obstacle collision
-            if isinstance(object_state_1, AgentState):
-                agent = self.get_agent_from_state(object_state_1)
-                client = self.get_client_from_state(object_state_1)
-                obstacle = object_state_2
-            else:
-                agent = self.get_agent_from_state(object_state_2)
-                client = self.get_client_from_state(object_state_2)
-                obstacle = object_state_1
-            # callback
-            agent._add_collision(obstacle, contact_point)
-            self.run_player_defined_method(agent, lambda: agent.on_obstacle_hit(), client)
+        elif (isinstance(object_state_1, AgentState) or isinstance(object_state_2, AgentState)) and \
+            (isinstance(object_state_1, Obstacle) or isinstance(object_state_2, Obstacle)):
+                # handle agent-obstacle collision
+                if isinstance(object_state_1, AgentState):
+                    agent = self.get_agent_from_state(object_state_1)
+                    client = self.get_client_from_state(object_state_1)
+                    obstacle = object_state_2
+                else:
+                    agent = self.get_agent_from_state(object_state_2)
+                    client = self.get_client_from_state(object_state_2)
+                    obstacle = object_state_1
+                # callback
+                agent._add_collision(obstacle, contact_point)
+                self.run_player_defined_method(agent, lambda: agent.on_obstacle_hit(), client)
 
     def separate_callback(self, object_state_1, object_state_2):
         """Callback for when physics engine detects that two colliding objects have now separated."""

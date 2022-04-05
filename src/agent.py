@@ -275,7 +275,8 @@ class Agent:
         Arguments:
             collising_object_state: the object_state that is no longer colliding with this agent.
         """
-        self.collisions.pop(colliding_object_state)
+        if colliding_object_state in self.collisions:
+            self.collisions.pop(colliding_object_state)
 
     def _tick(self):
         """Main interface for game loop.

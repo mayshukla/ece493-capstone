@@ -69,12 +69,16 @@ class PhysicsEngine:
         object_state_1 = self._get_object_state_from_id(object_id_1)
         object_state_2 = self._get_object_state_from_id(object_id_2)
         
+        if object_state_1 is None or object_state_2 is None:
+            return False
+
         if (not (isinstance(object_state_1, ProjectileState) and isinstance(object_state_2, AgentState))) \
             and (not (isinstance(object_state_1, AgentState) and isinstance(object_state_2, ProjectileState))):
             # stop the objects from moving
             arbiter.shapes[0].body.velocity = (0, 0)
             arbiter.shapes[1].body.velocity = (0, 0)
         print(f"Collision between object ids: {object_id_1} and {object_id_2}")
+        print(f"Collision between object states: {object_state_1} and {object_state_2}")
         # call the optional callback function
         if "collision_callback" in data:
             data["collision_callback"](object_state_1, object_state_2, arbiter.contact_point_set.points[0].point_a)
