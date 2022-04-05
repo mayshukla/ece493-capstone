@@ -101,7 +101,26 @@ improper syntax!!!
         wait.until(EC.text_to_be_present_in_element((By.ID, "pythonErrorsArea"), "IndentationError"))
 
     def test_completed_game(self):
-        pass
+        """This test can be run in headed mode with the following command:
+        GUI=1 python -m unittest test.test_frontend.TestFrontend.test_completed_game
+        """
+        agent_code = self.get_code_from_file("test/agent_code/agent1.py")
+        for driver in self.drivers:
+            code_area = WebDriverWait(driver, timeout=TestFrontend.TIMEOUT).until(lambda d: d.find_element(By.ID, "codeArea"))
+            code_area.clear()
+            code_area.send_keys(agent_code)
+
+            class_name_area = driver.find_element(By.ID, "classNameArea")
+            class_name_area.clear()
+            class_name_area.send_keys("Agent1")
+
+        for driver in self.drivers:
+            submit_button = driver.find_element(By.ID, "submitButton")
+            submit_button.click()
+
+        for driver in self.drivers:
+            wait = WebDriverWait(driver, timeout=60)
+            wait.until(EC.text_to_be_present_in_element((By.ID, "declareWinnerArea"), "You!"))
 
 
 if __name__ == '__main__':
