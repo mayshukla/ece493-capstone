@@ -60,11 +60,15 @@ class PhysicsEngine:
             True if the collision should be processed normally.
             False if the collision should be ignored.
         """
-        # print(self.bodies)
         object_id_1 = self._get_body_id(arbiter.shapes[0].body)
         object_id_2 = self._get_body_id(arbiter.shapes[1].body)
+
+        if object_id_1 is None or object_id_2 is None:
+            return False
+
         object_state_1 = self._get_object_state_from_id(object_id_1)
         object_state_2 = self._get_object_state_from_id(object_id_2)
+        
         if (not (isinstance(object_state_1, ProjectileState) and isinstance(object_state_2, AgentState))) \
             and (not (isinstance(object_state_1, AgentState) and isinstance(object_state_2, ProjectileState))):
             # stop the objects from moving
