@@ -1,6 +1,9 @@
 import math
 import random
 
+# Make random number generation deterministic for testing and demo purposes
+random.seed(256)
+
 class Agent2(Agent):
     angle = 20
     speed = 250
