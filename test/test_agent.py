@@ -12,7 +12,7 @@ class TestAgent(unittest.TestCase):
         self.enemy_agent = Agent(1, self.game)
 
         # Mock game.get_agents()
-        agents = [self.agent, self.enemy_agent]
+        agents = [[MagicMock(), self.agent], [MagicMock(), self.enemy_agent]]
         self.game.get_agents = MagicMock(return_value=agents)
 
     def normalize_angle(self, angle):
