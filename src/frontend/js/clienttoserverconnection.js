@@ -1,6 +1,9 @@
-import Message from './message.js';
+import Message from "./message.js";
 import {
   agents,
+  agent0NameSet,
+  agent1NameSet,
+  setAgentName,
   setAgentPosition,
   setAgentDirection,
   setAgentHealth,
@@ -13,15 +16,14 @@ import {
 } from "./gameSetup.js";
 
 /*
-* Handles server-client communication.
-*
-* This module is part of the following functional requirments:
-* FR2 - UI.RunGame
-* FR4 - UI.ConsistentState
-* FR5 - UI.ResultsScreen
-*
-*/
-
+ * Handles server-client communication.
+ *
+ * This module is part of the following functional requirments:
+ * FR2 - UI.RunGame
+ * FR4 - UI.ConsistentState
+ * FR5 - UI.ResultsScreen
+ *
+ */
 
 /**
  * Represents connection from client to server.
@@ -134,6 +136,9 @@ export default class ClientToServerConnection {
         // create agent
         return false;
       } else {
+        // if (!agent0NameSet || !agent1NameSet) {
+        //   setAgentName(agent_state.id, agent_state.name);
+        // }
         setAgentPosition(agent, agent_state.position.x, agent_state.position.y);
         setAgentDirection(agent, agent_state.angle);
         setAgentHealth(agent, agent_state.health);

@@ -16,7 +16,8 @@ const Application = PIXI.Application,
   AnimatedSprite = PIXI.AnimatedSprite,
   Container = PIXI.Container,
   ParticleContainer = PIXI.ParticleContainer,
-  Texture = PIXI.Texture;
+  Texture = PIXI.Texture,
+  Text = PIXI.Text;
 
 const PI = 3.14,
   PLAYABLE_AREA_X_MIN = 65,
@@ -26,7 +27,17 @@ const PI = 3.14,
   AGENT_GUN_X_PX = 244,
   AGENT_GUN_Y_PX = 162,
   AGENT_GUN_X_NORM = 0.95686,
-  AGENT_GUN_Y_NORM = 0.75349;
+  AGENT_GUN_Y_NORM = 0.75349,
+  TEXT_NAME_STYLE = {
+    // fill: "red",
+    fill: "#6dc2ca",
+    fontFamily: "Tahoma",
+    // fontFamily: "Arial",
+    fontSize: 75,
+    letterSpacing: 1,
+    fontWeight: 600,
+    lineJoin: "bevel",
+  };
 
 let app,
   agentSheet,
@@ -38,6 +49,8 @@ let app,
 
 export let agents = [];
 export let projectileMap = new Map();
+export let agent0NameSet = false;
+export let agent1NameSet = false;
 
 export default function initPixi() {
   //Create a Pixi Application
@@ -313,6 +326,15 @@ function createAgents(agentSheet) {
   agent0["ShieldEquipped"] = false;
   agent0.anchor.set(0.95652, 0.75);
   agent0.health = 100;
+  let agentName = new Text("agent0", TEXT_NAME_STYLE);
+  agentName.x = -230;
+  agentName.y = -250;
+  let agentHP = new Text("HP: " + agent0.health, TEXT_NAME_STYLE);
+  agentHP.x = -230;
+  agentHP.y = 50;
+  agent0.addChild(agentName);
+  agent0.addChild(agentHP);
+  // console.log(agent0.getChildAt(0).getLocalBounds());
 
   agent1.animationSpeed = 0.3;
   agent1.play();
@@ -338,6 +360,19 @@ export function destroyAgent(agentId) {
   console.log("app before", app);
   app.stage.removeChild(agent);
   console.log("app after", app);
+}
+
+export function setAgentName(agentId, agentName) {
+  let agent = findAgent(agentId);
+
+  agent.addChild(
+    new Text(agentName, {
+      fontFamily: "Arial",
+      fontSize: 24,
+      fill: 0xff1010,
+      align: "center",
+    })
+  );
 }
 
 export function createProjectile(projId, angle, x, y) {
