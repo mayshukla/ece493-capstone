@@ -33,7 +33,7 @@ const PI = 3.14,
     fill: "#6dc2ca",
     fontFamily: "Tahoma",
     // fontFamily: "Arial",
-    fontSize: 75,
+    fontSize: 15,
     letterSpacing: 1,
     fontWeight: 600,
     lineJoin: "bevel",
@@ -41,6 +41,7 @@ const PI = 3.14,
 
 let app,
   agentSheet,
+  agentTextDetails = new Map(),
   id,
   gameState,
   obstacleSheet,
@@ -326,15 +327,6 @@ function createAgents(agentSheet) {
   agent0["ShieldEquipped"] = false;
   agent0.anchor.set(0.95652, 0.75);
   agent0.health = 100;
-  let agentName = new Text("agent0", TEXT_NAME_STYLE);
-  agentName.x = -230;
-  agentName.y = -250;
-  let agentHP = new Text("HP: " + agent0.health, TEXT_NAME_STYLE);
-  agentHP.x = -230;
-  agentHP.y = 50;
-  agent0.addChild(agentName);
-  agent0.addChild(agentHP);
-  // console.log(agent0.getChildAt(0).getLocalBounds());
 
   agent1.animationSpeed = 0.3;
   agent1.play();
@@ -365,16 +357,54 @@ export function destroyAgent(agentId) {
 export function setAgentName(agentId, agentName) {
   let agent = findAgent(agentId);
 
-  agent.addChild(
-    new Text(agentName, {
-      fontFamily: "Arial",
-      fontSize: 24,
-      fill: 0xff1010,
-      align: "center",
-    })
-  );
+  if (agentId === 0) {
+    agent0NameSet = true;
+  } else {
+    agent1NameSet = true;
+    TEXT_NAME_STYLE.fill = "red";
+  }
+
+  console.log("writing agent initial names and health");
+  let agentNameText = new Text(agentName, TEXT_NAME_STYLE);
+  // agentNameText.angle = agent.angle
+  agentNameText.x = agent.x - 40;
+  agentNameText.y = agent.y - 75;
+
+  let agentHP = new Text("HP: " + agent.health, TEXT_NAME_STYLE);
+  // agentHP.angle = agent.angle;
+  agentHP.x = agent.x - 40;
+  agentHP.y = agent.y - 50;
+
+  agentTextDetails.set(agent, [agentNameText, agentHP]);
+  console.log(agentTextDetails);
+
+  app.stage.addChild(agentNameText);
+  app.stage.addChild(agentHP);
 }
 
+export function updateAgentTextPosition(agent, x, y) {
+  // if (agent.angle % 360 > 90 && agent.angle % 360 <= 270) {
+  //   let agentNameText = agent.getChildAt(0);
+  //   agentNameText.x *= -1;
+  //   agentNameText.y *= -1;
+  //   let agentHP = agent.getChildAt(1);
+  //   agentHP.x *= -1;
+  //   agentHP.y *= -1;
+  // }
+  let agentNameText = app.stage.getChildAt(
+    app.stage.getChildIndex(agentTextDetails.get(agent)[0])
+  );
+  console.log(agentNameText);
+  agentNameText.x = x - 30;
+  agentNameText.y = y - 65;
+
+  let agentHP = app.stage.getChildAt(
+    app.stage.getChildIndex(agentTextDetails.get(agent)[1])
+  );
+  agentHP.text = "HP: " + agent.health;
+  agentHP.x = x - 30;
+  agentHP.y = y - 40;
+}
 
 export function createProjectile(projId, agentId, angle, x, y) {
   let agent = findAgent(agentId);
@@ -443,11 +473,11 @@ export function toggleAgentShield(agent, shieldEnabled) {
 }
 
 function animateDamage(agent) {
-  colorTint(agent, 0xFF0000);
+  colorTint(agent, 0xff0000);
 }
 
 function animateAttack(agent) {
-  colorTint(agent, 0x00FF00);
+  colorTint(agent, 0x00ff00);
 }
 
 function colorTint(agent, color) {
@@ -456,7 +486,9 @@ function colorTint(agent, color) {
   filter.contrast(1, true);
   agent.filters = [filter];
 
-  setTimeout(() => { agent.filters = [] }, 200);
+  setTimeout(() => {
+    agent.filters = [];
+  }, 200);
 }
 
 function getRndInteger(min, max) {

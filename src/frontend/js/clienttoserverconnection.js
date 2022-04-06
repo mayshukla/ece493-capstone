@@ -11,6 +11,7 @@ import {
   projectileMap,
   createProjectile,
   updateProjectilePosition,
+  updateAgentTextPosition,
   destroyProjectile,
   destroyAgent,
 } from "./gameSetup.js";
@@ -136,12 +137,17 @@ export default class ClientToServerConnection {
         // create agent
         return false;
       } else {
-        // if (!agent0NameSet || !agent1NameSet) {
-        //   setAgentName(agent_state.id, agent_state.name);
-        // }
+        if (!agent0NameSet || !agent1NameSet) {
+          setAgentName(agent_state.id, agent_state.name);
+        }
         setAgentPosition(agent, agent_state.position.x, agent_state.position.y);
         setAgentDirection(agent, agent_state.angle);
         setAgentHealth(agent, agent_state.health);
+        updateAgentTextPosition(
+          agent,
+          agent_state.position.x,
+          agent_state.position.y
+        );
         if (agent_state.shieldEnabled && !agent.ShieldEquipped) {
           toggleAgentShield(agent, agent_state.shieldEnabled);
         }
