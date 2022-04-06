@@ -213,20 +213,21 @@ function createObstacles(obstacleSSheet) {
   let midObstacles = new Container();
   let leftObstacles = new Container();
   let rightObstacles = new Container();
-  // server x - 45, server y - 32
-  let init_x = PLAYABLE_AREA_X_MIN + 27 + 64;
-  let init_y = 105;
-  let ratio = 1.25;
+  let box_width = 50;
+  let image_width = 32;
+  let ratio = box_width / image_width;
+  let init_x = PLAYABLE_AREA_X_MIN + 3 * box_width;
+  let init_y = PLAYABLE_AREA_Y_MIN + 2 * box_width;
 
   obstacleSheet = {};
   obstacleSheet["blueBox"] = [
-    new Texture(obstacleSSheet, new Rectangle(1 * 32, 0, 32, 32)),
+    new Texture(obstacleSSheet, new Rectangle(1 * image_width, 0, image_width, image_width)),
   ];
   obstacleSheet["greyBox1"] = [
-    new Texture(obstacleSSheet, new Rectangle(3 * 32, 0, 32, 32)),
+    new Texture(obstacleSSheet, new Rectangle(3 * image_width, 0, image_width, image_width)),
   ];
   obstacleSheet["pinkBox"] = [
-    new Texture(obstacleSSheet, new Rectangle(5 * 32, 0, 32, 32)),
+    new Texture(obstacleSSheet, new Rectangle(5 * image_width, 0, image_width, image_width)),
   ];
 
   let blueBox = new Sprite(obstacleSheet["blueBox"][0]);
@@ -241,13 +242,13 @@ function createObstacles(obstacleSSheet) {
   blueBox.x = init_x;
   blueBox.y = init_y;
   blueBox2.x = blueBox.x;
-  blueBox2.y = blueBox.y + 15 + 32;
+  blueBox2.y = blueBox.y + box_width;
   blueBox3.x = blueBox2.x;
-  blueBox3.y = blueBox2.y + 15 + 32;
+  blueBox3.y = blueBox2.y + box_width;
   leftObstacles.addChild(blueBox, blueBox2, blueBox3);
 
-  init_x = PLAYABLE_AREA_X_MAX / 2 - 45;
-  init_y = 350 - 30;
+  init_x = (PLAYABLE_AREA_X_MAX + PLAYABLE_AREA_X_MIN) / 2 - (box_width / 2);
+  init_y = (PLAYABLE_AREA_Y_MAX + PLAYABLE_AREA_Y_MIN) / 2 - (box_width / 2);
 
   let greyBox1 = new Sprite(obstacleSheet["greyBox1"][0]);
   greyBox1.scale.set(ratio);
@@ -258,14 +259,14 @@ function createObstacles(obstacleSSheet) {
 
   greyBox1.x = init_x;
   greyBox1.y = init_y;
-  greyBox2.x = greyBox1.x + 20 + 32;
-  greyBox2.y = greyBox1.y + 20 + 32;
-  greyBox3.x = greyBox1.x - 20 - 32;
-  greyBox3.y = greyBox1.y - 20 - 32;
+  greyBox2.x = greyBox1.x + box_width;
+  greyBox2.y = greyBox1.y + box_width;
+  greyBox3.x = greyBox1.x - box_width;
+  greyBox3.y = greyBox1.y - box_width;
   midObstacles.addChild(greyBox1, greyBox2, greyBox3);
 
-  init_x = PLAYABLE_AREA_X_MAX - 69 - 96;
-  init_y = 570 - 10;
+  init_x = PLAYABLE_AREA_X_MAX - 3 * box_width - box_width;
+  init_y = PLAYABLE_AREA_Y_MAX - 2 * box_width - box_width;
 
   let pinkBox = new Sprite(obstacleSheet["pinkBox"][0]);
   pinkBox.scale.set(ratio);
@@ -277,9 +278,9 @@ function createObstacles(obstacleSSheet) {
   pinkBox.x = init_x;
   pinkBox.y = init_y;
   pinkBox2.x = pinkBox.x;
-  pinkBox2.y = pinkBox.y - 15 - 32;
+  pinkBox2.y = pinkBox.y - box_width;
   pinkBox3.x = pinkBox2.x;
-  pinkBox3.y = pinkBox2.y - 15 - 32;
+  pinkBox3.y = pinkBox2.y - box_width;
   rightObstacles.addChild(pinkBox, pinkBox2, pinkBox3);
 
   // console.log(blueBox.x, blueBox.y);

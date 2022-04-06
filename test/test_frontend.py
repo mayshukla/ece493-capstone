@@ -39,7 +39,8 @@ class TestFrontend(unittest.TestCase):
         # Open 2 browsers
         options = Options()
         # Must run headless for chromedriver to work in github actions
-        options.headless = True
+        if not "GUI" in os.environ or os.environ['GUI'] == "":
+            options.headless = True
         self.drivers = []
         for _ in range(2):
             self.drivers.append(webdriver.Chrome(service=Service(TestFrontend.driver_manager), options=options))
@@ -50,6 +51,11 @@ class TestFrontend(unittest.TestCase):
         # Close browsers
         for driver in self.drivers:
             driver.quit()
+
+    def get_code_from_file(self, filename):
+        with open(filename) as f:
+            contents = f.read()
+        return contents
 
     def test_exception_during_game(self):
         code_area = WebDriverWait(self.drivers[0], timeout=TestFrontend.TIMEOUT).until(lambda d: d.find_element(By.ID, "codeArea"))
@@ -95,7 +101,35 @@ improper syntax!!!
         wait.until(EC.text_to_be_present_in_element((By.ID, "pythonErrorsArea"), "IndentationError"))
 
     def test_completed_game(self):
-        pass
+        """This test can be run in headed mode with the following command:
+        GUI=1 python -m unittest test.test_frontend.TestFrontend.test_completed_game
+        """
+        agent_code = [
+            self.get_code_from_file("test/agent_code/agent1.py"),
+            self.get_code_from_file("test/agent_code/agent2.py"),
+        ]
+        agent_names = [
+            "Agent1",
+            "Agent2",
+        ]
+        for i in range(len(self.drivers)):
+            code_area = WebDriverWait(self.drivers[i], timeout=TestFrontend.TIMEOUT).until(lambda d: d.find_element(By.ID, "codeArea"))
+            code_area.clear()
+            code_area.send_keys(agent_code[i])
+
+            class_name_area = self.drivers[i].find_element(By.ID, "classNameArea")
+            class_name_area.clear()
+            class_name_area.send_keys(agent_names[i])
+
+        for driver in self.drivers:
+            submit_button = driver.find_element(By.ID, "submitButton")
+            submit_button.click()
+
+        wait = WebDriverWait(self.drivers[0], timeout=60 * 5)
+        wait.until(EC.text_to_be_present_in_element((By.ID, "declareWinnerArea"), "You Lost, Better Luck Next Time!"))
+
+        wait = WebDriverWait(self.drivers[1], timeout=60 * 5)
+        wait.until(EC.text_to_be_present_in_element((By.ID, "declareWinnerArea"), "You Win, Congratulations!"))
 
 
 if __name__ == '__main__':

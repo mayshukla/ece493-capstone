@@ -78,17 +78,18 @@ class MyAgent(Agent):
         collision_callback = MagicMock()
         self.game.physics.add_on_collision_callback(collision_callback)
         agent = Agent(self.game.gen_id(), self.game)
-        obstacle = Obstacle(self.game.gen_id(), Vector2(200, 70), 30, 30)
+        obstacle = Obstacle(self.game.gen_id(), Vector2(500, 300), 30, 30)
         agent.on_obstacle_scanned = MagicMock()
         self.game.agents = [[MagicMock(), agent]]
-        agent._set_position(Vector2(100, 100))
-        agent.agent_state.velocity = Vector2(100, 0)
+        # In one second, the agent, should move halfway into the scan radius
+        agent._set_position(Vector2(500 - Agent.SCAN_DISTANCE - 30, 300))
+        agent.agent_state.velocity = Vector2(Agent.SCAN_DISTANCE / 2, 0)
         self.game.physics.add_agent(agent.agent_state)
         self.game.physics.add_obstacle(obstacle)
-        for _ in range(10):
+        for _ in range(TICKS_PER_SECOND):
             self.game.tick()
         collision_callback.assert_not_called()
-        agent.on_obstacle_scanned.assert_called_with(obstacle)
+        agent.on_obstacle_scanned.assert_called_with(obstacle.position)
 
     def test_enemy_scanned_callback(self):
         collision_callback = MagicMock()

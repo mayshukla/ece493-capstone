@@ -22,6 +22,7 @@ from src.projectile_state import ProjectileState
 from src.agent_state import AgentState
 from src.obstacle import Obstacle
 from src.vector2 import Vector2
+import os
 from time import time
 import sys
 
@@ -52,6 +53,11 @@ class Game():
         self.physics = PhysicsEngine()
         self.physics.add_on_collision_callback(self.collision_callback)
         self.physics.add_on_separate_callback(self.separate_callback)
+        self.debug_render = False
+        if "GUI" in os.environ and os.environ['GUI'] != "":
+            self.debug_render = True
+        if self.debug_render:
+            self.physics.init_renderer()
 
         for client in self.clients:
             def callback(client, code, class_name):
@@ -122,7 +128,7 @@ class Game():
                     self.run_player_defined_method(agent[1], lambda: agent[1].on_enemy_scanned(object.position), agent[0])
                     agent[1]._clip_velocity()
                 elif isinstance(object, Obstacle):
-                    self.run_player_defined_method(agent[1], lambda: agent[1].on_obstacle_scanned(object), agent[0])
+                    self.run_player_defined_method(agent[1], lambda: agent[1].on_obstacle_scanned(object.position), agent[0])
                     agent[1]._clip_velocity()
 
         # check if an agent has been eliminated
@@ -134,6 +140,9 @@ class Game():
             destroyed_id = agent[1].agent_state.id
             for agent in self.agents:
                 agent[0].send_destroy_message(destroyed_id, "agent")
+
+        if self.debug_render:
+            self.physics.render_tick()
 
         # send updates to clients
         for agent in self.agents:
@@ -157,29 +166,24 @@ class Game():
 
         # TODO set obstacle positions and add to physics
 
+        box_width = 50
+
         # left obstacles
-        init_x = PLAYABLE_AREA_X_MIN + 72 + 64
-        init_y = 137
-        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x, init_y), 32, 32))
-        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x, init_y + 10 + 32), 32, 32))
-        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x, init_y + 10 + 64), 32, 32))
+        init_x = PLAYABLE_AREA_X_MIN + 3 * box_width + 0.5 * box_width
+        init_y = PLAYABLE_AREA_Y_MIN + 2 * box_width + 1.5 * box_width
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x, init_y), 3 * box_width, box_width))
 
         # middle obstacles
-        init_x = PLAYABLE_AREA_X_MAX/2
-        init_y = 350
-
-        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x, init_y), 32, 32))
-        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x - 32, init_y - 32), 32, 32))
-        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x + 32, init_y + 32), 32, 32))
+        init_x = (PLAYABLE_AREA_X_MAX + PLAYABLE_AREA_X_MIN) / 2
+        init_y = (PLAYABLE_AREA_Y_MAX + PLAYABLE_AREA_Y_MIN) / 2
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x, init_y), box_width, box_width))
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x - box_width, init_y - box_width), box_width, box_width))
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x + box_width, init_y + box_width), box_width, box_width))
 
         # right obstacles
-        init_x = PLAYABLE_AREA_X_MAX - 96 - 72
-        init_y = 570
-
-        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x, init_y), 32, 32))
-        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x, init_y - 10 - 32), 32, 32))
-        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x, init_y - 10 - 64), 32, 32))
-
+        init_x = PLAYABLE_AREA_X_MAX - 3 * box_width - 0.5 * box_width
+        init_y = PLAYABLE_AREA_Y_MAX - 2 * box_width - 1.5 * box_width
+        self.physics.add_obstacle(Obstacle(self.gen_id(), Vector2(init_x, init_y), 3 * box_width, box_width))
 
         for agent in self.agents:
             self.physics.add_agent(agent[1].agent_state)

@@ -6,6 +6,7 @@ FR4 - UI.ConsistentState
 """
 
 import argparse
+import mimetypes
 from traceback import format_exception
 import tornado.ioloop
 import tornado.web
@@ -125,11 +126,26 @@ class ServerToClientConnection(tornado.websocket.WebSocketHandler):
         self.write_message(message.to_json())
 
 
+def fix_mime_types():
+    """Manually register mimetypes to fix some weird behaviour on windows.
+
+    The mimetypes modules reades from the windows registry.
+    Sometimes the registry contains entries that produce the wrong mimetype.
+    If the mimetype of a .js file is wrong, the browser will refuse to run it.
+
+    See: https://bugs.python.org/issue43975
+    """
+    mimetypes.add_type("application/javascript", ".js")
+    mimetypes.add_type("text/html", ".html")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("port", type=int, help="Port for server to listen on.")
     args = parser.parse_args()
     port = args.port
+
+    fix_mime_types()
 
     game_server = GameServer()
 

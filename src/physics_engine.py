@@ -116,6 +116,21 @@ class PhysicsEngine:
         """
         self.collision_handler.data["separate_callback"] = callback
 
+    def init_renderer(self):
+        """Initialize the pygame renderer. This is for debug purposes only"""
+        # use pygame for testing
+        pygame.init()
+        size = PhysicsEngine.SPACE_WIDTH, PhysicsEngine.SPACE_HEIGHT
+        self.screen = pygame.display.set_mode(size)
+        self.draw_options = pymunk.pygame_util.DrawOptions(self.screen)
+
+    def render_tick(self):
+        """Update the pygame render. This should be called in the game loop."""
+        GRAY = (220, 220, 220)
+        self.screen.fill(GRAY)
+        self.space.debug_draw(self.draw_options)
+        pygame.display.update()
+
     def run_render_test(self):
         """
         Renders the current space using pygame. This is for debug purposes only.
@@ -133,7 +148,7 @@ class PhysicsEngine:
                 if event.type == pygame.QUIT:
                     running = False
 
-            screen.fill(GRAY)
+            self.screen.fill(GRAY)
             self.space.debug_draw(draw_options)
             pygame.display.update()
 
@@ -204,13 +219,11 @@ class PhysicsEngine:
         upper_left_point = (-obstacle.width/2, +obstacle.height/2)
         upper_right_point = (+obstacle.width/2, +obstacle.height/2)
         lower_right_point = (+obstacle.width/2, -obstacle.height/2)
-        start_points = [lower_left_point, upper_left_point, upper_right_point, lower_right_point]
-        end_points = [upper_left_point, upper_right_point, lower_right_point, lower_left_point]
+        vectices = [lower_left_point, upper_left_point, upper_right_point, lower_right_point]
 
-        for i in range(4):
-            segment = pymunk.Segment(obstacle_body, start_points[i], end_points[i], 15)
-            segment.collision_type = PhysicsEngine.COLLISION_TYPE_1
-            self.space.add(segment)
+        rect = pymunk.Poly(obstacle_body, vectices)
+        rect.collision_type = PhysicsEngine.COLLISION_TYPE_1
+        self.space.add(rect)
 
     def add_projectile(self, projectile_state):
         """
@@ -227,9 +240,12 @@ class PhysicsEngine:
         circle = pymunk.Circle(projectile_body, radius=5)
         circle.elasticity = 0
         circle.collision_type = PhysicsEngine.COLLISION_TYPE_1
-        # Ignore collisions between an agent and its own projectile
         circle.filter = pymunk.ShapeFilter(
-            group=self._id_to_collision_group(projectile_state.attackerId)
+            # Ignore collisions between an agent and its own projectile
+            group=self._id_to_collision_group(projectile_state.attackerId),
+            categories=0b1,
+            # Ignore collisions between any 2 projectiles
+            mask=pymunk.ShapeFilter.ALL_MASKS() ^ 0b1
         )
 
         if projectile_state.id in self.bodies:
