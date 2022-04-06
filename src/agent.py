@@ -36,12 +36,13 @@ class Agent:
     MAX_SPEED_DURING_ATTACK = MAX_SPEED * 0.5
     PROJECTILE_SPEED = 1000
 
-    def __init__(self, id, game):
+    def __init__(self, id, game, name=None):
         self.agent_state = AgentState(
             id,
             Vector2(0, 0),
             Vector2(0, 0),
-            Agent.MAX_HEALTH
+            Agent.MAX_HEALTH,
+            name=name
         )
         self.shield_timer = Timer(Agent.SHIELD_TIME_MAX, Agent.SHIELD_TIME_MAX, callback=self.deactivate_shield)
         self.shield_cooldown_timer = Timer(Agent.SHIELD_COOLDOWN_MAX, 0)

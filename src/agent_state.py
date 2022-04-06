@@ -14,7 +14,7 @@ from src.dynamic_object_state import DynamicObjectState
 class AgentState(DynamicObjectState):
     """Extends DynamicObjectState for agents."""
 
-    def __init__(self, id, position, velocity, health, shieldEnabled=False):
+    def __init__(self, id, position, velocity, health, shieldEnabled=False, name=None):
         """Constructor
 
         Arguments:
@@ -28,6 +28,7 @@ class AgentState(DynamicObjectState):
         self.health = health
         self.shieldEnabled = shieldEnabled
         self.angle = velocity.get_angle()
+        self.name = name
 
     def to_json_dict(self):
         json_dict = {
@@ -36,6 +37,7 @@ class AgentState(DynamicObjectState):
             'velocity': {'x': self.velocity.x, 'y': self.velocity.y},
             'angle': self.angle,
             'health': self.health,
-            'shieldEnabled': self.shieldEnabled
+            'shieldEnabled': self.shieldEnabled,
+            'name': self.name
         }
         return json_dict

@@ -161,7 +161,7 @@ class Game():
         # TODO figure out what starting positions should be
         self.agents[0][1]._set_position(Vector2(PLAYABLE_AREA_X_MIN + 72, 350))
         self.agents[0][1].set_movement_direction(0)
-        self.agents[1][1]._set_position(Vector2(PLAYABLE_AREA_X_MAX - 96 - 72, 350))
+        self.agents[1][1]._set_position(Vector2(PLAYABLE_AREA_X_MAX - 72, 350))
         self.agents[1][1].set_movement_direction(180)
 
         # TODO set obstacle positions and add to physics
@@ -307,7 +307,7 @@ class Game():
 
             # Check if player has already submitted code and if so, replace
             # agent instead of appending.
-            agent_instance = agent_class(self.gen_id(), self)
+            agent_instance = agent_class(self.gen_id(), self, name=class_name)
             agent_index = self.get_index_of_client_agent(client)
             if agent_index is not None:
                 self.agents[agent_index][1] = agent_instance
