@@ -28,10 +28,12 @@ class TestMessage(unittest.TestCase):
         expected_json = json.dumps({
             "type": Message.AGENT_STATES,
             "data": [
-                {"id": 1, "position": {"x": 100, "y": 200}, "velocity": {"x": 0, "y": 0}, "angle": 0.0, "health": 10, "shieldEnabled": False},
-                {"id": 2, "position": {"x": 300, "y": 400}, "velocity": {"x": 10, "y": 10}, "angle": 45.0, "health": 20, "shieldEnabled": False}
+                {"id": 1, "position": {"x": 100, "y": 200}, "velocity": {"x": 0, "y": 0}, "angle": 0.0, "health": 10, "shieldEnabled": False, "name": None},
+                {"id": 2, "position": {"x": 300, "y": 400}, "velocity": {"x": 10, "y": 10}, "angle": 45.0, "health": 20, "shieldEnabled": False, "name": None}
             ]
         })
+        print(msg.to_json())
+        print(expected_json)
         self.assertEqual(msg.to_json(), expected_json)
 
     def test_projectile_state_message(self):
