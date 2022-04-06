@@ -131,6 +131,39 @@ improper syntax!!!
         wait = WebDriverWait(self.drivers[1], timeout=60 * 5)
         wait.until(EC.text_to_be_present_in_element((By.ID, "declareWinnerArea"), "You Win, Congratulations!"))
 
+    def test_tied_game(self):
+        """This test can be run in headed mode with the following command:
+        GUI=1 python -m unittest test.test_frontend.TestFrontend.test_tied_game
+        """
+        agent_code = [
+            self.get_code_from_file("test/agent_code/agent1.py"),
+            self.get_code_from_file("test/agent_code/agent3.py"),
+        ]
+        agent_names = [
+            "Agent1",
+            "Agent3",
+        ]
+        for i in range(len(self.drivers)):
+            code_area = WebDriverWait(self.drivers[i], timeout=TestFrontend.TIMEOUT).until(lambda d: d.find_element(By.ID, "codeArea"))
+            code_area.clear()
+            code_area.send_keys(agent_code[i])
+
+            class_name_area = self.drivers[i].find_element(By.ID, "classNameArea")
+            class_name_area.clear()
+            class_name_area.send_keys(agent_names[i])
+
+        for driver in self.drivers:
+            submit_button = driver.find_element(By.ID, "submitButton")
+            submit_button.click()
+
+        wait = WebDriverWait(self.drivers[0], timeout=60 * 5)
+        wait.until(EC.text_to_be_present_in_element((By.ID, "declareWinnerArea"), "It's a Tie!"))
+
+        wait = WebDriverWait(self.drivers[1], timeout=60 * 5)
+        wait.until(EC.text_to_be_present_in_element((By.ID, "declareWinnerArea"), "It's a Tie!"))
+
+    
+
 
 if __name__ == '__main__':
     unittest.main()

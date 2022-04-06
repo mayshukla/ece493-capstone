@@ -103,9 +103,9 @@ class Agent:
         healths = []
         agents = self.game.get_agents()
         for agent in agents:
-            if agent.agent_state.id == self.agent_state.id:
+            if agent[1].agent_state.id == self.agent_state.id:
                 continue
-            healths.append(agent.agent_state.health)
+            healths.append(agent[1].agent_state.health)
         return healths
 
     def is_shield_activated(self):
