@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: class Agent</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><strong>src.agent.Agent</strong> = <a name="src.agent.Agent">class Agent</a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>src.agent.Agent(id,&nbsp;game,&nbsp;name=None)<br>
+&nbsp;<br>
+Base&nbsp;class&nbsp;for&nbsp;an&nbsp;Agent&nbsp;that&nbsp;should&nbsp;be&nbsp;extended&nbsp;by&nbsp;player&nbsp;code.<br>
+Functions&nbsp;with&nbsp;names&nbsp;that&nbsp;don't&nbsp;start&nbsp;with&nbsp;underscores&nbsp;are&nbsp;part&nbsp;of&nbsp;the<br>
+player&nbsp;API.&nbsp;E.g.&nbsp;<a href="#src.agent.Agent-run">run</a>(),&nbsp;<a href="#src.agent.Agent-get_health">get_health</a>()<br>
+Functions&nbsp;with&nbsp;names&nbsp;that&nbsp;start&nbsp;with&nbsp;underscores&nbsp;should&nbsp;*not*&nbsp;be&nbsp;called&nbsp;from<br>
+player&nbsp;code.&nbsp;E.g.&nbsp;_decrement_health()<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Agent-__init__"><strong>__init__</strong></a>(self, id, game, name=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="Agent-activate_shield"><strong>activate_shield</strong></a>(self)</dt><dd><tt>Activates&nbsp;the&nbsp;agent's&nbsp;shield&nbsp;if&nbsp;it&nbsp;is&nbsp;allowed&nbsp;to&nbsp;do&nbsp;so.</tt></dd></dl>
+
+<dl><dt><a name="Agent-attack_ranged"><strong>attack_ranged</strong></a>(self, direction)</dt><dd><tt>Triggers&nbsp;a&nbsp;ranged&nbsp;attack&nbsp;in&nbsp;the&nbsp;specified&nbsp;direction.<br>
+&nbsp;<br>
+If&nbsp;within&nbsp;the&nbsp;cooldown&nbsp;period,&nbsp;this&nbsp;function&nbsp;does&nbsp;nothing.<br>
+The&nbsp;cooldown&nbsp;period&nbsp;is&nbsp;defined&nbsp;by&nbsp;Agent.ATTACK_COOLDOWN_MAX<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;direction:&nbsp;Direction&nbsp;in&nbsp;degrees.&nbsp;Follows&nbsp;same&nbsp;angle&nbsp;convection&nbsp;as<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set_movement_direction.</tt></dd></dl>
+
+<dl><dt><a name="Agent-deactivate_shield"><strong>deactivate_shield</strong></a>(self)</dt><dd><tt>Activates&nbsp;the&nbsp;agent's&nbsp;shield&nbsp;if&nbsp;it&nbsp;is&nbsp;activated.</tt></dd></dl>
+
+<dl><dt><a name="Agent-get_agents_health"><strong>get_agents_health</strong></a>(self)</dt><dd><tt>Gets&nbsp;health&nbsp;of&nbsp;all&nbsp;agents&nbsp;except&nbsp;this&nbsp;agent.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;of&nbsp;numbers&nbsp;representing&nbsp;health.</tt></dd></dl>
+
+<dl><dt><a name="Agent-get_agents_position"><strong>get_agents_position</strong></a>(self)</dt><dd><tt>Gets&nbsp;position&nbsp;of&nbsp;all&nbsp;agents,&nbsp;within&nbsp;this&nbsp;agent's&nbsp;scanning&nbsp;distance.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;of&nbsp;Vector2&nbsp;objects&nbsp;representing&nbsp;positions.</tt></dd></dl>
+
+<dl><dt><a name="Agent-get_health"><strong>get_health</strong></a>(self)</dt><dd><tt>Gets&nbsp;health&nbsp;of&nbsp;agent<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Health&nbsp;as&nbsp;number&nbsp;between&nbsp;0&nbsp;and&nbsp;100</tt></dd></dl>
+
+<dl><dt><a name="Agent-get_position"><strong>get_position</strong></a>(self)</dt><dd><tt>Gets&nbsp;current&nbsp;position&nbsp;of&nbsp;agent<br>
+Example:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;position&nbsp;=&nbsp;self.<a href="#src.agent.Agent-get_position">get_position</a>()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;x_position&nbsp;=&nbsp;position.x<br>
+&nbsp;&nbsp;&nbsp;&nbsp;y_position&nbsp;=&nbsp;position.y<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Position&nbsp;as&nbsp;Vector2&nbsp;(object&nbsp;with&nbsp;x&nbsp;and&nbsp;y&nbsp;fields).</tt></dd></dl>
+
+<dl><dt><a name="Agent-get_shield_cooldown_time"><strong>get_shield_cooldown_time</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Agent-get_shield_time"><strong>get_shield_time</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Agent-is_shield_activated"><strong>is_shield_activated</strong></a>(self)</dt><dd><tt>Returns&nbsp;true&nbsp;if&nbsp;shield&nbsp;is&nbsp;activated.</tt></dd></dl>
+
+<dl><dt><a name="Agent-on_damage_taken"><strong>on_damage_taken</strong></a>(self)</dt><dd><tt>Callback&nbsp;that&nbsp;players&nbsp;can&nbsp;override.&nbsp;Called&nbsp;when&nbsp;the&nbsp;agent&nbsp;is&nbsp;damaged&nbsp;by&nbsp;a&nbsp;projectile.</tt></dd></dl>
+
+<dl><dt><a name="Agent-on_enemy_scanned"><strong>on_enemy_scanned</strong></a>(self, enemy_position)</dt><dd><tt>Callback&nbsp;that&nbsp;players&nbsp;can&nbsp;override.&nbsp;Called&nbsp;when&nbsp;an&nbsp;enemy&nbsp;is&nbsp;nearby.</tt></dd></dl>
+
+<dl><dt><a name="Agent-on_obstacle_hit"><strong>on_obstacle_hit</strong></a>(self)</dt><dd><tt>Callback&nbsp;that&nbsp;players&nbsp;can&nbsp;override.&nbsp;Called&nbsp;when&nbsp;the&nbsp;agent&nbsp;runs&nbsp;into&nbsp;an&nbsp;obstacle.</tt></dd></dl>
+
+<dl><dt><a name="Agent-on_obstacle_scanned"><strong>on_obstacle_scanned</strong></a>(self, obstacle_position)</dt><dd><tt>Callback&nbsp;that&nbsp;players&nbsp;can&nbsp;override.&nbsp;Called&nbsp;when&nbsp;an&nbsp;obstacle&nbsp;is&nbsp;nearby.</tt></dd></dl>
+
+<dl><dt><a name="Agent-run"><strong>run</strong></a>(self)</dt><dd><tt>This&nbsp;function&nbsp;will&nbsp;be&nbsp;called&nbsp;repeatedly&nbsp;in&nbsp;the&nbsp;main&nbsp;game&nbsp;loop.<br>
+Players&nbsp;can&nbsp;override&nbsp;this&nbsp;function&nbsp;to&nbsp;implement&nbsp;agent&nbsp;behavior.</tt></dd></dl>
+
+<dl><dt><a name="Agent-set_movement_direction"><strong>set_movement_direction</strong></a>(self, angle)</dt><dd><tt>Sets&nbsp;the&nbsp;current&nbsp;direction&nbsp;of&nbsp;movement.<br>
+&nbsp;<br>
+The&nbsp;direction&nbsp;is&nbsp;specified&nbsp;in&nbsp;units&nbsp;of&nbsp;degrees.<br>
+Zero&nbsp;degrees&nbsp;means&nbsp;directly&nbsp;to&nbsp;the&nbsp;right.<br>
+Positive&nbsp;angles&nbsp;turn&nbsp;the&nbsp;agent&nbsp;clockwise&nbsp;from&nbsp;the&nbsp;zero&nbsp;degree&nbsp;position.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;angle:&nbsp;Desired&nbsp;angle&nbsp;in&nbsp;degrees.</tt></dd></dl>
+
+<dl><dt><a name="Agent-set_movement_speed"><strong>set_movement_speed</strong></a>(self, speed)</dt><dd><tt>Sets&nbsp;the&nbsp;current&nbsp;speed&nbsp;of&nbsp;the&nbsp;agent&nbsp;in&nbsp;units&nbsp;of&nbsp;pixels&nbsp;per&nbsp;second.<br>
+&nbsp;<br>
+If&nbsp;a&nbsp;speed&nbsp;greater&nbsp;that&nbsp;Agent.MAX_SPEED&nbsp;is&nbsp;given,&nbsp;then&nbsp;the&nbsp;speed&nbsp;is&nbsp;set<br>
+to&nbsp;Agent.MAX_SPEED.<br>
+&nbsp;<br>
+If&nbsp;the&nbsp;agent&nbsp;is&nbsp;currently&nbsp;within&nbsp;the&nbsp;attack&nbsp;cooldown&nbsp;period,&nbsp;then&nbsp;the<br>
+speed&nbsp;is&nbsp;clamped&nbsp;at&nbsp;Agent.MAX_SPEED_DURING_ATTACK.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;speed:&nbsp;Desired&nbsp;speed&nbsp;in&nbsp;units&nbsp;of&nbsp;pixels&nbsp;per&nbsp;second.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>ATTACK_COOLDOWN_MAX</strong> = 0.5</dl>
+
+<dl><dt><strong>DAMAGE_AMOUNT</strong> = 10</dl>
+
+<dl><dt><strong>MAX_HEALTH</strong> = 100</dl>
+
+<dl><dt><strong>MAX_SPEED</strong> = 200</dl>
+
+<dl><dt><strong>MAX_SPEED_DURING_ATTACK</strong> = 100.0</dl>
+
+<dl><dt><strong>PROJECTILE_SPEED</strong> = 1000</dl>
+
+<dl><dt><strong>SCAN_DISTANCE</strong> = 200</dl>
+
+<dl><dt><strong>SHIELD_COOLDOWN_MAX</strong> = 20</dl>
+
+<dl><dt><strong>SHIELD_TIME_MAX</strong> = 10</dl>
+
+<dl><dt><strong>TIMER_DECREMENT</strong> = 0.03333333333333333</dl>
+
+</td></tr></table>
+</body></html>
