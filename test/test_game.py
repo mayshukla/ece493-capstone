@@ -43,11 +43,14 @@ class MyAgent(Agent):
 
     def test_tick(self):
         self.mock_agents()
+        self.game.physics = MagicMock()
         self.game.tick()
         for agent_mock in self.game.agents:
             agent_mock[1]._tick.assert_called()
-
-        # TODO add more asserts as we add functionality to Game.tick
+            agent_mock[0].send_agent_states.assert_called()
+            agent_mock[0].send_projectile_states.assert_called()
+        
+        self.game.physics.scan_area.assert_called()
 
     def test_obstacle_hit_callback(self):
         self.game.physics.add_on_collision_callback(self.game.collision_callback)
