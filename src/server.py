@@ -7,6 +7,7 @@ FR4 - UI.ConsistentState
 
 import argparse
 import mimetypes
+import os
 from traceback import format_exception
 import tornado.ioloop
 import tornado.web
@@ -144,6 +145,12 @@ def main():
     parser.add_argument("port", type=int, help="Port for server to listen on.")
     args = parser.parse_args()
     port = args.port
+
+    # If running on heroku, get the port from the PORT env var
+    # https://stackoverflow.com/questions/27899666/what-port-to-use-on-heroku-python-app
+    ON_HEROKU = os.environ.get('ON_HEROKU')
+    if ON_HEROKU:
+        port = int(os.environ.get("PORT", 17995))
 
     fix_mime_types()
 
