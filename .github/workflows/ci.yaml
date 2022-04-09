@@ -11,3 +11,8 @@ jobs:
       - run: python3 -m pip install -r src/requirements.txt
       - run: python3 -m pip install -r test/requirements.txt
       - run: python3 -m unittest
+
+name: summarize-issues
+on: [push, pull_request]
+uses: brcrista/summarize-issues@v3
+
