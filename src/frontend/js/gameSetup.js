@@ -384,14 +384,6 @@ export function setAgentName(agentId, agentName) {
 }
 
 export function updateAgentTextPosition(agent, x, y) {
-  // if (agent.angle % 360 > 90 && agent.angle % 360 <= 270) {
-  //   let agentNameText = agent.getChildAt(0);
-  //   agentNameText.x *= -1;
-  //   agentNameText.y *= -1;
-  //   let agentHP = agent.getChildAt(1);
-  //   agentHP.x *= -1;
-  //   agentHP.y *= -1;
-  // }
   let agentNameText = app.stage.getChildAt(
     app.stage.getChildIndex(agentTextDetails.get(agent)[0])
   );
