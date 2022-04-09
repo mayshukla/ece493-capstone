@@ -12,7 +12,3 @@ jobs:
       - run: python3 -m pip install -r test/requirements.txt
       - run: python3 -m unittest
       - uses: brcrista/summarize-issues@v3
-        with:
-          title: 'My Issues Report'
-          outputPath: 'IssuesReport.md'
-
