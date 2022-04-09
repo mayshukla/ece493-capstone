@@ -11,9 +11,6 @@ jobs:
       - run: python3 -m pip install -r src/requirements.txt
       - run: python3 -m pip install -r test/requirements.txt
       - run: python3 -m unittest
-  summarize-issues:
-    steps:
-      runs-on: ubuntu-latest
       - uses: brcrista/summarize-issues@v3
         with:
           title: 'My Issues Report'
